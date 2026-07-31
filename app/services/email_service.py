@@ -18,10 +18,8 @@ class EmailService:
             mailjet_secret = os.getenv('MAILJET_SECRET_KEY')
             
             if mailjet_key and mailjet_secret:
-                from mailjet_rest import Client
+                import requests
                 import base64
-                
-                mailjet = Client(auth=(mailjet_key, mailjet_secret))
                 
                 sender_email = os.getenv('MAIL_DEFAULT_SENDER_EMAIL', 'lesliesarai321@gmail.com')
                 sender_name = 'Venus Healthcare'
@@ -46,7 +44,11 @@ class EmailService:
                         'Base64Content': logo_data
                     }]
                 
-                result = mailjet.send.create(data=data)
+                result = requests.post(
+                    'https://api.mailjet.com/v3.1/send',
+                    auth=(mailjet_key, mailjet_secret),
+                    json=data
+                )
                 if result.status_code >= 400:
                     print(f"[EMAIL FAILED] Mailjet error: {result.status_code} | {result.text}")
                     raise Exception(f"Mailjet error {result.status_code}: {result.text}")
