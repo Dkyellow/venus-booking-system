@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard - Venus Clinic{% endblock %}
+{% block extra_css %}<link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">{% endblock %}
+{% block body %}
+<div class="dashboard-layout">
+{% include "components/sidebar.html" %}
+<main class="main-content">
+{% include "components/navbar.html" %}
+<div class="page-content">
+
+<div class="row g-3 mb-4">
+<div class="col-6 col-md-3"><div class="stat-card animate-slideUp"><div class="stat-icon primary"><i class="fas fa-calendar-check"></i></div><div><div class="stat-value" id="stat-today_count">{{ today_count }}</div><div class="stat-label">Today's Appointments</div></div></div></div>
+<div class="col-6 col-md-3"><div class="stat-card animate-slideUp" style="animation-delay:0.1s"><div class="stat-icon info"><i class="fas fa-calendar"></i></div><div><div class="stat-value" id="stat-upcoming_count">{{ upcoming_count }}</div><div class="stat-label">Upcoming</div></div></div></div>
+<div class="col-6 col-md-3"><div class="stat-card animate-slideUp" style="animation-delay:0.2s"><div class="stat-icon success"><i class="fas fa-check-circle"></i></div><div><div class="stat-value" id="stat-completed_count">{{ completed_count }}</div><div class="stat-label">Completed Today</div></div></div></div>
+<div class="col-6 col-md-3"><div class="stat-card animate-slideUp" style="animation-delay:0.3s"><div class="stat-icon danger"><i class="fas fa-times-circle"></i></div><div><div class="stat-value" id="stat-cancelled_count">{{ cancelled_count }}</div><div class="stat-label">Cancelled (Month)</div></div></div></div>
+</div>
+
+<div class="row g-4 mb-4">
+<div class="col-lg-8">
+
+<div class="card d-none d-md-block"><div class="card-header d-flex justify-content-between align-items-center"><h6 class="mb-0 fw-semibold">Recent Appointments</h6><a href="{{ url_for('admin.appointments') }}" class="btn btn-sm btn-ghost">View All</a></div><div class="card-body p-0"><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Ref</th><th>Patient</th><th>Service</th><th>Date</th><th>Status</th></tr></thead><tbody>
+{% for apt in recent_appointments %}<tr><td class="wrap-ref"><a href="{{ url_for('admin.appointment_detail', id=apt.id) }}" class="fw-medium text-decoration-none">{{ apt.reference }}</a></td><td>{{ apt.patient.full_name }}</td><td>{{ apt.service.name }}</td><td>{{ apt.date.strftime('%b %d') }} {{ apt.start_time.strftime('%I:%M %p') }}</td><td><span class="badge badge-{{ apt.status_color }}">{{ apt.status.value }}</span></td></tr>{% endfor %}
+{% if not recent_appointments %}<tr><td colspan="5" class="text-center py-4 text-secondary">No recent appointments</td></tr>{% endif %}
+</tbody></table></div></div></div>
+
+<div class="d-md-none mb-3">
+<div class="d-flex justify-content-between align-items-center mb-3">
+<h6 class="mb-0 fw-semibold">Recent Appointments</h6>
+<a href="{{ url_for('admin.appointments') }}" class="btn btn-sm btn-ghost">View All <i class="fas fa-arrow-right ms-1"></i></a>
+</div>
+<div class="apt-cards">
+{% for apt in recent_appointments %}
+<a href="{{ url_for('admin.appointment_detail', id=apt.id) }}" class="apt-card">
+<div class="apt-card-left">
+<div class="apt-card-avatar">{{ apt.patient.full_name[0] }}</div>
+</div>
+<div class="apt-card-center">
+<div class="apt-card-name">{{ apt.patient.full_name }}</div>
+<div class="apt-card-service">{{ apt.service.name }}</div>
+</div>
+<div class="apt-card-right">
+<div class="apt-card-time">{{ apt.date.strftime('%b %d') }} &middot; {{ apt.start_time.strftime('%I:%M %p') }}</div>
+<span class="badge badge-{{ apt.status_color }} badge-sm">{{ apt.status.value }}</span>
+</div>
+</a>
+{% endfor %}
+{% if not recent_appointments %}
+<div class="empty-card text-center py-4 text-secondary">No recent appointments</div>
+{% endif %}
+</div>
+</div>
+
+</div>
+<div class="col-lg-4">
+
+<div class="quick-actions-grid mb-4">
+<a href="{{ url_for('admin.new_appointment') }}" class="quick-action-card">
+<div class="qa-icon primary"><i class="fas fa-plus"></i></div>
+<div class="qa-label">New Appointment</div>
+</a>
+<a href="{{ url_for('booking.book') }}" class="quick-action-card" target="_blank">
+<div class="qa-icon info"><i class="fas fa-external-link-alt"></i></div>
+<div class="qa-label">Public Booking</div>
+</a>
+<a href="{{ url_for('admin.calendar') }}" class="quick-action-card">
+<div class="qa-icon success"><i class="fas fa-calendar"></i></div>
+<div class="qa-label">Calendar</div>
+</a>
+<a href="{{ url_for('admin.patients') }}" class="quick-action-card">
+<div class="qa-icon warning"><i class="fas fa-users"></i></div>
+<div class="qa-label">Patients</div>
+</a>
+</div>
+
+<div class="card"><div class="card-header"><h6 class="mb-0 fw-semibold">Recent Activity</h6></div><div class="card-body">
+{% for notif in recent_notifications %}<div class="activity-item"><div class="activity-icon" style="background:var(--primary-light);color:var(--primary);"><i class="fas fa-bell"></i></div><div><div class="activity-text small">{{ notif.message }}</div><div class="activity-time">{{ notif.created_at.strftime('%b %d, %I:%M %p') }}</div></div></div>{% endfor %}
+{% if not recent_notifications %}<p class="text-secondary small text-center mb-0">No recent activity</p>{% endif %}
+</div></div>
+
+</div></div>
+
+</div></div>
+</main></div>
+{% endblock %}
+{% block extra_js %}<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>{% endblock %}

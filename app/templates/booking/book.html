@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Book Appointment - Venus Clinic{% endblock %}
+{% block extra_css %}<link href="{{ url_for('static', filename='css/booking.css') }}" rel="stylesheet">{% endblock %}
+{% block body %}
+<div class="booking-page">
+<nav style="background:var(--bg-primary);border-bottom:1px solid var(--border-color);padding:16px 0;">
+<div class="container d-flex align-items-center justify-content-between">
+<div class="d-flex align-items-center gap-2"><img src="{{ url_for('static', filename='logo.png') }}" alt="Venus" style="height:32px;width:auto;"><span class="fw-bold fs-5">Venus Clinic</span></div>
+<a href="{{ url_for('main.index') }}" class="btn btn-ghost btn-sm">Back to Home</a>
+</div></nav>
+<div class="booking-container">
+<div class="booking-steps">
+<div class="booking-step active"><span class="booking-step-number">1</span><span class="d-mobile-none">Service</span></div>
+<div class="booking-step-divider"></div>
+<div class="booking-step"><span class="booking-step-number">2</span><span class="d-mobile-none">Practitioner</span></div>
+<div class="booking-step-divider"></div>
+<div class="booking-step"><span class="booking-step-number">3</span><span class="d-mobile-none">Date & Time</span></div>
+<div class="booking-step-divider"></div>
+<div class="booking-step"><span class="booking-step-number">4</span><span class="d-mobile-none">Your Details</span></div>
+</div>
+<div class="booking-layout">
+<div>
+<div class="booking-step-content" id="step-1">
+<h4 class="fw-bold mb-3">Select a Service</h4>
+<div id="services-list" class="d-flex flex-column gap-3">
+{% for service in services %}
+<div class="service-card" data-id="{{ service.id }}" onclick="BookingFlow.selectService({{ service.id }})">
+<div class="service-card-icon" style="background:{{ service.color }}20;color:{{ service.color }};"><i class="fas {{ service.icon or 'fa-stethoscope' }}"></i></div>
+<div class="service-card-info"><h4>{{ service.name }}</h4><p>{{ (service.description or '')[:80] }}</p>
+<div class="service-card-meta"><span><i class="far fa-clock"></i> {{ service.duration }} min</span>{% if service.price > 0 %}<span><i class="fas fa-dollar-sign"></i> ${{ '%.2f'|format(service.price) }}</span>{% endif %}</div></div>
+</div>
+{% endfor %}
+</div></div>
+<div class="booking-step-content" id="step-2" style="display:none;">
+<h4 class="fw-bold mb-3">Choose a Practitioner</h4>
+<button class="btn btn-outline mb-3" onclick="BookingFlow.loadCalendar();BookingFlow.renderStep(3)"><i class="fas fa-forward me-1"></i>Any Available</button>
+<div id="practitioners-list" class="d-flex flex-column gap-3">
+{% for p in practitioners %}
+<div class="practitioner-card" data-id="{{ p.id }}" onclick="BookingFlow.selectPractitioner({{ p.id }})">
+<div class="practitioner-avatar">{% if p.photo_url %}<img src="{{ p.photo_url }}">{% else %}<i class="fas fa-user-md"></i>{% endif %}</div>
+<div class="practitioner-info"><h4>{{ p.display_name }}</h4><p>{{ p.specialization or 'General' }}</p></div>
+</div>
+{% endfor %}
+</div></div>
+<div class="booking-step-content" id="step-3" style="display:none;">
+<h4 class="fw-bold mb-3">Select Date & Time</h4>
+<h6 class="fw-semibold text-secondary mb-2">Available Dates</h6><div id="dates-list"></div>
+<h6 class="fw-semibold text-secondary mt-4 mb-2">Available Times</h6><div id="time-slots-list"></div>
+<button class="btn btn-ghost mt-3" onclick="BookingFlow.renderStep(2)"><i class="fas fa-arrow-left me-1"></i>Back</button>
+</div>
+<div class="booking-step-content" id="step-4" style="display:none;">
+<h4 class="fw-bold mb-3">Your Information</h4>
+<form id="booking-form" onsubmit="event.preventDefault();BookingFlow.submitBooking();">
+<div class="row g-3">
+<div class="col-md-6"><label class="form-label">First Name *</label><input type="text" name="first_name" class="form-control" required></div>
+<div class="col-md-6"><label class="form-label">Last Name *</label><input type="text" name="last_name" class="form-control" required></div>
+<div class="col-md-6"><label class="form-label">Email *</label><input type="email" name="email" class="form-control" required></div>
+<div class="col-md-6"><label class="form-label">Phone *</label><input type="tel" name="phone" class="form-control" required></div>
+<div class="col-md-6"><label class="form-label">Date of Birth</label><input type="date" name="date_of_birth" class="form-control"></div>
+<div class="col-md-6"><label class="form-label">Gender</label><select name="gender" class="form-select"><option value="">Prefer not to say</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+<div class="col-12"><label class="form-label">Reason for Visit</label><textarea name="reason" class="form-control" rows="2"></textarea></div>
+<div class="col-12"><label class="form-label">Additional Notes</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+</div>
+<div class="d-flex gap-2 mt-4">
+<button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-check me-1"></i>Confirm Booking</button>
+<button type="button" class="btn btn-secondary btn-lg" onclick="BookingFlow.renderStep(3)">Back</button>
+</div></form></div>
+</div>
+<div><div class="booking-summary" id="booking-summary-content"><h3><i class="fas fa-receipt me-2"></i>Booking Summary</h3></div></div>
+</div></div></div>
+{% endblock %}
+{% block extra_js %}<script src="{{ url_for('static', filename='js/booking.js') }}"></script>{% endblock %}

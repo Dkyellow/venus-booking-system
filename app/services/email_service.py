@@ -1,0 +1,146 @@
+from flask import render_template, current_app
+from flask_mail import Message
+from app.extensions import mail, db
+from app.models.notification import EmailLog
+from app.models.appointment import Appointment
+from datetime import datetime
+import logging
+import os
+
+logger = logging.getLogger(__name__)
+
+
+class EmailService:
+    
+    @staticmethod
+    def send_email(to, subject, html_body, template_name=None, appointment_id=None):
+        try:
+            msg = Message(
+                subject=subject,
+                recipients=[to] if isinstance(to, str) else to,
+                html=html_body
+            )
+            
+            logo_path = os.path.join(current_app.static_folder, 'logo.png')
+            if os.path.exists(logo_path):
+                with open(logo_path, 'rb') as f:
+                    msg.attach('logo.png', 'image/png', f.read(), 'inline', [('Content-ID', '<logo>')])
+            
+            mail.send(msg)
+            print(f"[EMAIL SENT] To: {to} | Subject: {subject}")
+            
+            log = EmailLog(
+                recipient=to if isinstance(to, str) else to[0],
+                subject=subject,
+                body=html_body,
+                template=template_name,
+                status='sent',
+                appointment_id=appointment_id,
+                sent_at=datetime.utcnow()
+            )
+            db.session.add(log)
+            db.session.commit()
+            return True
+        except Exception as e:
+            logger.error(f"Email send failed: {str(e)}")
+            print(f"[EMAIL FAILED] To: {to} | Subject: {subject} | Error: {e}")
+            log = EmailLog(
+                recipient=to if isinstance(to, str) else to[0],
+                subject=subject,
+                body=html_body,
+                template=template_name,
+                status='failed',
+                error_message=str(e),
+                appointment_id=appointment_id
+            )
+            db.session.add(log)
+            db.session.commit()
+            return False
+    
+    @staticmethod
+    def send_booking_confirmation(appointment):
+        try:
+            html = render_template(
+                'emails/confirmation.html',
+                appointment=appointment,
+                patient=appointment.patient,
+                practitioner=appointment.practitioner,
+                service=appointment.service
+            )
+            return EmailService.send_email(
+                to=appointment.patient.email,
+                subject=f"Booking Confirmed - {appointment.reference}",
+                html_body=html,
+                template_name='confirmation',
+                appointment_id=appointment.id
+            )
+        except Exception as e:
+            logger.error(f"Confirmation email failed: {str(e)}")
+            return False
+    
+    @staticmethod
+    def send_reminder(appointment, hours_before=24):
+        try:
+            html = render_template(
+                'emails/reminder.html',
+                appointment=appointment,
+                patient=appointment.patient,
+                practitioner=appointment.practitioner,
+                service=appointment.service,
+                hours_before=hours_before
+            )
+            return EmailService.send_email(
+                to=appointment.patient.email,
+                subject=f"Appointment Reminder - {hours_before}h away",
+                html_body=html,
+                template_name='reminder',
+                appointment_id=appointment.id
+            )
+        except Exception as e:
+            logger.error(f"Reminder email failed: {str(e)}")
+            return False
+    
+    @staticmethod
+    def send_rescheduled(appointment, old_date, old_time):
+        try:
+            html = render_template(
+                'emails/rescheduled.html',
+                appointment=appointment,
+                patient=appointment.patient,
+                practitioner=appointment.practitioner,
+                service=appointment.service,
+                old_date=old_date,
+                old_time=old_time
+            )
+            return EmailService.send_email(
+                to=appointment.patient.email,
+                subject=f"Appointment Rescheduled - {appointment.reference}",
+                html_body=html,
+                template_name='rescheduled',
+                appointment_id=appointment.id
+            )
+        except Exception as e:
+            logger.error(f"Reschedule email failed: {str(e)}")
+            return False
+    
+    @staticmethod
+    def send_cancellation(appointment, reason=None):
+        try:
+            html = render_template(
+                'emails/cancelled.html',
+                appointment=appointment,
+                patient=appointment.patient,
+                practitioner=appointment.practitioner,
+                service=appointment.service,
+                reason=reason
+            )
+            return EmailService.send_email(
+                to=appointment.patient.email,
+                subject=f"Appointment Cancelled - {appointment.reference}",
+                html_body=html,
+                template_name='cancelled',
+                appointment_id=appointment.id
+            )
+        except Exception as e:
+            logger.error(f"Cancellation email failed: {str(e)}")
+            return False

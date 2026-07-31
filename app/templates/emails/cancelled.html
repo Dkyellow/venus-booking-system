@@ -1,0 +1,12 @@
+{% extends "emails/base_email.html" %}
+{% block content %}
+<h2 style="font-size:18px;color:#111827;margin:0 0 16px;">Appointment Cancelled</h2>
+<p style="font-size:14px;color:#6B7280;line-height:1.6;margin:0 0 16px;">Hi {{ patient.first_name }}, your appointment has been cancelled.</p>
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#FEE2E2;border-radius:8px;padding:20px;margin:20px 0;border:1px solid #FECACA;">
+<tr><td style="padding:8px 0;font-size:14px;color:#991B1B;">Reference: {{ appointment.reference }}</td></tr>
+<tr><td style="padding:8px 0;font-size:14px;color:#991B1B;border-top:1px solid #FCA5A5;">Service: {{ appointment.service.name }}</td></tr>
+<tr><td style="padding:8px 0;font-size:14px;color:#991B1B;border-top:1px solid #FCA5A5;">Date: {{ appointment.date.strftime('%B %d, %Y') }}</td></tr>
+{% if reason %}<tr><td style="padding:8px 0;font-size:14px;color:#991B1B;border-top:1px solid #FCA5A5;">Reason: {{ reason }}</td></tr>{% endif %}
+</table>
+<p style="font-size:14px;color:#6B7280;line-height:1.6;">To rebook, visit our website or call +263 (0242) 339 769.</p>
+{% endblock %}

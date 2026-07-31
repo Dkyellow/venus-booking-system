@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Calendar - Venus Clinic{% endblock %}
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.css" rel="stylesheet">
+{% endblock %}
+{% block body %}
+<div class="dashboard-layout">
+{% include "components/sidebar.html" %}
+<main class="main-content">
+{% include "components/navbar.html" %}
+<div class="page-content">
+<div class="card mb-3">
+<div class="card-body py-3">
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+<div class="d-flex align-items-center gap-3 flex-wrap">
+<h6 class="mb-0 fw-semibold">Appointment Calendar</h6>
+<div class="d-flex align-items-center gap-3 flex-wrap" style="font-size:0.75rem;">
+<span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#F59E0B;display:inline-block;"></span>Pending</span>
+<span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#69A83F;display:inline-block;"></span>Confirmed</span>
+<span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#3B82F6;display:inline-block;"></span>Checked In</span>
+<span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#06B6D4;display:inline-block;"></span>In Progress</span>
+<span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#10B981;display:inline-block;"></span>Completed</span>
+<span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#EF4444;display:inline-block;"></span>Cancelled</span>
+</div>
+</div>
+<a href="{{ url_for('admin.new_appointment') }}" class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i>New Appointment</a>
+</div>
+</div>
+</div>
+<div class="card">
+<div class="card-body">
+<div id="calendar"></div>
+</div>
+</div>
+</div></div>
+</main></div>
+<div id="appointment-detail-modal" class="modal-overlay"><div class="modal-content" style="max-width:520px;"><div class="modal-header"><h5 class="modal-title fw-semibold">Appointment Details</h5><button class="btn btn-ghost btn-sm" data-modal-close><i class="fas fa-times"></i></button></div><div class="modal-body"></div><div class="modal-footer"><button class="btn btn-secondary btn-sm" data-modal-close>Close</button></div></div></div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+<script src="{{ url_for('static', filename='js/calendar.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/calendar/events')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            CalendarManager.init('calendar', data.events || []);
+        })
+        .catch(function(err) {
+            console.error('Failed to load calendar events:', err);
+            CalendarManager.init('calendar', []);
+        });
+});
+</script>
+{% endblock %}

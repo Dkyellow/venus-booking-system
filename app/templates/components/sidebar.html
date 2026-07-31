@@ -1,0 +1,25 @@
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-header">
+<img src="{{ url_for('static', filename='logo.png') }}" alt="Venus" style="height:36px;width:auto;">
+<span class="sidebar-brand">Venus Clinic</span>
+<button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button>
+</div>
+<nav class="sidebar-nav">
+<div class="sidebar-section">Main</div>
+<a href="{{ url_for('admin.dashboard') }}" class="sidebar-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}"><i class="fas fa-th-large"></i> Dashboard</a>
+<a href="{{ url_for('admin.calendar') }}" class="sidebar-link {% if request.endpoint == 'admin.calendar' %}active{% endif %}"><i class="fas fa-calendar-alt"></i> Calendar</a>
+<a href="{{ url_for('admin.appointments') }}" class="sidebar-link {% if 'appointment' in request.endpoint|default('') %}active{% endif %}"><i class="fas fa-calendar-check"></i> Appointments</a>
+<div class="sidebar-section">Management</div>
+<a href="{{ url_for('admin.services') }}" class="sidebar-link {% if 'service' in request.endpoint|default('') %}active{% endif %}"><i class="fas fa-concierge-bell"></i> Services</a>
+<a href="{{ url_for('admin.practitioners') }}" class="sidebar-link {% if 'practitioner' in request.endpoint|default('') %}active{% endif %}"><i class="fas fa-user-md"></i> Practitioners</a>
+<a href="{{ url_for('admin.patients') }}" class="sidebar-link {% if 'patient' in request.endpoint|default('') %}active{% endif %}"><i class="fas fa-users"></i> Patients</a>
+<div class="sidebar-section">Analytics</div>
+<a href="{{ url_for('admin.reports') }}" class="sidebar-link {% if request.endpoint == 'admin.reports' %}active{% endif %}"><i class="fas fa-chart-bar"></i> Reports</a>
+<a href="{{ url_for('admin.notifications') }}" class="sidebar-link {% if request.endpoint == 'admin.notifications' %}active{% endif %}"><i class="fas fa-bell"></i> Notifications</a>
+{% if current_user.is_admin %}
+<div class="sidebar-section">System</div>
+<a href="{{ url_for('admin.settings') }}" class="sidebar-link {% if request.endpoint == 'admin.settings' %}active{% endif %}"><i class="fas fa-cog"></i> Settings</a>
+{% endif %}
+</nav>
+</aside>

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Manage {{ appointment.reference }}{% endblock %}
+{% block body %}
+<div class="booking-page">
+<nav style="background:var(--bg-primary);border-bottom:1px solid var(--border-color);padding:16px 0;">
+<div class="container d-flex align-items-center justify-content-between">
+<div class="d-flex align-items-center gap-2"><img src="{{ url_for('static', filename='logo.png') }}" alt="Venus" style="height:32px;width:auto;"><span class="fw-bold fs-5">Venus Clinic</span></div>
+</div></nav>
+<div class="booking-container">
+<div class="card" style="max-width:700px;margin:0 auto;"><div class="card-body p-4">
+<h4 class="fw-bold mb-1">Booking {{ appointment.reference }}</h4>
+<span class="badge badge-{{ appointment.status_color }} mb-4">{{ appointment.status.value }}</span>
+<div class="detail-box mb-4">
+<div class="detail-row"><span class="detail-label">Service</span><span class="detail-value">{{ appointment.service.name }}</span></div>
+<div class="detail-row"><span class="detail-label">Practitioner</span><span class="detail-value">{{ appointment.practitioner.full_name if appointment.practitioner else 'Any Available' }}</span></div>
+<div class="detail-row"><span class="detail-label">Date</span><span class="detail-value">{{ appointment.date.strftime('%B %d, %Y') }}</span></div>
+<div class="detail-row"><span class="detail-label">Time</span><span class="detail-value">{{ appointment.start_time.strftime('%I:%M %p') }} - {{ appointment.end_time.strftime('%I:%M %p') }}</span></div>
+</div>
+<div class="d-flex gap-3 flex-wrap">
+<a href="{{ add_to_cal_url }}" target="_blank" class="btn btn-outline btn-sm"><i class="fab fa-google me-1"></i>Add to Calendar</a>
+{% if appointment.status.value not in ['Cancelled', 'Completed'] %}
+<form method="POST" action="{{ url_for('booking.cancel_appointment', reference=appointment.reference) }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<button type="submit" class="btn btn-outline-danger btn-sm" data-confirm-delete="Cancel this appointment?"><i class="fas fa-times me-1"></i>Cancel</button>
+</form>
+{% endif %}
+</div></div></div></div></div>
+<style>.detail-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-light);}.detail-row:last-child{border-bottom:none;}.detail-label{color:var(--text-secondary);}.detail-value{text-align:right;}</style>
+{% endblock %}

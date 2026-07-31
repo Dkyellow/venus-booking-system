@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Manage Booking - Venus Clinic{% endblock %}
+{% block body %}
+<div class="booking-page">
+<nav style="background:var(--bg-primary);border-bottom:1px solid var(--border-color);padding:16px 0;">
+<div class="container d-flex align-items-center justify-content-between">
+<div class="d-flex align-items-center gap-2"><img src="{{ url_for('static', filename='logo.png') }}" alt="Venus" style="height:32px;width:auto;"><span class="fw-bold fs-5">Venus Clinic</span></div>
+</div></nav>
+<div class="booking-container">
+<div class="card" style="max-width:500px;margin:0 auto;"><div class="card-body p-4">
+<h4 class="fw-bold mb-1">Manage Your Booking</h4>
+<p class="text-secondary small mb-4">Enter your booking reference and email.</p>
+<form method="POST">{{ form.hidden_tag() }}
+<div class="mb-3"><label class="form-label">Booking Reference</label>{{ form.reference(class="form-control", placeholder="APT-XXXXXXXX-XXXXXX") }}</div>
+<div class="mb-3"><label class="form-label">Email Address</label>{{ form.email(class="form-control", placeholder="you@example.com") }}</div>
+<button type="submit" class="btn btn-primary w-100 btn-lg"><i class="fas fa-search me-1"></i>Find Booking</button>
+</form></div></div></div></div>
+{% endblock %}

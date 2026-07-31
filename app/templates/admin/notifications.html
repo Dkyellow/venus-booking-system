@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Notifications - Venus Clinic{% endblock %}
+{% block extra_css %}<link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">{% endblock %}
+{% block body %}
+<div class="dashboard-layout">
+{% include "components/sidebar.html" %}
+<main class="main-content">
+{% include "components/navbar.html" %}
+<div class="page-content">
+<h4 class="fw-bold mb-4">Notifications</h4>
+
+<div class="card d-none d-md-block"><div class="card-body p-0"><div class="table-responsive"><table class="table mb-0">
+<thead><tr><th>Type</th><th>Category</th><th>Message</th><th>Status</th><th>Date</th></tr></thead>
+<tbody>
+{% for n in notifications %}<tr><td><span class="badge badge-info">{{ n.type }}</span></td><td><span class="badge badge-primary">{{ n.category }}</span></td><td class="small">{{ n.message[:80] }}{% if n.message|length > 80 %}...{% endif %}</td><td><span class="badge badge-{% if n.status=='sent' %}success{% elif n.status=='failed' %}danger{% else %}warning{% endif %}">{{ n.status }}</span></td><td class="small text-secondary">{{ n.created_at.strftime('%b %d') }}</td></tr>{% endfor %}
+{% if not notifications %}<tr><td colspan="5" class="text-center py-4 text-secondary">No notifications</td></tr>{% endif %}
+</tbody></table></div></div></div>
+
+<div class="d-md-none">
+<div class="apt-cards">
+{% for n in notifications %}
+<div class="apt-card">
+<div class="apt-card-left">
+<div class="apt-card-avatar" style="background:{% if n.status=='sent' %}rgba(16,185,129,0.12);color:#10b981{% elif n.status=='failed' %}rgba(239,68,68,0.12);color:#ef4444{% else %}rgba(245,158,11,0.12);color:#f59e0b{% endif %};">
+<i class="fas fa-{% if n.status=='sent' %}check{% elif n.status=='failed' %}times{% else %}clock{% endif %}"></i>
+</div>
+</div>
+<div class="apt-card-center">
+<div class="apt-card-name">{{ n.type }}</div>
+<div class="apt-card-service">{{ n.message[:60] }}{% if n.message|length > 60 %}...{% endif %}</div>
+</div>
+<div class="apt-card-right">
+<div class="apt-card-time">{{ n.created_at.strftime('%b %d') }}</div>
+<span class="badge badge-{% if n.status=='sent' %}success{% elif n.status=='failed' %}danger{% else %}warning{% endif %} badge-sm">{{ n.status }}</span>
+</div>
+</div>
+{% endfor %}
+{% if not notifications %}
+<div class="empty-card text-center py-4 text-secondary">No notifications</div>
+{% endif %}
+</div>
+</div>
+
+</div></div>
+</main></div>{% endblock %}

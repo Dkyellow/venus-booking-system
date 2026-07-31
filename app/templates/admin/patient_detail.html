@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ patient.full_name }} - Venus Clinic{% endblock %}
+{% block extra_css %}<link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">{% endblock %}
+{% block body %}
+<div class="dashboard-layout">
+{% include "components/sidebar.html" %}
+<main class="main-content">
+{% include "components/navbar.html" %}
+<div class="page-content">
+<div class="mb-4"><a href="{{ url_for('admin.patients') }}" class="text-secondary text-decoration-none small"><i class="fas fa-arrow-left me-1"></i>Back</a><h4 class="fw-bold mt-1">{{ patient.full_name }}</h4></div>
+<div class="row g-4">
+<div class="col-md-4"><div class="card"><div class="card-header"><h6 class="mb-0 fw-semibold">Info</h6></div><div class="card-body">
+<p class="mb-2"><i class="fas fa-envelope me-2 text-secondary"></i>{{ patient.email }}</p>
+<p class="mb-2"><i class="fas fa-phone me-2 text-secondary"></i>{{ patient.phone }}</p>
+{% if patient.date_of_birth %}<p class="mb-2"><i class="fas fa-birthday-cake me-2 text-secondary"></i>{{ patient.date_of_birth.strftime('%B %d, %Y') }}</p>{% endif %}
+{% if patient.gender %}<p class="mb-0"><i class="fas fa-user me-2 text-secondary"></i>{{ patient.gender }}</p>{% endif %}
+</div></div></div>
+<div class="col-md-8"><div class="card"><div class="card-header"><h6 class="mb-0 fw-semibold">Appointments</h6></div><div class="card-body p-0"><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Ref</th><th>Service</th><th>Date</th><th>Status</th></tr></thead><tbody>
+{% for a in appointments %}<tr><td><a href="{{ url_for('admin.appointment_detail', id=a.id) }}">{{ a.reference }}</a></td><td>{{ a.service.name }}</td><td>{{ a.date.strftime('%b %d, %Y') }}</td><td><span class="badge badge-{{ a.status_color }}">{{ a.status.value }}</span></td></tr>{% endfor %}
+{% if not appointments %}<tr><td colspan="4" class="text-center py-3 text-secondary">No appointments</td></tr>{% endif %}
+</tbody></table></div></div></div></div>
+</div></div></div></div>
+</main></div>{% endblock %}

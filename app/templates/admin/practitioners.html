@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Practitioners - Venus Clinic{% endblock %}
+{% block extra_css %}<link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">{% endblock %}
+{% block body %}
+<div class="dashboard-layout">
+{% include "components/sidebar.html" %}
+<main class="main-content">
+{% include "components/navbar.html" %}
+<div class="page-content">
+<div class="d-flex justify-content-between align-items-center mb-4"><h4 class="fw-bold mb-0">Practitioners</h4><a href="{{ url_for('admin.new_practitioner') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i>New Practitioner</a></div>
+<div class="row g-4">
+{% for s in staff %}
+<div class="col-md-6 col-xl-4"><div class="card h-100"><div class="card-body">
+<div class="d-flex align-items-center gap-3 mb-3">
+<div class="practitioner-avatar" style="background:{{ s.color }}20;color:{{ s.color }};">{% if s.photo_url %}<img src="{{ s.photo_url }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">{% else %}<i class="fas fa-user-md"></i>{% endif %}</div>
+<div><h6 class="fw-semibold mb-0">{{ s.display_name }}</h6><small class="text-secondary">{{ s.specialization or 'General' }}</small></div>
+</div>
+<p class="small text-secondary mb-2">{{ (s.bio or 'No bio')[:100] }}{% if s.bio and s.bio|length > 100 %}...{% endif %}</p>
+<div>{% for svc in s.services %}<span class="badge badge-primary me-1 mb-1">{{ svc.name }}</span>{% endfor %}</div>
+</div><div class="card-footer bg-transparent d-flex gap-2">
+<a href="{{ url_for('admin.edit_practitioner', id=s.id) }}" class="btn btn-sm btn-outline flex-fill"><i class="fas fa-edit me-1"></i>Edit</a>
+<a href="{{ url_for('admin.practitioner_schedules', id=s.id) }}" class="btn btn-sm btn-outline flex-fill"><i class="fas fa-clock me-1"></i>Schedule</a>
+</div></div></div>
+{% endfor %}
+{% if not staff %}<div class="col-12"><div class="empty-state"><i class="fas fa-user-md"></i><h3>No practitioners yet</h3><a href="{{ url_for('admin.new_practitioner') }}" class="btn btn-primary">Add Practitioner</a></div></div>{% endif %}
+</div></div></div></div>
+</main></div>{% endblock %}

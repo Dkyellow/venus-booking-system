@@ -1,0 +1,32 @@
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i class="fas fa-bell me-2"></i>
+            <strong class="me-auto">Notification</strong>
+            <small>Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toast-body">
+            <!-- Toast message will be inserted here -->
+        </div>
+    </div>
+</div>
+
+<script>
+function showToast(message, type = 'success') {
+    const toastBody = document.getElementById('toast-body');
+    const toast = document.getElementById('toast');
+    
+    toastBody.textContent = message;
+    toastBody.className = 'toast-body';
+    
+    if (type === 'success') {
+        toastBody.classList.add('text-success');
+    } else if (type === 'error') {
+        toastBody.classList.add('text-danger');
+    }
+    
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+}
+</script>

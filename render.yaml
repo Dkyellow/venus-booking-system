@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: venus-healthcare
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: venus-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: MAIL_SERVER
+        sync: false
+      - key: MAIL_PORT
+        value: 587
+      - key: MAIL_USE_TLS
+        value: true
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_DEFAULT_SENDER
+        value: "Venus Healthcare <lesliesarai321@gmail.com>"
+      - key: CLINIC_NAME
+        value: Venus Healthcare
+      - key: CLINIC_PHONE
+        value: "+263 (0242) 339 769"
+      - key: CLINIC_EMAIL
+        value: medical@venushealthcare.co.zw
+databases:
+  - name: venus-db
+    plan: free
+    databaseName: venus_booking

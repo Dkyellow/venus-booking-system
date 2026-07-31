@@ -1,0 +1,23 @@
+<nav class="top-bar">
+<div class="top-bar-left">
+<button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+<h5 class="mb-0 fw-semibold">{% block page_title %}Dashboard{% endblock %}</h5>
+</div>
+<div class="top-bar-right">
+<button class="btn btn-ghost btn-icon" data-theme-toggle title="Toggle theme"><i class="fas fa-moon"></i></button>
+<div class="dropdown">
+<button class="btn btn-ghost d-flex align-items-center gap-2 dropdown-toggle" data-bs-toggle="dropdown">
+<div style="width:32px;height:32px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;">{{ current_user.first_name[0] }}{{ current_user.last_name[0] }}</div>
+<span class="d-mobile-none">{{ current_user.first_name }}</span>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><span class="dropdown-item-text small text-secondary">{{ current_user.email }}</span></li>
+<li><hr class="dropdown-divider"></li>
+<li><a class="dropdown-item" href="{{ url_for('auth.profile') }}"><i class="fas fa-user me-2"></i>Profile</a></li>
+{% if current_user.is_patient %}<li><a class="dropdown-item" href="{{ url_for('patient.dashboard') }}"><i class="fas fa-th-large me-2"></i>Dashboard</a></li>{% endif %}
+<li><hr class="dropdown-divider"></li>
+<li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+</ul>
+</div>
+</div>
+</nav>

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Reports - Venus Clinic{% endblock %}
+{% block extra_css %}<link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">{% endblock %}
+{% block body %}
+<div class="dashboard-layout">
+{% include "components/sidebar.html" %}
+<main class="main-content">
+{% include "components/navbar.html" %}
+<div class="page-content">
+<h4 class="fw-bold mb-4">Reports</h4>
+<div class="row g-4 mb-4">
+<div class="col-md-3"><div class="stat-card"><div class="stat-icon primary"><i class="fas fa-calendar"></i></div><div><div class="stat-value">{{ total_appointments }}</div><div class="stat-label">This Month</div></div></div></div>
+<div class="col-md-3"><div class="stat-card"><div class="stat-icon danger"><i class="fas fa-percentage"></i></div><div><div class="stat-value">{{ cancellation_rate }}%</div><div class="stat-label">Cancellation Rate</div></div></div></div>
+</div>
+<div class="row g-4">
+<div class="col-lg-8">
+<div class="card mb-4"><div class="card-header"><h6 class="mb-0 fw-semibold">Last 30 Days</h6></div><div class="card-body"><div style="height:300px;"><canvas id="dailyChart"></canvas></div></div></div>
+<div class="card"><div class="card-header"><h6 class="mb-0 fw-semibold">Monthly</h6></div><div class="card-body"><div style="height:300px;"><canvas id="monthlyChart"></canvas></div></div></div>
+</div>
+<div class="col-lg-4">
+<div class="card mb-4"><div class="card-header"><h6 class="mb-0 fw-semibold">By Service</h6></div><div class="card-body">
+{% for name, count in service_stats %}<div class="d-flex justify-content-between align-items-center py-2" style="border-bottom:1px solid var(--border-light);"><span class="small">{{ name }}</span><span class="badge badge-primary">{{ count }}</span></div>{% endfor %}
+</div></div>
+<div class="card"><div class="card-header"><h6 class="mb-0 fw-semibold">By Practitioner</h6></div><div class="card-body">
+{% for first, last, count in practitioner_stats %}<div class="d-flex justify-content-between align-items-center py-2" style="border-bottom:1px solid var(--border-light);"><span class="small">{{ first }} {{ last }}</span><span class="badge badge-info">{{ count }}</span></div>{% endfor %}
+</div></div>
+</div>
+</div></div></div>
+</main></div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>document.addEventListener('DOMContentLoaded',function(){var d={{ daily_data|tojson }};ChartManager.createLineChart('dailyChart',d.map(function(x){return x.date}),[{label:'Appointments',data:d.map(function(x){return x.count}),borderColor:'#69A83F',backgroundColor:'#69A83F20'}]);var m={{ monthly_data|tojson }};ChartManager.createBarChart('monthlyChart',m.map(function(x){return x.month}),[{label:'Appointments',data:m.map(function(x){return x.count}),backgroundColor:'#5A9033'}]);});</script>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% macro loading_spinner(id='loading', text='Loading...') %}
+<div id="{{ id }}" class="d-flex flex-column align-items-center justify-content-center py-5">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2 text-muted">{{ text }}</p>
+</div>
+{% endmacro %}
+
+{% macro loading_overlay(id='loadingOverlay') %}
+<div id="{{ id }}" class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.8); z-index: 9999; display: none;">
+    <div class="text-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Processing...</p>
+    </div>
+</div>
+{% endmacro %}

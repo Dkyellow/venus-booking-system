@@ -1,0 +1,2 @@
+This is a placeholder file for the logo directory.
+Place your clinic logo files here (e.g., logo.png, favicon.ico).
