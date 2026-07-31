@@ -21,7 +21,7 @@ class EmailService:
                 import requests
                 import base64
                 
-                sender_email = os.getenv('MAIL_DEFAULT_SENDER_EMAIL', 'lesliesarai321@gmail.com')
+                sender_email = os.getenv('MAIL_DEFAULT_SENDER_EMAIL') or 'lesliesarai321@gmail.com'
                 sender_name = 'Venus Healthcare'
                 
                 to_email = to if isinstance(to, list) else [to]
@@ -30,29 +30,32 @@ class EmailService:
                 text_body = re.sub(r'<[^>]+>', ' ', html_body)
                 text_body = re.sub(r'\s+', ' ', text_body).strip()
                 
-                data = {
-                    'FromEmail': sender_email,
-                    'FromName': sender_name,
+                message = {
+                    'From': {
+                        'Email': sender_email,
+                        'Name': sender_name
+                    },
+                    'To': [{'Email': e} for e in to_email],
                     'Subject': subject,
                     'TextPart': text_body,
-                    'HtmlPart': html_body,
-                    'Recipients': [{'Email': e} for e in to_email]
+                    'HTMLPart': html_body
                 }
                 
                 logo_path = os.path.join(current_app.static_folder, 'logo.png')
                 if os.path.exists(logo_path):
                     with open(logo_path, 'rb') as f:
                         logo_data = base64.b64encode(f.read()).decode()
-                    data['Attachments'] = [{
+                    message['Attachments'] = [{
                         'ContentType': 'image/png',
                         'Filename': 'logo.png',
                         'Base64Content': logo_data
                     }]
                 
+                data = {'Messages': [message]}
+                
                 import json
-                safe_data = {k: v for k, v in data.items() if k != 'Attachments'}
-                print(f"[EMAIL DEBUG] Mailjet payload: {json.dumps(safe_data, indent=2)}")
-                print(f"[EMAIL DEBUG] Mailjet key prefix: {mailjet_key[:8]}...")
+                safe_msg = {k: v for k, v in message.items() if k not in ('Attachments', 'HTMLPart', 'TextPart')}
+                print(f"[EMAIL DEBUG] Mailjet message: {json.dumps(safe_msg, indent=2)}")
                 
                 result = requests.post(
                     'https://api.mailjet.com/v3.1/send',
