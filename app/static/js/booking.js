@@ -92,28 +92,56 @@ const BookingFlow = {
         try {
             let url = `/api/booking/available-dates?service_id=${this.selectedService}`;
             if (this.selectedPractitioner) url += `&practitioner_id=${this.selectedPractitioner}`;
-            const data = await App.fetchData(url);
             const container = document.getElementById('dates-list');
             if (!container) return;
+            container.innerHTML = '<div class="date-loading"><div class="spinner"></div><span>Finding available dates...</span></div>';
+            const data = await App.fetchData(url);
             if (!data.dates || data.dates.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="far fa-calendar"></i><h3>No available dates</h3><p>Please try a different service or practitioner.</p></div>';
+                container.innerHTML = '<div class="empty-state"><i class="far fa-calendar-xmark"></i><h3>No available dates</h3><p>Try a different service or practitioner.</p></div>';
                 return;
             }
-            container.innerHTML = '<div class="time-slots-grid" style="grid-template-columns: repeat(7, 1fr); gap: 6px;">' +
-                data.dates.map(d => `
-                    <button class="time-slot" data-date="${d.date}" onclick="BookingFlow.selectDate('${d.date}')">
-                        <div style="font-size:0.7rem;color:var(--text-tertiary)">${d.day_name.substring(0,3)}</div>
-                        <div>${new Date(d.date + 'T00:00:00').getDate()}</div>
-                    </button>
-                `).join('') + '</div>';
+            const months = {};
+            data.dates.forEach(d => {
+                const dt = new Date(d.date + 'T00:00:00');
+                const key = `${dt.getFullYear()}-${String(dt.getMonth()).padStart(2, '0')}`;
+                if (!months[key]) months[key] = { label: dt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }), dates: [] };
+                months[key].dates.push(d);
+            });
+            let html = '';
+            Object.values(months).forEach(m => {
+                html += `<div class="date-month-group"><div class="date-month-header">${m.label}</div>`;
+                html += '<div class="date-weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span></div>';
+                const firstDow = new Date(m.dates[0].date + 'T00:00:00').getDay();
+                const offset = firstDow === 0 ? 4 : firstDow - 1;
+                html += '<div class="date-grid">';
+                for (let i = 0; i < offset; i++) html += '<div class="date-cell empty"></div>';
+                m.dates.forEach(d => {
+                    const dt = new Date(d.date + 'T00:00:00');
+                    const dayNum = dt.getDate();
+                    const isSelected = this.selectedDate === d.date;
+                    html += `<button class="date-cell${isSelected ? ' selected' : ''}" data-date="${d.date}" onclick="BookingFlow.selectDate('${d.date}')">
+                        <span class="date-day-num">${dayNum}</span>
+                        <span class="date-slots-badge">${d.slots_count} slot${d.slots_count !== 1 ? 's' : ''}</span>
+                    </button>`;
+                });
+                html += '</div></div>';
+            });
+            container.innerHTML = html;
         } catch (e) { console.error('Failed to load dates:', e); }
     },
 
     selectDate(date) {
         this.selectedDate = date;
         this.selectedTime = null;
-        document.querySelectorAll('#dates-list .time-slot').forEach(c => c.classList.remove('selected'));
-        document.querySelector(`#dates-list .time-slot[data-date="${date}"]`)?.classList.add('selected');
+        document.querySelectorAll('#dates-list .date-cell').forEach(c => c.classList.remove('selected'));
+        const cell = document.querySelector(`#dates-list .date-cell[data-date="${date}"]`);
+        if (cell) {
+            cell.classList.add('selected');
+            const dt = new Date(date + 'T00:00:00');
+            const formatted = dt.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            document.getElementById('selected-date-display').textContent = formatted;
+            document.getElementById('selected-date-display').style.display = 'block';
+        }
         this.loadTimeSlots(date);
     },
 
@@ -121,20 +149,45 @@ const BookingFlow = {
         try {
             let url = `/api/booking/slots?service_id=${this.selectedService}&date=${date}`;
             if (this.selectedPractitioner) url += `&practitioner_id=${this.selectedPractitioner}`;
-            const data = await App.fetchData(url);
             const container = document.getElementById('time-slots-list');
             if (!container) return;
+            container.innerHTML = '<div class="date-loading"><div class="spinner"></div><span>Loading times...</span></div>';
+            document.getElementById('times-section').style.display = 'block';
+            const data = await App.fetchData(url);
             if (!data.slots || data.slots.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="far fa-clock"></i><h3>No available times</h3><p>This date is fully booked.</p></div>';
+                container.innerHTML = '<div class="empty-state small"><i class="far fa-clock"></i><h3>No times available</h3><p>This date is fully booked. Pick another date.</p></div>';
                 return;
             }
-            container.innerHTML = '<div class="time-slots-grid">' +
-                data.slots.map(s => `
-                    <button class="time-slot" data-time="${s.start_time}" onclick="BookingFlow.selectTime('${s.start_time}', '${s.end_time}', '${s.display}')">
-                        ${s.display}
-                    </button>
-                `).join('') + '</div>';
-            this.renderStep(3);
+            const amSlots = data.slots.filter(s => {
+                const h = parseInt(s.start_time.split(':')[0]);
+                return h < 12;
+            });
+            const pmSlots = data.slots.filter(s => {
+                const h = parseInt(s.start_time.split(':')[0]);
+                return h >= 12;
+            });
+            let html = '';
+            if (amSlots.length) {
+                html += '<div class="time-group"><div class="time-group-header"><i class="fas fa-sun"></i> Morning</div>';
+                html += '<div class="time-slots-grid">';
+                amSlots.forEach(s => {
+                    html += `<button class="time-slot" data-time="${s.start_time}" onclick="BookingFlow.selectTime('${s.start_time}', '${s.end_time}', '${s.display}')">
+                        <span class="time-text">${s.display}</span>
+                    </button>`;
+                });
+                html += '</div></div>';
+            }
+            if (pmSlots.length) {
+                html += '<div class="time-group"><div class="time-group-header"><i class="fas fa-cloud-sun"></i> Afternoon</div>';
+                html += '<div class="time-slots-grid">';
+                pmSlots.forEach(s => {
+                    html += `<button class="time-slot" data-time="${s.start_time}" onclick="BookingFlow.selectTime('${s.start_time}', '${s.end_time}', '${s.display}')">
+                        <span class="time-text">${s.display}</span>
+                    </button>`;
+                });
+                html += '</div></div>';
+            }
+            container.innerHTML = html;
         } catch (e) { console.error('Failed to load time slots:', e); }
     },
 
