@@ -47,6 +47,9 @@ class EmailService:
                     }]
                 
                 result = mailjet.send.create(data=data)
+                if result.status_code >= 400:
+                    print(f"[EMAIL FAILED] Mailjet error: {result.status_code} | {result.text}")
+                    raise Exception(f"Mailjet error {result.status_code}: {result.text}")
                 print(f"[EMAIL SENT] To: {to} | Subject: {subject} | Status: {result.status_code}")
             elif os.getenv('SENDGRID_API_KEY'):
                 from sendgrid import SendGridAPIClient
