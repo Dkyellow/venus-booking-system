@@ -26,10 +26,15 @@ class EmailService:
                 
                 to_email = to if isinstance(to, list) else [to]
                 
+                import re
+                text_body = re.sub(r'<[^>]+>', ' ', html_body)
+                text_body = re.sub(r'\s+', ' ', text_body).strip()
+                
                 data = {
                     'FromEmail': sender_email,
                     'FromName': sender_name,
                     'Subject': subject,
+                    'TextPart': text_body,
                     'HtmlPart': html_body,
                     'Recipients': [{'Email': e} for e in to_email]
                 }
