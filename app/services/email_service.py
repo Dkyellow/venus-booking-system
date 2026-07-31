@@ -23,7 +23,7 @@ class EmailService:
                 
                 mailjet = Client(auth=(mailjet_key, mailjet_secret))
                 
-                sender_email = 'medical@venushealthcare.co.zw'
+                sender_email = os.getenv('MAIL_DEFAULT_SENDER_EMAIL', 'lesliesarai321@gmail.com')
                 sender_name = 'Venus Healthcare'
                 
                 to_email = to if isinstance(to, list) else [to]
