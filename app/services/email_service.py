@@ -14,9 +14,41 @@ class EmailService:
     @staticmethod
     def send_email(to, subject, html_body, template_name=None, appointment_id=None):
         try:
-            sendgrid_key = os.getenv('SENDGRID_API_KEY')
+            mailjet_key = os.getenv('MAILJET_API_KEY')
+            mailjet_secret = os.getenv('MAILJET_SECRET_KEY')
             
-            if sendgrid_key:
+            if mailjet_key and mailjet_secret:
+                from mailjet_rest import Client
+                import base64
+                
+                mailjet = Client(auth=(mailjet_key, mailjet_secret))
+                
+                sender_email = 'medical@venushealthcare.co.zw'
+                sender_name = 'Venus Healthcare'
+                
+                to_email = to if isinstance(to, list) else [to]
+                
+                data = {
+                    'FromEmail': sender_email,
+                    'FromName': sender_name,
+                    'Subject': subject,
+                    'HtmlPart': html_body,
+                    'Recipients': [{'Email': e} for e in to_email]
+                }
+                
+                logo_path = os.path.join(current_app.static_folder, 'logo.png')
+                if os.path.exists(logo_path):
+                    with open(logo_path, 'rb') as f:
+                        logo_data = base64.b64encode(f.read()).decode()
+                    data['Attachments'] = [{
+                        'ContentType': 'image/png',
+                        'Filename': 'logo.png',
+                        'Base64Content': logo_data
+                    }]
+                
+                result = mailjet.send.create(data=data)
+                print(f"[EMAIL SENT] To: {to} | Subject: {subject} | Status: {result.status_code}")
+            elif os.getenv('SENDGRID_API_KEY'):
                 from sendgrid import SendGridAPIClient
                 from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition, ContentId
                 import base64
@@ -41,23 +73,12 @@ class EmailService:
                     )
                     message.attachment = attachment
                 
-                sg = SendGridAPIClient(sendgrid_key)
+                sg = SendGridAPIClient(os.getenv('SENDGRID_API_KEY'))
                 sg.send(message)
-                print(f"[EMAIL SENT] To: {to} | Subject: {subject}")
+                print(f"[EMAIL SENT via SendGrid] To: {to} | Subject: {subject}")
             else:
-                from flask_mail import Message
-                from app.extensions import mail
-                msg = Message(
-                    subject=subject,
-                    recipients=[to] if isinstance(to, str) else [to],
-                    html=html_body
-                )
-                logo_path = os.path.join(current_app.static_folder, 'logo.png')
-                if os.path.exists(logo_path):
-                    with open(logo_path, 'rb') as f:
-                        msg.attach('logo.png', 'image/png', f.read(), 'inline', [('Content-ID', '<logo>')])
-                mail.send(msg)
-                print(f"[EMAIL SENT via SMTP] To: {to} | Subject: {subject}")
+                print(f"[EMAIL SKIPPED] No email API key set. To: {to} | Subject: {subject}")
+                return False
             
             log = EmailLog(
                 recipient=to if isinstance(to, str) else to[0],
