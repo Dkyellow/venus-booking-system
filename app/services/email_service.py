@@ -49,6 +49,11 @@ class EmailService:
                         'Base64Content': logo_data
                     }]
                 
+                import json
+                safe_data = {k: v for k, v in data.items() if k != 'Attachments'}
+                print(f"[EMAIL DEBUG] Mailjet payload: {json.dumps(safe_data, indent=2)}")
+                print(f"[EMAIL DEBUG] Mailjet key prefix: {mailjet_key[:8]}...")
+                
                 result = requests.post(
                     'https://api.mailjet.com/v3.1/send',
                     auth=(mailjet_key, mailjet_secret),
