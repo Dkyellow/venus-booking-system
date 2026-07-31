@@ -1,6 +1,5 @@
 from flask import render_template, current_app
-from flask_mail import Message
-from app.extensions import mail, db
+from app.extensions import db
 from app.models.notification import EmailLog
 from app.models.appointment import Appointment
 from datetime import datetime
@@ -15,19 +14,50 @@ class EmailService:
     @staticmethod
     def send_email(to, subject, html_body, template_name=None, appointment_id=None):
         try:
-            msg = Message(
-                subject=subject,
-                recipients=[to] if isinstance(to, str) else to,
-                html=html_body
-            )
+            sendgrid_key = os.getenv('SENDGRID_API_KEY')
             
-            logo_path = os.path.join(current_app.static_folder, 'logo.png')
-            if os.path.exists(logo_path):
-                with open(logo_path, 'rb') as f:
-                    msg.attach('logo.png', 'image/png', f.read(), 'inline', [('Content-ID', '<logo>')])
-            
-            mail.send(msg)
-            print(f"[EMAIL SENT] To: {to} | Subject: {subject}")
+            if sendgrid_key:
+                from sendgrid import SendGridAPIClient
+                from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition, ContentId
+                import base64
+                
+                message = Mail(
+                    from_email=current_app.config.get('MAIL_DEFAULT_SENDER', 'Venus Healthcare <lesliesarai321@gmail.com>'),
+                    to_emails=to if isinstance(to, list) else [to],
+                    subject=subject,
+                    html_content=html_body
+                )
+                
+                logo_path = os.path.join(current_app.static_folder, 'logo.png')
+                if os.path.exists(logo_path):
+                    with open(logo_path, 'rb') as f:
+                        logo_data = base64.b64encode(f.read()).decode()
+                    attachment = Attachment(
+                        FileContent(logo_data),
+                        FileName('logo.png'),
+                        FileType('image/png'),
+                        Disposition('inline'),
+                        ContentId('logo')
+                    )
+                    message.attachment = attachment
+                
+                sg = SendGridAPIClient(sendgrid_key)
+                sg.send(message)
+                print(f"[EMAIL SENT] To: {to} | Subject: {subject}")
+            else:
+                from flask_mail import Message
+                from app.extensions import mail
+                msg = Message(
+                    subject=subject,
+                    recipients=[to] if isinstance(to, str) else [to],
+                    html=html_body
+                )
+                logo_path = os.path.join(current_app.static_folder, 'logo.png')
+                if os.path.exists(logo_path):
+                    with open(logo_path, 'rb') as f:
+                        msg.attach('logo.png', 'image/png', f.read(), 'inline', [('Content-ID', '<logo>')])
+                mail.send(msg)
+                print(f"[EMAIL SENT via SMTP] To: {to} | Subject: {subject}")
             
             log = EmailLog(
                 recipient=to if isinstance(to, str) else to[0],
