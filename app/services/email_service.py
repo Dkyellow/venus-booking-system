@@ -45,7 +45,7 @@ class EmailService:
                 if os.path.exists(logo_path):
                     with open(logo_path, 'rb') as f:
                         logo_data = base64.b64encode(f.read()).decode()
-                    message['InlineAttachments'] = [{
+                    message['Attachments'] = [{
                         'ContentType': 'image/png',
                         'Filename': 'logo.png',
                         'Base64Content': logo_data,
