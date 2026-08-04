@@ -113,50 +113,61 @@ class SchedulingEngine:
         buffer_time = service.buffer_time or 15
         total_slot = duration + buffer_time
         
+        # Check holiday
+        if Holiday.query.filter_by(date=target_date).first():
+            return []
+        
+        # Batch-load all data for this date
+        day_start_dt = datetime.combine(target_date, time(0, 0))
+        day_end_dt = datetime.combine(target_date, time(23, 59, 59))
+        
+        # Load staff schedules for this day of week
+        day_of_week = target_date.weekday()
+        
+        # Load leave records
         if practitioner_id:
-            available, reason = self.is_practitioner_available_on_date(practitioner_id, target_date)
-            if not available:
-                return []
-            
-            schedules = StaffSchedule.query.filter_by(
-                staff_id=practitioner_id,
-                day_of_week=target_date.weekday(),
-                is_active=True
+            leave_records = StaffLeave.query.filter(
+                StaffLeave.staff_id == practitioner_id,
+                StaffLeave.start_date <= target_date,
+                StaffLeave.end_date >= target_date,
+                StaffLeave.status == 'Approved'
             ).all()
+            on_leave_ids = {lr.staff_id for lr in leave_records}
+            if practitioner_id in on_leave_ids:
+                return []
         else:
-            if Holiday.query.filter_by(date=target_date).first():
-                return []
-            
-            all_staff_ids = [s.id for s in Staff.query.filter_by(is_active=True, is_practitioner=True).all()]
-            available_staff_ids = []
-            for sid in all_staff_ids:
-                avail, _ = self.is_practitioner_available_on_date(sid, target_date)
-                if avail:
-                    available_staff_ids.append(sid)
-            
-            if not available_staff_ids:
-                return []
-            
-            schedules = StaffSchedule.query.filter(
-                StaffSchedule.staff_id.in_(available_staff_ids),
-                StaffSchedule.day_of_week == target_date.weekday(),
-                StaffSchedule.is_active == True
+            leave_records = StaffLeave.query.filter(
+                StaffLeave.start_date <= target_date,
+                StaffLeave.end_date >= target_date,
+                StaffLeave.status == 'Approved'
             ).all()
+            on_leave_ids = {lr.staff_id for lr in leave_records}
+        
+        # Load schedules for this day
+        all_schedules = StaffSchedule.query.filter(
+            StaffSchedule.day_of_week == day_of_week,
+            StaffSchedule.is_active == True
+        ).all()
+        
+        # Filter to available staff
+        if practitioner_id:
+            schedules = [s for s in all_schedules if s.staff_id == practitioner_id and s.staff_id not in on_leave_ids]
+        else:
+            available_staff_ids = {s.id for s in Staff.query.filter_by(is_active=True, is_practitioner=True).all()}
+            schedules = [s for s in all_schedules if s.staff_id in available_staff_ids and s.staff_id not in on_leave_ids]
         
         if not schedules:
             return []
         
-        if Holiday.query.filter_by(date=target_date).first():
-            return []
-        
-        blocked_times = []
+        # Load blocked times
+        blocked_times = BlockedTime.query.filter(
+            BlockedTime.start_time <= day_end_dt,
+            BlockedTime.end_time >= day_start_dt
+        ).all()
         if practitioner_id:
-            blocked_times = BlockedTime.query.filter(
-                BlockedTime.staff_id == practitioner_id,
-                BlockedTime.start_time <= datetime.combine(target_date, time(23, 59, 59)),
-                BlockedTime.end_time >= datetime.combine(target_date, time(0, 0, 0))
-            ).all()
+            blocked_times = [b for b in blocked_times if b.staff_id == practitioner_id]
         
+        # Load existing appointments
         existing_appointments = Appointment.query.filter(
             Appointment.date == target_date,
             Appointment.status.in_([
@@ -165,17 +176,22 @@ class SchedulingEngine:
                 AppointmentStatus.IN_PROGRESS,
                 AppointmentStatus.PENDING
             ]),
-            Appointment.end_time > datetime.combine(target_date, time(0, 0, 0)),
-            Appointment.start_time < datetime.combine(target_date, time(23, 59, 59))
-        )
-        
+            Appointment.end_time > day_start_dt,
+            Appointment.start_time < day_end_dt
+        ).all()
         if practitioner_id:
-            existing_appointments = existing_appointments.filter(
-                Appointment.practitioner_id == practitioner_id
-            )
+            existing_appointments = [a for a in existing_appointments if a.practitioner_id == practitioner_id]
         
-        existing_appointments = existing_appointments.all()
+        # Pre-index
+        blocked_by_staff = {}
+        for b in blocked_times:
+            blocked_by_staff.setdefault(b.staff_id, []).append(b)
         
+        appts_by_staff = {}
+        for a in existing_appointments:
+            appts_by_staff.setdefault(a.practitioner_id, []).append(a)
+        
+        # Generate slots
         available_slots = []
         processed_starts = set()
         
@@ -191,6 +207,8 @@ class SchedulingEngine:
                     day_start = day_start.replace(second=0, microsecond=0)
             
             current_time = day_start
+            staff_blocked = blocked_by_staff.get(staff_id, [])
+            staff_appts = appts_by_staff.get(staff_id, [])
             
             while current_time + timedelta(minutes=total_slot) <= day_end:
                 slot_start = current_time
@@ -201,31 +219,36 @@ class SchedulingEngine:
                     current_time += timedelta(minutes=buffer_time)
                     continue
                 
-                avail, _ = self.is_practitioner_available_at_time(
-                    staff_id, target_date, slot_start, slot_end
-                )
-                if not avail:
+                # Check blocked
+                blocked = any(slot_start < b.end_time and slot_end > b.start_time for b in staff_blocked)
+                if blocked:
                     current_time += timedelta(minutes=buffer_time)
                     continue
                 
-                if self._is_slot_available(slot_start, slot_end, existing_appointments, blocked_times):
-                    if service.requires_room:
-                        room_ok, room, _ = self.check_room_availability(
-                            target_date, slot_start, slot_end, service.required_room_type
-                        )
-                        if not room_ok:
-                            current_time += timedelta(minutes=buffer_time)
-                            continue
-                    
-                    processed_starts.add(start_key)
-                    available_slots.append({
-                        'start_time': slot_start.strftime('%H:%M'),
-                        'end_time': (slot_start + timedelta(minutes=duration)).strftime('%H:%M'),
-                        'display': slot_start.strftime('%I:%M %p'),
-                        'datetime_start': slot_start.isoformat(),
-                        'datetime_end': (slot_start + timedelta(minutes=duration)).isoformat(),
-                        'practitioner_id': staff_id,
-                    })
+                # Check appointments
+                conflict = any(slot_start < a.end_time and slot_end > a.start_time for a in staff_appts)
+                if conflict:
+                    current_time += timedelta(minutes=buffer_time)
+                    continue
+                
+                # Check room if needed
+                if service.requires_room:
+                    room_ok, _, _ = self.check_room_availability(
+                        target_date, slot_start, slot_end, service.required_room_type
+                    )
+                    if not room_ok:
+                        current_time += timedelta(minutes=buffer_time)
+                        continue
+                
+                processed_starts.add(start_key)
+                available_slots.append({
+                    'start_time': slot_start.strftime('%H:%M'),
+                    'end_time': (slot_start + timedelta(minutes=duration)).strftime('%H:%M'),
+                    'display': slot_start.strftime('%I:%M %p'),
+                    'datetime_start': slot_start.isoformat(),
+                    'datetime_end': (slot_start + timedelta(minutes=duration)).isoformat(),
+                    'practitioner_id': staff_id,
+                })
                 
                 current_time += timedelta(minutes=buffer_time)
         
@@ -259,29 +282,192 @@ class SchedulingEngine:
         if not service:
             return []
         
-        available_dates = []
         start_date = date.today()
-        end_date = start_date + timedelta(days=service.max_advance_days or 60)
-        end_date = min(end_date, start_date + timedelta(days=months_ahead * 30))
+        end_date = start_date + timedelta(days=min(service.max_advance_days or 60, months_ahead * 30))
         
+        duration = service.duration
+        buffer_time = service.buffer_time or 15
+        total_slot = duration + buffer_time
+        
+        # Batch-load all data for the date range
+        day_start_dt = datetime.combine(start_date, time(0, 0))
+        day_end_dt = datetime.combine(end_date, time(23, 59, 59))
+        
+        # Holidays
+        holiday_dates = {h.date for h in Holiday.query.filter(
+            Holiday.date >= start_date, Holiday.date <= end_date
+        ).all()}
+        
+        # Staff schedules (all active)
+        all_schedules = StaffSchedule.query.filter(
+            StaffSchedule.is_active == True,
+            StaffSchedule.day_of_week >= 0
+        ).all()
+        
+        # Leave records
+        if practitioner_id:
+            leave_records = StaffLeave.query.filter(
+                StaffLeave.staff_id == practitioner_id,
+                StaffLeave.start_date <= end_date,
+                StaffLeave.end_date >= start_date,
+                StaffLeave.status == 'Approved'
+            ).all()
+        else:
+            leave_records = StaffLeave.query.filter(
+                StaffLeave.start_date <= end_date,
+                StaffLeave.end_date >= start_date,
+                StaffLeave.status == 'Approved'
+            ).all()
+        
+        # Blocked times
+        if practitioner_id:
+            blocked_times = BlockedTime.query.filter(
+                BlockedTime.staff_id == practitioner_id,
+                BlockedTime.start_time <= day_end_dt,
+                BlockedTime.end_time >= day_start_dt
+            ).all()
+        else:
+            blocked_times = []
+        
+        # Active practitioners
+        if practitioner_id:
+            active_staff = {practitioner_id}
+        else:
+            active_staff = {s.id for s in Staff.query.filter_by(is_active=True, is_practitioner=True).all()}
+        
+        # Existing appointments
+        existing_appointments = Appointment.query.filter(
+            Appointment.date >= start_date,
+            Appointment.date <= end_date,
+            Appointment.status.in_([
+                AppointmentStatus.CONFIRMED,
+                AppointmentStatus.CHECKED_IN,
+                AppointmentStatus.IN_PROGRESS,
+                AppointmentStatus.PENDING
+            ])
+        )
+        if practitioner_id:
+            existing_appointments = existing_appointments.filter(
+                Appointment.practitioner_id == practitioner_id
+            )
+        existing_appointments = existing_appointments.all()
+        
+        # Pre-index data
+        schedules_by_staff_day = {}
+        for s in all_schedules:
+            schedules_by_staff_day.setdefault(s.staff_id, {})[s.day_of_week] = s
+        
+        leave_by_staff = {}
+        for lr in leave_records:
+            leave_by_staff.setdefault(lr.staff_id, []).append(lr)
+        
+        appointments_by_date = {}
+        for appt in existing_appointments:
+            appointments_by_date.setdefault(appt.date, []).append(appt)
+        
+        # Check each date
+        available_dates = []
         current_date = start_date
         while current_date <= end_date:
-            slots = self.get_available_slots(
-                service_id=service_id,
-                target_date=current_date,
-                practitioner_id=practitioner_id
-            )
-            if slots:
-                available_dates.append({
-                    'date': current_date.isoformat(),
-                    'display': current_date.strftime('%B %d, %Y'),
-                    'day_name': current_date.strftime('%A'),
-                    'slots_count': len(slots),
-                })
+            if current_date not in holiday_dates:
+                has_slots = self._check_date_has_slots(
+                    current_date, service, duration, buffer_time, total_slot,
+                    active_staff, schedules_by_staff_day, leave_by_staff,
+                    blocked_times, appointments_by_date, practitioner_id
+                )
+                if has_slots:
+                    available_dates.append({
+                        'date': current_date.isoformat(),
+                        'display': current_date.strftime('%B %d, %Y'),
+                        'day_name': current_date.strftime('%A'),
+                        'slots_count': has_slots,
+                    })
             
             current_date += timedelta(days=1)
         
         return available_dates
+    
+    def _check_date_has_slots(
+        self, target_date, service, duration, buffer_time, total_slot,
+        active_staff, schedules_by_staff_day, leave_by_staff,
+        blocked_times, appointments_by_date, practitioner_id
+    ):
+        day_of_week = target_date.weekday()
+        day_appointments = appointments_by_date.get(target_date, [])
+        day_blocked = [b for b in blocked_times 
+                       if b.start_time.date() <= target_date and b.end_time.date() >= target_date]
+        slot_count = 0
+        
+        # Determine which staff to check
+        if practitioner_id:
+            staff_to_check = [practitioner_id]
+        else:
+            staff_to_check = list(active_staff)
+        
+        for staff_id in staff_to_check:
+            # Check leave
+            on_leave = False
+            for lr in leave_by_staff.get(staff_id, []):
+                if lr.start_date <= target_date <= lr.end_date:
+                    on_leave = True
+                    break
+            if on_leave:
+                continue
+            
+            # Check schedule
+            staff_scheds = schedules_by_staff_day.get(staff_id, {})
+            if day_of_week not in staff_scheds:
+                continue
+            sched = staff_scheds[day_of_week]
+            
+            staff_appts = [a for a in day_appointments 
+                          if a.practitioner_id == staff_id]
+            staff_blocked = [b for b in day_blocked if b.staff_id == staff_id]
+            
+            # Generate slots
+            day_start = datetime.combine(target_date, sched.start_time)
+            day_end = datetime.combine(target_date, sched.end_time)
+            
+            if target_date == date.today():
+                now = datetime.now(self.timezone).replace(tzinfo=None)
+                if day_start < now:
+                    day_start = now + timedelta(minutes=30)
+                    day_start = day_start.replace(second=0, microsecond=0)
+            
+            current_time = day_start
+            while current_time + timedelta(minutes=total_slot) <= day_end:
+                slot_start = current_time
+                slot_end = current_time + timedelta(minutes=duration)
+                
+                # Check blocked
+                blocked = False
+                for b in staff_blocked:
+                    if slot_start < b.end_time and slot_end > b.start_time:
+                        blocked = True
+                        break
+                
+                if not blocked:
+                    # Check appointments
+                    conflict = False
+                    for appt in staff_appts:
+                        if slot_start < appt.end_time and slot_end > appt.start_time:
+                            conflict = True
+                            break
+                    
+                    if not conflict:
+                        # Check room if needed
+                        if service.requires_room:
+                            room_ok, _, _ = self.check_room_availability(
+                                target_date, slot_start, slot_end, service.required_room_type
+                            )
+                            if room_ok:
+                                slot_count += 1
+                        else:
+                            slot_count += 1
+                
+                current_time += timedelta(minutes=buffer_time)
+        
+        return slot_count
     
     def can_book_appointment(
         self,
