@@ -10,6 +10,9 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
 <div><a href="{{ url_for('admin.appointments') }}" class="text-secondary text-decoration-none small"><i class="fas fa-arrow-left me-1"></i>Back</a><h4 class="fw-bold mt-1 mb-0">{{ appointment.reference }}</h4></div>
 <div class="d-flex gap-2">
+{% if appointment.status.value == 'Pending' %}
+<form method="POST" action="{{ url_for('admin.update_appointment', id=appointment.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="status"><input type="hidden" name="status" value="Confirmed"><button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-check me-1"></i>Confirm Booking</button></form>
+{% endif %}
 {% if appointment.status.value not in ['Completed', 'Cancelled'] %}
 <form method="POST" action="{{ url_for('admin.update_appointment', id=appointment.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="status"><input type="hidden" name="status" value="Completed"><button type="submit" class="btn btn-success btn-sm"><i class="fas fa-check me-1"></i>Complete</button></form>
 <form method="POST" action="{{ url_for('admin.update_appointment', id=appointment.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="status"><input type="hidden" name="status" value="Cancelled"><button type="submit" class="btn btn-danger btn-sm" data-confirm-delete="Cancel this appointment?"><i class="fas fa-times me-1"></i>Cancel</button></form>

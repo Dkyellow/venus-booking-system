@@ -31,7 +31,7 @@ def dashboard():
 
     today_count = Appointment.query.filter(
         Appointment.date == today,
-        Appointment.status.in_([AppointmentStatus.CONFIRMED, AppointmentStatus.CHECKED_IN, AppointmentStatus.IN_PROGRESS])
+        Appointment.status.in_([AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED, AppointmentStatus.CHECKED_IN, AppointmentStatus.IN_PROGRESS])
     ).count()
 
     upcoming_count = Appointment.query.filter(
@@ -237,6 +237,8 @@ def update_appointment(id):
 
         if new_status == 'cancelled':
             NotificationService.notify_booking_cancelled(appointment, appointment.cancellation_reason)
+        elif new_status == 'confirmed':
+            NotificationService.notify_booking_confirmed(appointment)
 
         flash(f'Appointment status updated to {new_status}', 'success')
 

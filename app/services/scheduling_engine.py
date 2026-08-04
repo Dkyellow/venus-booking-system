@@ -266,19 +266,18 @@ class SchedulingEngine:
         
         current_date = start_date
         while current_date <= end_date:
-            if current_date.weekday() < 5:
-                slots = self.get_available_slots(
-                    service_id=service_id,
-                    target_date=current_date,
-                    practitioner_id=practitioner_id
-                )
-                if slots:
-                    available_dates.append({
-                        'date': current_date.isoformat(),
-                        'display': current_date.strftime('%B %d, %Y'),
-                        'day_name': current_date.strftime('%A'),
-                        'slots_count': len(slots),
-                    })
+            slots = self.get_available_slots(
+                service_id=service_id,
+                target_date=current_date,
+                practitioner_id=practitioner_id
+            )
+            if slots:
+                available_dates.append({
+                    'date': current_date.isoformat(),
+                    'display': current_date.strftime('%B %d, %Y'),
+                    'day_name': current_date.strftime('%A'),
+                    'slots_count': len(slots),
+                })
             
             current_date += timedelta(days=1)
         

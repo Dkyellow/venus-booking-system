@@ -104,3 +104,26 @@ def migrate():
 
 if __name__ == '__main__':
     migrate()
+
+# Also run via Flask app context for ORM-based migrations
+import os
+from app import create_app
+from app.extensions import db
+
+def migrate_schedules():
+    app = create_app(os.getenv('FLASK_ENV', 'development'))
+    with app.app_context():
+        from app.models.staff import Staff
+        from app.models.schedule import StaffSchedule
+        from datetime import time
+        
+        all_staff = Staff.query.filter_by(is_active=True, is_practitioner=True).all()
+        for s in all_staff:
+            existing_days = {sched.day_of_week for sched in StaffSchedule.query.filter_by(staff_id=s.id, is_active=True).all()}
+            for day in range(7):
+                if day not in existing_days:
+                    sched = StaffSchedule(staff_id=s.id, day_of_week=day, start_time=time(9, 0), end_time=time(17, 0), is_active=True)
+                    db.session.add(sched)
+                    print(f"[MIGRATE] Added day {day} schedule for {s.first_name} {s.last_name}")
+        db.session.commit()
+        print("[MIGRATE] Weekend schedules migration complete.")

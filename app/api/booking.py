@@ -143,7 +143,7 @@ def api_create_booking():
         date=start_dt.date(),
         start_time=start_dt,
         end_time=end_dt,
-        status=AppointmentStatus.CONFIRMED,
+        status=AppointmentStatus.PENDING,
         reason=data.get('reason'),
         notes=data.get('notes')
     )
@@ -173,7 +173,7 @@ def api_create_booking():
     email_sent = False
     email_error = None
     try:
-        email_sent = NotificationService.notify_booking_confirmed(appointment)
+        email_sent = NotificationService.notify_booking_received(appointment)
     except Exception as e:
         email_error = str(e)
         import logging

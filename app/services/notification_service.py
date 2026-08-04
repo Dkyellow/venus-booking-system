@@ -51,6 +51,22 @@ class NotificationService:
         )
     
     @staticmethod
+    def notify_booking_received(appointment):
+        print(f"[NOTIFY] Sending booking received for {appointment.reference} to {appointment.patient.email}")
+        try:
+            result = EmailService.send_booking_received(appointment)
+            print(f"[NOTIFY] Email result: {result}")
+        except Exception as e:
+            print(f"[NOTIFY] Email error: {e}")
+        
+        NotificationService.create_notification(
+            'system', 'booking_received',
+            f"Booking {appointment.reference} received, pending confirmation",
+            patient_id=appointment.patient_id,
+            appointment_id=appointment.id
+        )
+    
+    @staticmethod
     def notify_booking_reminder(appointment, hours_before=24):
         EmailService.send_reminder(appointment, hours_before)
         

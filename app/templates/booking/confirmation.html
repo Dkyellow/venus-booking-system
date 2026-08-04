@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Booking Confirmed - {{ appointment.reference }}{% endblock %}
+{% block title %}Booking Received - {{ appointment.reference }}{% endblock %}
 {% block body %}
 <div class="booking-page">
 <nav style="background:var(--bg-primary);border-bottom:1px solid var(--border-color);padding:16px 0;">
@@ -9,9 +9,9 @@
 <div class="booking-container">
 <div class="card" style="max-width:700px;margin:0 auto;"><div class="card-body">
 <div class="booking-confirmation">
-<div class="checkmark"><i class="fas fa-check"></i></div>
-<h3 class="fw-bold mb-2">Booking Confirmed!</h3>
-<p class="text-secondary mb-4">Your appointment has been successfully booked.</p>
+<div class="checkmark"><i class="fas fa-clock"></i></div>
+<h3 class="fw-bold mb-2">Booking Received!</h3>
+<p class="text-secondary mb-4">Your booking request has been submitted. We'll confirm your appointment shortly.</p>
 <div class="detail-box text-start" style="max-width:500px;margin:0 auto;">
 <div class="detail-row"><span class="detail-label">Reference</span><span class="detail-value fw-bold">{{ appointment.reference }}</span></div>
 <div class="detail-row"><span class="detail-label">Service</span><span class="detail-value">{{ appointment.service.name }}</span></div>

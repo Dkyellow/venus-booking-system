@@ -148,6 +148,27 @@ class EmailService:
             return False
     
     @staticmethod
+    def send_booking_received(appointment):
+        try:
+            html = render_template(
+                'emails/booking_received.html',
+                appointment=appointment,
+                patient=appointment.patient,
+                practitioner=appointment.practitioner,
+                service=appointment.service
+            )
+            return EmailService.send_email(
+                to=appointment.patient.email,
+                subject=f"Booking Received - {appointment.reference}",
+                html_body=html,
+                template_name='booking_received',
+                appointment_id=appointment.id
+            )
+        except Exception as e:
+            logger.error(f"Booking received email failed: {str(e)}")
+            return False
+    
+    @staticmethod
     def send_reminder(appointment, hours_before=24):
         try:
             html = render_template(

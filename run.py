@@ -106,6 +106,17 @@ with app.app_context():
     from app.models.settings import ClinicSettings
     from datetime import time
     
+    # Add weekend schedules for existing staff who only have Mon-Fri
+    all_staff = Staff.query.filter_by(is_active=True, is_practitioner=True).all()
+    for s in all_staff:
+        existing_days = {sched.day_of_week for sched in StaffSchedule.query.filter_by(staff_id=s.id, is_active=True).all()}
+        for day in range(7):
+            if day not in existing_days:
+                sched = StaffSchedule(staff_id=s.id, day_of_week=day, start_time=time(9, 0), end_time=time(17, 0), is_active=True)
+                db.session.add(sched)
+                print(f"[MIGRATE] Added day {day} schedule for {s.first_name} {s.last_name}")
+    db.session.commit()
+    
     if User.query.count() == 0:
         print("[SEED] Database empty, seeding...")
         
@@ -159,7 +170,7 @@ with app.app_context():
             for sn in svc_names:
                 if sn in services:
                     s.services.append(services[sn])
-            for day in range(5):
+            for day in range(7):
                 sched = StaffSchedule(staff_id=s.id, day_of_week=day, start_time=time(9, 0), end_time=time(17, 0), is_active=True)
                 db.session.add(sched)
         

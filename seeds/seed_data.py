@@ -86,7 +86,7 @@ def seed_database():
                 for sn in svc_names:
                     if sn in services:
                         s.services.append(services[sn])
-                for day in range(5):
+                for day in range(7):
                     sched = StaffSchedule(staff_id=s.id, day_of_week=day, start_time=time(9, 0), end_time=time(17, 0), is_active=True)
                     db.session.add(sched)
             staff_list[email] = s
