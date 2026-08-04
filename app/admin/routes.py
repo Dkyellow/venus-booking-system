@@ -36,7 +36,7 @@ def dashboard():
 
     upcoming_count = Appointment.query.filter(
         Appointment.date > today,
-        Appointment.status.in_([AppointmentStatus.CONFIRMED, AppointmentStatus.PENDING])
+        Appointment.status.in_([AppointmentStatus.CONFIRMED, AppointmentStatus.PENDING, AppointmentStatus.RESCHEDULED])
     ).count()
 
     completed_count = Appointment.query.filter(
@@ -265,7 +265,7 @@ def reschedule_appointment(id):
     appointment.date = datetime.strptime(new_date, '%Y-%m-%d').date()
     appointment.start_time = datetime.strptime(f"{new_date} {new_start}", '%Y-%m-%d %H:%M')
     appointment.end_time = datetime.strptime(f"{new_date} {new_end}", '%Y-%m-%d %H:%M')
-    appointment.status = AppointmentStatus.RESCHEDULED
+    appointment.status = AppointmentStatus.CONFIRMED
 
     history = AppointmentHistory(
         appointment_id=appointment.id,
@@ -279,7 +279,7 @@ def reschedule_appointment(id):
 
     NotificationService.notify_booking_rescheduled(appointment, old_date, old_time)
 
-    flash('Appointment rescheduled successfully', 'success')
+    flash('Appointment rescheduled and confirmed successfully', 'success')
     return redirect(url_for('admin.appointment_detail', id=id))
 
 

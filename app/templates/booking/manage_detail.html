@@ -19,11 +19,27 @@
 <div class="d-flex gap-3 flex-wrap">
 <a href="{{ add_to_cal_url }}" target="_blank" class="btn btn-outline btn-sm"><i class="fab fa-google me-1"></i>Add to Calendar</a>
 {% if appointment.status.value not in ['Cancelled', 'Completed'] %}
+<button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#rescheduleModal"><i class="fas fa-calendar-alt me-1"></i>Reschedule</button>
 <form method="POST" action="{{ url_for('booking.cancel_appointment', reference=appointment.reference) }}">
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 <button type="submit" class="btn btn-outline-danger btn-sm" data-confirm-delete="Cancel this appointment?"><i class="fas fa-times me-1"></i>Cancel</button>
 </form>
 {% endif %}
 </div></div></div></div></div>
+
+<div class="modal fade" id="rescheduleModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+<div class="modal-header"><h5 class="modal-title fw-bold">Request Reschedule</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+<form method="POST" action="{{ url_for('booking.reschedule_appointment', reference=appointment.reference) }}">
+<div class="modal-body">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<p class="text-secondary small mb-3">Your reschedule request will be reviewed by our team. You'll receive a confirmation email once approved.</p>
+<div class="mb-3"><label class="form-label">New Date</label><input type="date" name="date" class="form-control" value="{{ appointment.date.strftime('%Y-%m-%d') }}" required></div>
+<div class="row g-3">
+<div class="col-6"><label class="form-label">Start Time</label><input type="time" name="start_time" class="form-control" value="{{ appointment.start_time.strftime('%H:%M') }}" required></div>
+<div class="col-6"><label class="form-label">End Time</label><input type="time" name="end_time" class="form-control" value="{{ appointment.end_time.strftime('%H:%M') }}" required></div>
+</div>
+</div>
+<div class="modal-footer"><button type="button" class="btn btn-outline" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Submit Request</button></div>
+</form></div></div></div>
 <style>.detail-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-light);}.detail-row:last-child{border-bottom:none;}.detail-label{color:var(--text-secondary);}.detail-value{text-align:right;}</style>
 {% endblock %}

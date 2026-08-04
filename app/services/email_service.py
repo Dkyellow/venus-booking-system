@@ -45,16 +45,18 @@ class EmailService:
                 if os.path.exists(logo_path):
                     with open(logo_path, 'rb') as f:
                         logo_data = base64.b64encode(f.read()).decode()
-                    message['Attachments'] = [{
+                    message['InlineAttachments'] = [{
                         'ContentType': 'image/png',
                         'Filename': 'logo.png',
-                        'Base64Content': logo_data
+                        'Base64Content': logo_data,
+                        'ContentID': 'logo',
+                        'ContentDisposition': 'inline'
                     }]
                 
                 data = {'Messages': [message]}
                 
                 import json
-                safe_msg = {k: v for k, v in message.items() if k not in ('Attachments', 'HTMLPart', 'TextPart')}
+                safe_msg = {k: v for k, v in message.items() if k not in ('Attachments', 'InlineAttachments', 'HTMLPart', 'TextPart')}
                 print(f"[EMAIL DEBUG] Mailjet message: {json.dumps(safe_msg, indent=2)}")
                 
                 result = requests.post(
