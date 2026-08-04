@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Room Management - Venus Healthcare{% endblock %}
+{% block extra_css %}<link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">{% endblock %}
+{% block body %}
+<div class="d-flex">
+{% include 'components/sidebar.html' %}
+<main class="main-content flex-grow-1">
+<div class="top-bar"><h5 class="mb-0 fw-bold">Room & Resource Management</h5></div>
+<div class="content-area p-4">
+<div class="d-flex justify-content-between align-items-center mb-4">
+<div>
+<p class="text-secondary mb-0" style="font-size:0.875rem;">Manage consultation rooms, equipment, and clinical resources.</p>
+</div>
+<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRoomModal"><i class="fas fa-plus me-1"></i>Add Room</button>
+</div>
+
+<div class="row g-3">
+{% for room in rooms %}
+<div class="col-md-6 col-lg-4">
+<div class="card h-100">
+<div class="card-body">
+<div class="d-flex justify-content-between align-items-start mb-2">
+<h6 class="fw-bold mb-0">{{ room.name }}</h6>
+{% if room.is_active %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-secondary">Inactive</span>{% endif %}
+</div>
+<p class="text-secondary mb-2" style="font-size:0.8125rem;">{{ room.description or 'No description' }}</p>
+<div class="d-flex flex-wrap gap-2 mb-2">
+<span class="badge bg-light text-dark"><i class="fas fa-door-open me-1"></i>{{ room.room_type }}</span>
+<span class="badge bg-light text-dark"><i class="fas fa-users me-1"></i>Cap: {{ room.capacity }}</span>
+{% if room.floor %}<span class="badge bg-light text-dark"><i class="fas fa-building me-1"></i>Floor {{ room.floor }}</span>{% endif %}
+</div>
+{% if room.equipment %}
+<p class="mb-0" style="font-size:0.75rem;color:var(--text-tertiary)"><i class="fas fa-tools me-1"></i>{{ room.equipment }}</p>
+{% endif %}
+</div>
+<div class="card-footer bg-transparent d-flex gap-2">
+<button class="btn btn-sm btn-outline flex-grow-1" data-bs-toggle="modal" data-bs-target="#editRoom{{ room.id }}"><i class="fas fa-edit me-1"></i>Edit</button>
+<form method="POST" action="{{ url_for('admin.delete_room', id=room.id) }}" class="flex-grow-1" onsubmit="return confirm('Delete {{ room.name }}?')">
+<button type="submit" class="btn btn-sm btn-outline-danger w-100"><i class="fas fa-trash me-1"></i>Delete</button>
+</form>
+</div>
+</div>
+</div>
+
+<div class="modal fade" id="editRoom{{ room.id }}" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+<div class="modal-header"><h5 class="modal-title fw-bold">Edit {{ room.name }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+<form method="POST" action="{{ url_for('admin.edit_room', id=room.id) }}">
+<div class="modal-body">
+<div class="mb-3"><label class="form-label">Name *</label><input type="text" name="name" class="form-control" value="{{ room.name }}" required></div>
+<div class="mb-3"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="2">{{ room.description or '' }}</textarea></div>
+<div class="row g-3">
+<div class="col-md-4"><label class="form-label">Type</label>
+<select name="room_type" class="form-select">
+{% for t in ['Consultation','Examination','Procedure','Laboratory','Imaging'] %}
+<option {% if room.room_type == t %}selected{% endif %}>{{ t }}</option>
+{% endfor %}
+</select></div>
+<div class="col-md-4"><label class="form-label">Capacity</label><input type="number" name="capacity" class="form-control" value="{{ room.capacity }}" min="1"></div>
+<div class="col-md-4"><label class="form-label">Floor</label><input type="text" name="floor" class="form-control" value="{{ room.floor or '' }}"></div>
+</div>
+<div class="mt-3"><label class="form-label">Equipment</label><input type="text" name="equipment" class="form-control" value="{{ room.equipment or '' }}" placeholder="e.g. X-Ray, Ultrasound, Dental Chair"></div>
+<div class="mt-3 form-check"><input type="checkbox" name="is_active" class="form-check-input" {% if room.is_active %}checked{% endif %}><label class="form-check-label">Active</label></div>
+</div>
+<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Save Changes</button></div>
+</form></div></div></div>
+{% endfor %}
+
+{% if not rooms %}
+<div class="col-12"><div class="card"><div class="card-body text-center py-5">
+<i class="fas fa-door-closed fa-3x text-secondary mb-3"></i>
+<h5 class="text-secondary">No Rooms Configured</h5>
+<p class="text-secondary">Add consultation rooms and resources to enable room-based scheduling.</p>
+<button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#addRoomModal"><i class="fas fa-plus me-1"></i>Add First Room</button>
+</div></div></div>
+{% endif %}
+</div>
+</div></main>
+</div>
+
+<div class="modal fade" id="addRoomModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+<div class="modal-header"><h5 class="modal-title fw-bold">Add Room</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+<form method="POST" action="{{ url_for('admin.add_room') }}">
+<div class="modal-body">
+<div class="mb-3"><label class="form-label">Name *</label><input type="text" name="name" class="form-control" required placeholder="e.g. Room A, Dental Suite 1"></div>
+<div class="mb-3"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="2" placeholder="Optional description..."></textarea></div>
+<div class="row g-3">
+<div class="col-md-4"><label class="form-label">Type</label>
+<select name="room_type" class="form-select">
+<option>Consultation</option><option>Examination</option><option>Procedure</option><option>Laboratory</option><option>Imaging</option>
+</select></div>
+<div class="col-md-4"><label class="form-label">Capacity</label><input type="number" name="capacity" class="form-control" value="1" min="1"></div>
+<div class="col-md-4"><label class="form-label">Floor</label><input type="text" name="floor" class="form-control" placeholder="e.g. 1st"></div>
+</div>
+<div class="mt-3"><label class="form-label">Equipment</label><input type="text" name="equipment" class="form-control" placeholder="e.g. X-Ray, Ultrasound, Dental Chair"></div>
+</div>
+<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Add Room</button></div>
+</form></div></div></div>
+{% endblock %}
+{% block extra_js %}<script src="{{ url_for('static', filename='js/app.js') }}"></script>{% endblock %}

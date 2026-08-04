@@ -2,7 +2,7 @@
 <aside class="sidebar" id="sidebar">
 <div class="sidebar-header">
 <img src="{{ url_for('static', filename='logo.png') }}" alt="Venus" style="height:36px;width:auto;">
-<span class="sidebar-brand">Venus Clinic</span>
+<span class="sidebar-brand">Venus Healthcare</span>
 <button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button>
 </div>
 <nav class="sidebar-nav">
@@ -10,6 +10,9 @@
 <a href="{{ url_for('admin.dashboard') }}" class="sidebar-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}"><i class="fas fa-th-large"></i> Dashboard</a>
 <a href="{{ url_for('admin.calendar') }}" class="sidebar-link {% if request.endpoint == 'admin.calendar' %}active{% endif %}"><i class="fas fa-calendar-alt"></i> Calendar</a>
 <a href="{{ url_for('admin.appointments') }}" class="sidebar-link {% if 'appointment' in request.endpoint|default('') %}active{% endif %}"><i class="fas fa-calendar-check"></i> Appointments</a>
+<div class="sidebar-section">Scheduling</div>
+<a href="{{ url_for('admin.leave_management') }}" class="sidebar-link {% if 'leave' in request.endpoint|default('') %}active{% endif %}"><i class="fas fa-calendar-times"></i> Staff Leave</a>
+<a href="{{ url_for('admin.rooms_management') }}" class="sidebar-link {% if 'room' in request.endpoint|default('') %}active{% endif %}"><i class="fas fa-door-open"></i> Rooms</a>
 <div class="sidebar-section">Management</div>
 <a href="{{ url_for('admin.services') }}" class="sidebar-link {% if 'service' in request.endpoint|default('') %}active{% endif %}"><i class="fas fa-concierge-bell"></i> Services</a>
 <a href="{{ url_for('admin.practitioners') }}" class="sidebar-link {% if 'practitioner' in request.endpoint|default('') %}active{% endif %}"><i class="fas fa-user-md"></i> Practitioners</a>

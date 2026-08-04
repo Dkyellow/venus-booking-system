@@ -16,6 +16,7 @@ with app.app_context():
     from app.models.staff import Staff
     from app.models.service import Service
     from app.models.schedule import StaffSchedule
+    from app.models.room import Room
     from app.models.settings import ClinicSettings
     from datetime import time
     
@@ -76,6 +77,23 @@ with app.app_context():
                 sched = StaffSchedule(staff_id=s.id, day_of_week=day, start_time=time(9, 0), end_time=time(17, 0), is_active=True)
                 db.session.add(sched)
         
+        rooms_data = [
+            ('Consultation Room 1', 'Standard consultation room for general practice', 'Consultation', 1, '1st', 'Blood pressure monitor, Thermometer'),
+            ('Consultation Room 2', 'General consultation room', 'Consultation', 1, '1st', 'Stethoscope, Otoscope'),
+            ('Dental Suite 1', 'Fully equipped dental examination room', 'Examination', 1, '1st', 'Dental chair, X-Ray, Ultrasonic scaler'),
+            ('Dental Suite 2', 'Secondary dental room for procedures', 'Procedure', 1, '1st', 'Dental chair, Compressor'),
+            ('Physiotherapy Room', 'Physical therapy and rehabilitation space', 'Procedure', 2, '2nd', 'Treatment table, Exercise equipment, Ultrasound therapy'),
+            ('Ultrasound Room', 'Diagnostic imaging suite', 'Imaging', 1, '2nd', 'Ultrasound machine, Exam table'),
+            ('Laboratory', 'Sample collection and basic testing', 'Laboratory', 2, '1st', 'Centrifuge, Microscope, Sample storage'),
+            ('Examination Room 1', 'Multi-purpose examination room', 'Examination', 1, '1st', 'Exam table, Basic diagnostics'),
+            ('Vaccination Room', 'Dedicated immunization room', 'Consultation', 1, '1st', 'Vaccine storage, Syringes, Emergency kit'),
+            ('ENT Suite', 'Specialist ENT examination room', 'Examination', 1, '2nd', 'Otoscope, Nasoscope, Audiometer'),
+        ]
+        
+        for name, desc, rtype, cap, floor, equip in rooms_data:
+            room = Room(name=name, description=desc, room_type=rtype, capacity=cap, floor=floor, equipment=equip)
+            db.session.add(room)
+        
         settings = ClinicSettings(
             clinic_name='Venus Healthcare',
             clinic_email='medical@venushealthcare.co.zw',
@@ -87,6 +105,6 @@ with app.app_context():
         
         db.session.commit()
         print("[SEED] Done!")
-# new shit
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

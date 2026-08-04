@@ -150,6 +150,18 @@ def api_create_booking():
     db.session.add(appointment)
     db.session.commit()
     
+    room_assigned = None
+    if service.requires_room:
+        room = engine.assign_room(
+            appointment.id,
+            start_dt.date(),
+            start_dt,
+            end_dt,
+            service.required_room_type
+        )
+        if room:
+            room_assigned = room.name
+    
     history = AppointmentHistory(
         appointment_id=appointment.id,
         action='created',
@@ -172,7 +184,8 @@ def api_create_booking():
         'reference': reference,
         'message': f'Appointment booked successfully! Reference: {reference}',
         'email_sent': email_sent,
-        'email_error': email_error
+        'email_error': email_error,
+        'room_assigned': room_assigned
     })
 
 

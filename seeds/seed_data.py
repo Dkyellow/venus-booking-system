@@ -11,6 +11,7 @@ from app.models.staff import Staff
 from app.models.service import Service, ServiceCategory
 from app.models.appointment import Appointment, AppointmentStatus, AppointmentHistory
 from app.models.schedule import StaffSchedule
+from app.models.room import Room
 from app.models.settings import ClinicSettings
 
 
@@ -91,6 +92,29 @@ def seed_database():
             staff_list[email] = s
         db.session.flush()
 
+        print("Seeding rooms...")
+        rooms_data = [
+            ('Consultation Room 1', 'Standard consultation room for general practice', 'Consultation', 1, '1st', 'Blood pressure monitor, Thermometer'),
+            ('Consultation Room 2', 'General consultation room', 'Consultation', 1, '1st', 'Stethoscope, Otoscope'),
+            ('Dental Suite 1', 'Fully equipped dental examination room', 'Examination', 1, '1st', 'Dental chair, X-Ray, Ultrasonic scaler'),
+            ('Dental Suite 2', 'Secondary dental room for procedures', 'Procedure', 1, '1st', 'Dental chair, Compressor'),
+            ('Physiotherapy Room', 'Physical therapy and rehabilitation space', 'Procedure', 2, '2nd', 'Treatment table, Exercise equipment, Ultrasound therapy'),
+            ('Ultrasound Room', 'Diagnostic imaging suite', 'Imaging', 1, '2nd', 'Ultrasound machine, Exam table'),
+            ('Laboratory', 'Sample collection and basic testing', 'Laboratory', 2, '1st', 'Centrifuge, Microscope, Sample storage'),
+            ('Examination Room 1', 'Multi-purpose examination room', 'Examination', 1, '1st', 'Exam table, Basic diagnostics'),
+            ('Vaccination Room', 'Dedicated immunization room', 'Consultation', 1, '1st', 'Vaccine storage, Syringes, Emergency kit'),
+            (' ENT Suite', 'Specialist ENT examination room', 'Examination', 1, '2nd', 'Otoscope, Nasoscope, Audiometer'),
+        ]
+
+        rooms = {}
+        for name, desc, rtype, cap, floor, equip in rooms_data:
+            room = Room.query.filter_by(name=name).first()
+            if not room:
+                room = Room(name=name, description=desc, room_type=rtype, capacity=cap, floor=floor, equipment=equip)
+                db.session.add(room)
+            rooms[name] = room
+        db.session.flush()
+
         print("Seeding clinic settings...")
         settings = ClinicSettings.query.first()
         if not settings:
@@ -109,6 +133,7 @@ def seed_database():
         print("Receptionist: reception@venushealthcare.co.zw / reception123")
         print(f"Services: {len(services)}")
         print(f"Practitioners: {len(staff_list)}")
+        print(f"Rooms: {len(rooms)}")
 
 
 if __name__ == '__main__':

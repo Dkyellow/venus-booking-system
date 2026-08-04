@@ -10,7 +10,8 @@ from app.models.patient import Patient
 from app.models.staff import Staff
 from app.models.service import Service, ServiceCategory
 from app.models.appointment import Appointment, AppointmentStatus, AppointmentHistory
-from app.models.schedule import StaffSchedule, BlockedTime, Holiday
+from app.models.schedule import StaffSchedule, BlockedTime, Holiday, StaffLeave
+from app.models.room import Room, AppointmentRoom
 from app.models.notification import Notification, EmailLog, WhatsAppLog
 from app.models.settings import ClinicSettings
 from app.models.audit import AuditLog
@@ -552,3 +553,127 @@ def notifications():
 
     pagination = query.order_by(Notification.created_at.desc()).paginate(page=page, per_page=20, error_out=False)
     return render_template('admin/notifications.html', notifications=pagination.items, pagination=pagination, selected_type=type_filter)
+
+
+@admin_bp.route('/leave')
+@login_required
+def leave_management():
+    practitioners = Staff.query.filter_by(is_active=True, is_practitioner=True).all()
+    
+    status_filter = request.args.get('status', '')
+    practitioner_filter = request.args.get('practitioner', '')
+    
+    query = StaffLeave.query
+    
+    if status_filter:
+        query = query.filter_by(status=status_filter)
+    if practitioner_filter:
+        query = query.filter_by(staff_id=int(practitioner_filter))
+    
+    leaves = query.order_by(StaffLeave.created_at.desc()).all()
+    
+    return render_template('admin/leave.html',
+                          leaves=leaves,
+                          practitioners=practitioners,
+                          selected_status=status_filter,
+                          selected_practitioner=practitioner_filter)
+
+
+@admin_bp.route('/leave/add', methods=['POST'])
+@login_required
+def add_leave():
+    staff_id = request.form.get('staff_id', type=int)
+    start_date = request.form.get('start_date')
+    end_date = request.form.get('end_date')
+    leave_type = request.form.get('leave_type', 'Leave')
+    reason = request.form.get('reason', '')
+    status = request.form.get('status', 'Approved')
+    
+    if not staff_id or not start_date or not end_date:
+        flash('Staff, start date, and end date are required.', 'error')
+        return redirect(url_for('admin.leave_management'))
+    
+    leave = StaffLeave(
+        staff_id=staff_id,
+        start_date=datetime.strptime(start_date, '%Y-%m-%d').date(),
+        end_date=datetime.strptime(end_date, '%Y-%m-%d').date(),
+        leave_type=leave_type,
+        reason=reason,
+        status=status,
+        created_by=current_user.id
+    )
+    db.session.add(leave)
+    db.session.commit()
+    flash(f'{leave_type} added successfully for {leave.duration_days} day(s).', 'success')
+    return redirect(url_for('admin.leave_management'))
+
+
+@admin_bp.route('/leave/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_leave(id):
+    leave = StaffLeave.query.get_or_404(id)
+    db.session.delete(leave)
+    db.session.commit()
+    flash('Leave entry deleted.', 'success')
+    return redirect(url_for('admin.leave_management'))
+
+
+@admin_bp.route('/rooms')
+@login_required
+def rooms_management():
+    rooms = Room.query.order_by(Room.name).all()
+    return render_template('admin/rooms.html', rooms=rooms)
+
+
+@admin_bp.route('/rooms/add', methods=['POST'])
+@login_required
+def add_room():
+    name = request.form.get('name')
+    description = request.form.get('description', '')
+    room_type = request.form.get('room_type', 'Consultation')
+    capacity = request.form.get('capacity', 1, type=int)
+    floor = request.form.get('floor', '')
+    equipment = request.form.get('equipment', '')
+    
+    if not name:
+        flash('Room name is required.', 'error')
+        return redirect(url_for('admin.rooms_management'))
+    
+    room = Room(
+        name=name,
+        description=description,
+        room_type=room_type,
+        capacity=capacity,
+        floor=floor,
+        equipment=equipment
+    )
+    db.session.add(room)
+    db.session.commit()
+    flash(f'Room "{name}" added successfully.', 'success')
+    return redirect(url_for('admin.rooms_management'))
+
+
+@admin_bp.route('/rooms/<int:id>/edit', methods=['POST'])
+@login_required
+def edit_room(id):
+    room = Room.query.get_or_404(id)
+    room.name = request.form.get('name', room.name)
+    room.description = request.form.get('description', room.description)
+    room.room_type = request.form.get('room_type', room.room_type)
+    room.capacity = request.form.get('capacity', room.capacity, type=int)
+    room.floor = request.form.get('floor', room.floor)
+    room.equipment = request.form.get('equipment', room.equipment)
+    room.is_active = 'is_active' in request.form
+    db.session.commit()
+    flash(f'Room "{room.name}" updated.', 'success')
+    return redirect(url_for('admin.rooms_management'))
+
+
+@admin_bp.route('/rooms/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_room(id):
+    room = Room.query.get_or_404(id)
+    db.session.delete(room)
+    db.session.commit()
+    flash(f'Room "{room.name}" deleted.', 'success')
+    return redirect(url_for('admin.rooms_management'))

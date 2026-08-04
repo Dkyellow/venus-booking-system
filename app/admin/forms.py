@@ -16,6 +16,17 @@ class ServiceForm(FlaskForm):
     color = StringField('Color', default='#4F46E5')
     is_active = BooleanField('Active', default=True)
     is_online_bookable = BooleanField('Online Bookable', default=True)
+    requires_room = BooleanField('Requires Room', default=False)
+    required_room_type = SelectField('Required Room Type', choices=[
+        ('', 'Any'),
+        ('Consultation', 'Consultation'),
+        ('Examination', 'Examination'),
+        ('Procedure', 'Procedure'),
+        ('Laboratory', 'Laboratory'),
+        ('Imaging', 'Imaging')
+    ], validators=[Optional()])
+    min_duration = IntegerField('Min Duration (minutes)', validators=[Optional(), NumberRange(min=5, max=480)])
+    max_duration = IntegerField('Max Duration (minutes)', validators=[Optional(), NumberRange(min=5, max=480)])
     max_advance_days = IntegerField('Max Advance Booking (days)', validators=[Optional()], default=60)
     min_advance_hours = IntegerField('Min Advance Booking (hours)', validators=[Optional()], default=2)
     sort_order = IntegerField('Sort Order', validators=[Optional()], default=0)

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ title }} - Venus Clinic{% endblock %}
+{% block title %}{{ title }} - Venus Healthcare{% endblock %}
 {% block extra_css %}<link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">{% endblock %}
 {% block body %}
 <div class="dashboard-layout">
@@ -15,12 +15,21 @@
 <div class="col-12"><label class="form-label">Description</label>{{ form.description(class="form-control", rows=3) }}</div>
 <div class="col-md-4"><label class="form-label">Duration (min) *</label>{{ form.duration(class="form-control") }}</div>
 <div class="col-md-4"><label class="form-label">Buffer Time (min)</label>{{ form.buffer_time(class="form-control") }}</div>
-<div class="col-md-4"><label class="form-label">Price ($)</label>{{ form.price(class="form-control") }}</div>
 <div class="col-md-4"><label class="form-label">Color</label>{{ form.color(class="form-control", type="color") }}</div>
+
+<div class="col-12"><hr><h6 class="fw-semibold text-secondary">Variable Duration (Optional)</h6></div>
+<div class="col-md-4"><label class="form-label">Min Duration (min)</label>{{ form.min_duration(class="form-control", placeholder="Leave blank if fixed") }}</div>
+<div class="col-md-4"><label class="form-label">Max Duration (min)</label>{{ form.max_duration(class="form-control", placeholder="Leave blank if fixed") }}</div>
+
+<div class="col-12"><hr><h6 class="fw-semibold text-secondary">Room Requirements</h6></div>
+<div class="col-md-4"><div class="form-check form-switch mt-2">{{ form.requires_room(class="form-check-input") }} <label class="form-check-label">Requires Room</label></div></div>
+<div class="col-md-4"><label class="form-label">Required Room Type</label>{{ form.required_room_type(class="form-select") }}</div>
+
+<div class="col-12"><hr><h6 class="fw-semibold text-secondary">Booking Rules</h6></div>
 <div class="col-md-4"><label class="form-label">Max Advance Days</label>{{ form.max_advance_days(class="form-control") }}</div>
 <div class="col-md-4"><label class="form-label">Min Advance Hours</label>{{ form.min_advance_hours(class="form-control") }}</div>
-<div class="col-md-6"><div class="form-check form-switch mt-4">{{ form.is_active(class="form-check-input") }} <label class="form-check-label">Active</label></div></div>
-<div class="col-md-6"><div class="form-check form-switch mt-4">{{ form.is_online_bookable(class="form-check-input") }} <label class="form-check-label">Online Bookable</label></div></div>
+<div class="col-md-4"><div class="form-check form-switch mt-4">{{ form.is_active(class="form-check-input") }} <label class="form-check-label">Active</label></div></div>
+<div class="col-md-4"><div class="form-check form-switch">{{ form.is_online_bookable(class="form-check-input") }} <label class="form-check-label">Online Bookable</label></div></div>
 </div>
 <div class="d-flex gap-2 mt-4"><button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Save</button><a href="{{ url_for('admin.services') }}" class="btn btn-secondary">Cancel</a></div>
 </form></div></div></div></div>
