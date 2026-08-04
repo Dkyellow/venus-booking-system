@@ -14,18 +14,6 @@ class EmailService:
     @staticmethod
     def send_email(to, subject, html_body, template_name=None, appointment_id=None):
         try:
-            import base64
-            logo_path = os.path.join(current_app.static_folder, 'logo.png')
-            if os.path.exists(logo_path):
-                with open(logo_path, 'rb') as f:
-                    logo_b64 = base64.b64encode(f.read()).decode()
-                logo_data_uri = f'data:image/png;base64,{logo_b64}'
-                html_body = html_body.replace(
-                    'https://venus-booking-system.onrender.com/static/logo.png',
-                    logo_data_uri
-                )
-                html_body = html_body.replace('cid:logo', logo_data_uri)
-            
             mailjet_key = os.getenv('MAILJET_API_KEY')
             mailjet_secret = os.getenv('MAILJET_SECRET_KEY')
             

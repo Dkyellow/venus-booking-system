@@ -57,9 +57,12 @@ def manage_detail(reference):
     return render_template('booking/manage_detail.html', appointment=appointment, add_to_cal_url=add_to_cal_url)
 
 
-@booking_bp.route('/manage/<reference>/cancel', methods=['POST'])
+@booking_bp.route('/manage/<reference>/cancel', methods=['GET', 'POST'])
 def cancel_appointment(reference):
     appointment = Appointment.query.filter_by(reference=reference).first_or_404()
+    
+    if request.method == 'GET':
+        return render_template('booking/cancel_confirm.html', appointment=appointment)
     
     if appointment.status in [AppointmentStatus.CANCELLED, AppointmentStatus.COMPLETED]:
         flash('This appointment cannot be cancelled.', 'danger')
