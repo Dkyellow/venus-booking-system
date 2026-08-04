@@ -36,7 +36,7 @@ const BookingFlow = {
         this.updateSummary();
     },
 
-    onPractitionerChange(id) {
+    async onPractitionerChange(id) {
         this.selectedPractitioner = id ? parseInt(id) : null;
         this.selectedDate = null;
         this.selectedTime = null;
@@ -45,7 +45,7 @@ const BookingFlow = {
         this.resetDate();
         this.hideTimeCard();
         this.updateSummary();
-        if (this.selectedService) this.loadAvailableDates();
+        if (this.selectedService) await this.loadAvailableDates();
     },
 
     async updatePractitioners() {
@@ -55,7 +55,7 @@ const BookingFlow = {
             const data = await App.fetchData(`/api/services/${this.selectedService}/practitioners`);
             sel.innerHTML = '<option value="">Any available practitioner</option>' +
                 data.practitioners.map(p => `<option value="${p.id}">${p.name}${p.specialization ? ' - ' + p.specialization : ''}</option>`).join('');
-            if (this.selectedService) this.loadAvailableDates();
+            if (this.selectedService) await this.loadAvailableDates();
         } catch (e) { console.error(e); }
     },
 
@@ -63,6 +63,8 @@ const BookingFlow = {
         if (!this.selectedService) return;
         let url = `/api/booking/available-dates?service_id=${this.selectedService}`;
         if (this.selectedPractitioner) url += `&practitioner_id=${this.selectedPractitioner}`;
+        const grid = document.getElementById('cal-grid');
+        if (grid) grid.innerHTML = '<div class="bp-cal-loading" style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-tertiary);font-size:0.8125rem;">Loading dates...</div>';
         try {
             const data = await App.fetchData(url);
             this.availableDates = data.dates || [];
@@ -70,10 +72,17 @@ const BookingFlow = {
         } catch (e) { console.error(e); }
     },
 
-    toggleCalendar() {
+    async toggleCalendar() {
         const dd = document.getElementById('calendar-dropdown');
         if (!dd) return;
-        dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+        if (dd.style.display === 'none' || !dd.style.display) {
+            if (this.selectedService && this.availableDates.length === 0) {
+                await this.loadAvailableDates();
+            }
+            dd.style.display = 'block';
+        } else {
+            dd.style.display = 'none';
+        }
     },
 
     prevMonth() {
