@@ -217,12 +217,12 @@ def update_appointment(id):
         old_status = appointment.status.value
         appointment.status = AppointmentStatus(new_status)
 
-        if new_status == 'completed':
+        if new_status == 'Completed':
             appointment.completed_at = datetime.utcnow()
-        elif new_status == 'cancelled':
+        elif new_status == 'Cancelled':
             appointment.cancelled_at = datetime.utcnow()
             appointment.cancellation_reason = request.form.get('reason', '')
-        elif new_status == 'checked_in':
+        elif new_status == 'Checked In':
             appointment.checked_in_at = datetime.utcnow()
 
         history = AppointmentHistory(
@@ -235,9 +235,9 @@ def update_appointment(id):
         db.session.add(history)
         db.session.commit()
 
-        if new_status == 'cancelled':
+        if new_status == 'Cancelled':
             NotificationService.notify_booking_cancelled(appointment, appointment.cancellation_reason)
-        elif new_status == 'confirmed':
+        elif new_status == 'Confirmed':
             NotificationService.notify_booking_confirmed(appointment)
 
         flash(f'Appointment status updated to {new_status}', 'success')
