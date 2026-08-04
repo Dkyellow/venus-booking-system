@@ -1,256 +1,294 @@
 const BookingFlow = {
-    currentStep: 1,
     selectedService: null,
     selectedPractitioner: null,
     selectedDate: null,
     selectedTime: null,
-    patientInfo: {},
+    calYear: null,
+    calMonth: null,
+    availableDates: [],
+    currentPeriod: 'AM',
+    allSlots: [],
 
     init() {
-        this.renderStep(1);
-    },
-
-    renderStep(step) {
-        this.currentStep = step;
-        document.querySelectorAll('.booking-step').forEach((el, i) => {
-            el.classList.remove('active', 'completed');
-            if (i + 1 < step) el.classList.add('completed');
-            if (i + 1 === step) el.classList.add('active');
+        const today = new Date();
+        this.calYear = today.getFullYear();
+        this.calMonth = today.getMonth();
+        document.addEventListener('click', (e) => {
+            const dd = document.getElementById('calendar-dropdown');
+            const ci = document.getElementById('calendar-input');
+            if (dd && dd.style.display !== 'none' && !dd.contains(e.target) && ci && !ci.contains(e.target)) {
+                dd.style.display = 'none';
+            }
         });
-        document.querySelectorAll('.booking-step-content').forEach((el, i) => {
-            el.style.display = (i + 1 === step) ? 'block' : 'none';
-        });
-        this.updateSummary();
     },
 
-    async loadServices() {
-        try {
-            const data = await App.fetchData('/api/services');
-            const container = document.getElementById('services-list');
-            if (!container) return;
-            container.innerHTML = data.services.map(s => `
-                <div class="service-card" data-id="${s.id}" onclick="BookingFlow.selectService(${s.id})">
-                    <div class="service-card-icon" style="background: ${s.color}20; color: ${s.color};">
-                        <i class="fas ${s.icon || 'fa-stethoscope'}"></i>
-                    </div>
-                    <div class="service-card-info">
-                        <h4>${s.name}</h4>
-                        <p>${s.description || ''}</p>
-                        <div class="service-card-meta">
-                            <span><i class="far fa-clock"></i> ${s.duration} min</span>
-                            ${s.price > 0 ? `<span><i class="fas fa-dollar-sign"></i> $${parseFloat(s.price).toFixed(2)}</span>` : ''}
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        } catch (e) { console.error('Failed to load services:', e); }
-    },
-
-    selectService(id) {
-        this.selectedService = id;
+    onServiceChange(id) {
+        this.selectedService = id ? parseInt(id) : null;
         this.selectedPractitioner = null;
         this.selectedDate = null;
         this.selectedTime = null;
-        document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
-        document.querySelector(`.service-card[data-id="${id}"]`)?.classList.add('selected');
-        this.loadPractitioners(id);
-        this.renderStep(2);
+        this.availableDates = [];
+        this.allSlots = [];
+        this.updatePractitioners();
+        this.resetDate();
+        this.hideTimeCard();
+        this.hideForm();
+        this.updateSummary();
     },
 
-    async loadPractitioners(serviceId) {
-        try {
-            const data = await App.fetchData(`/api/services/${serviceId}/practitioners`);
-            const container = document.getElementById('practitioners-list');
-            if (!container) return;
-            container.innerHTML = data.practitioners.map(p => `
-                <div class="practitioner-card" data-id="${p.id}" onclick="BookingFlow.selectPractitioner(${p.id})">
-                    <div class="practitioner-avatar">${p.photo_url ? `<img src="${p.photo_url}" alt="${p.name}">` : '<i class="fas fa-user-md"></i>'}</div>
-                    <div class="practitioner-info">
-                        <h4>${p.name}</h4>
-                        <p>${p.specialization || ''}</p>
-                    </div>
-                </div>
-            `).join('');
-        } catch (e) { console.error('Failed to load practitioners:', e); }
-    },
-
-    selectPractitioner(id) {
-        this.selectedPractitioner = id;
+    onPractitionerChange(id) {
+        this.selectedPractitioner = id ? parseInt(id) : null;
         this.selectedDate = null;
         this.selectedTime = null;
-        document.querySelectorAll('.practitioner-card').forEach(c => c.classList.remove('selected'));
-        document.querySelector(`.practitioner-card[data-id="${id}"]`)?.classList.add('selected');
-        this.loadCalendar();
-        this.renderStep(3);
+        this.availableDates = [];
+        this.allSlots = [];
+        this.resetDate();
+        this.hideTimeCard();
+        this.updateSummary();
+        if (this.selectedService) this.loadAvailableDates();
     },
 
-    loadCalendar() {
-        this.loadAvailableDates();
+    async updatePractitioners() {
+        const sel = document.getElementById('practitioner-select');
+        if (!sel || !this.selectedService) { if (sel) sel.innerHTML = '<option value="">Any available practitioner</option>'; return; }
+        try {
+            const data = await App.fetchData(`/api/services/${this.selectedService}/practitioners`);
+            sel.innerHTML = '<option value="">Any available practitioner</option>' +
+                data.practitioners.map(p => `<option value="${p.id}">${p.name}${p.specialization ? ' - ' + p.specialization : ''}</option>`).join('');
+            if (this.selectedService) this.loadAvailableDates();
+        } catch (e) { console.error(e); }
     },
 
     async loadAvailableDates() {
+        if (!this.selectedService) return;
+        let url = `/api/booking/available-dates?service_id=${this.selectedService}`;
+        if (this.selectedPractitioner) url += `&practitioner_id=${this.selectedPractitioner}`;
         try {
-            let url = `/api/booking/available-dates?service_id=${this.selectedService}`;
-            if (this.selectedPractitioner) url += `&practitioner_id=${this.selectedPractitioner}`;
-            const container = document.getElementById('dates-list');
-            if (!container) return;
-            container.innerHTML = '<div class="date-loading"><div class="spinner"></div><span>Finding available dates...</span></div>';
             const data = await App.fetchData(url);
-            if (!data.dates || data.dates.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="far fa-calendar-xmark"></i><h3>No available dates</h3><p>Try a different service or practitioner.</p></div>';
-                return;
-            }
-            const months = {};
-            data.dates.forEach(d => {
-                const dt = new Date(d.date + 'T00:00:00');
-                const key = `${dt.getFullYear()}-${String(dt.getMonth()).padStart(2, '0')}`;
-                if (!months[key]) months[key] = { label: dt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }), dates: [] };
-                months[key].dates.push(d);
-            });
-            let html = '';
-            Object.values(months).forEach(m => {
-                html += `<div class="date-month-group"><div class="date-month-header">${m.label}</div>`;
-                html += '<div class="date-weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span></div>';
-                const firstDow = new Date(m.dates[0].date + 'T00:00:00').getDay();
-                const offset = firstDow === 0 ? 4 : firstDow - 1;
-                html += '<div class="date-grid">';
-                for (let i = 0; i < offset; i++) html += '<div class="date-cell empty"></div>';
-                m.dates.forEach(d => {
-                    const dt = new Date(d.date + 'T00:00:00');
-                    const dayNum = dt.getDate();
-                    const isSelected = this.selectedDate === d.date;
-                    html += `<button class="date-cell${isSelected ? ' selected' : ''}" data-date="${d.date}" onclick="BookingFlow.selectDate('${d.date}')">
-                        <span class="date-day-num">${dayNum}</span>
-                        <span class="date-slots-badge">${d.slots_count} slot${d.slots_count !== 1 ? 's' : ''}</span>
-                    </button>`;
-                });
-                html += '</div></div>';
-            });
-            container.innerHTML = html;
-        } catch (e) { console.error('Failed to load dates:', e); }
+            this.availableDates = data.dates || [];
+            this.renderCalendar();
+        } catch (e) { console.error(e); }
     },
 
-    selectDate(date) {
-        this.selectedDate = date;
-        this.selectedTime = null;
-        document.querySelectorAll('#dates-list .date-cell').forEach(c => c.classList.remove('selected'));
-        const cell = document.querySelector(`#dates-list .date-cell[data-date="${date}"]`);
-        if (cell) {
-            cell.classList.add('selected');
-            const dt = new Date(date + 'T00:00:00');
-            const formatted = dt.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-            document.getElementById('selected-date-display').textContent = formatted;
-            document.getElementById('selected-date-display').style.display = 'block';
+    toggleCalendar() {
+        const dd = document.getElementById('calendar-dropdown');
+        if (!dd) return;
+        dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+    },
+
+    prevMonth() {
+        this.calMonth--;
+        if (this.calMonth < 0) { this.calMonth = 11; this.calYear--; }
+        this.renderCalendar();
+    },
+
+    nextMonth() {
+        this.calMonth++;
+        if (this.calMonth > 11) { this.calMonth = 0; this.calYear++; }
+        this.renderCalendar();
+    },
+
+    renderCalendar() {
+        const grid = document.getElementById('cal-grid');
+        const label = document.getElementById('cal-month-year');
+        if (!grid || !label) return;
+        const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        label.textContent = `${months[this.calMonth]} ${this.calYear}`;
+
+        const firstDay = new Date(this.calYear, this.calMonth, 1);
+        const daysInMonth = new Date(this.calYear, this.calMonth + 1, 0).getDate();
+        let startDow = firstDay.getDay();
+        startDow = startDow === 0 ? 6 : startDow - 1;
+
+        const availSet = new Set(this.availableDates.map(d => d.date));
+        const today = new Date().toISOString().split('T')[0];
+
+        let html = '';
+        for (let i = 0; i < startDow; i++) html += '<div class="bp-cal-day empty"></div>';
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateStr = `${this.calYear}-${String(this.calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const isAvailable = availSet.has(dateStr);
+            const isSelected = this.selectedDate === dateStr;
+            const isPast = dateStr < today;
+            let cls = 'bp-cal-day';
+            if (isAvailable && !isPast) cls += ' available';
+            else cls += ' unavailable';
+            if (isSelected) cls += ' selected';
+            if (isPast) cls += ' past';
+
+            if (isAvailable && !isPast) {
+                html += `<div class="${cls}" onclick="BookingFlow.pickDate('${dateStr}')">${day}</div>`;
+            } else {
+                html += `<div class="${cls}">${day}</div>`;
+            }
         }
-        this.loadTimeSlots(date);
+        grid.innerHTML = html;
     },
 
-    async loadTimeSlots(date) {
+    pickDate(dateStr) {
+        this.selectedDate = dateStr;
+        this.selectedTime = null;
+        const dt = new Date(dateStr + 'T00:00:00');
+        const display = dt.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        document.getElementById('calendar-display').textContent = display;
+        document.getElementById('calendar-dropdown').style.display = 'none';
+        this.loadTimeSlots();
+        this.updateSummary();
+    },
+
+    clearDate() {
+        this.selectedDate = null;
+        this.selectedTime = null;
+        document.getElementById('calendar-display').textContent = 'Pick a date';
+        document.getElementById('calendar-dropdown').style.display = 'none';
+        this.hideTimeCard();
+        this.hideForm();
+        this.updateSummary();
+    },
+
+    resetDate() {
+        this.selectedDate = null;
+        this.selectedTime = null;
+        const calDisp = document.getElementById('calendar-display');
+        if (calDisp) calDisp.textContent = 'Pick a date';
+        const dd = document.getElementById('calendar-dropdown');
+        if (dd) dd.style.display = 'none';
+    },
+
+    async loadTimeSlots() {
+        if (!this.selectedService || !this.selectedDate) return;
+        const timeCard = document.getElementById('time-card');
+        const timeList = document.getElementById('time-list');
+        if (!timeCard || !timeList) return;
+        timeCard.style.display = 'block';
+        timeList.innerHTML = '<div class="bp-time-loading"><div class="bp-spinner"></div></div>';
+
+        let url = `/api/booking/slots?service_id=${this.selectedService}&date=${this.selectedDate}`;
+        if (this.selectedPractitioner) url += `&practitioner_id=${this.selectedPractitioner}`;
         try {
-            let url = `/api/booking/slots?service_id=${this.selectedService}&date=${date}`;
-            if (this.selectedPractitioner) url += `&practitioner_id=${this.selectedPractitioner}`;
-            const container = document.getElementById('time-slots-list');
-            if (!container) return;
-            container.innerHTML = '<div class="date-loading"><div class="spinner"></div><span>Loading times...</span></div>';
-            document.getElementById('times-section').style.display = 'block';
             const data = await App.fetchData(url);
-            if (!data.slots || data.slots.length === 0) {
-                container.innerHTML = '<div class="empty-state small"><i class="far fa-clock"></i><h3>No times available</h3><p>This date is fully booked. Pick another date.</p></div>';
-                return;
-            }
-            const amSlots = data.slots.filter(s => {
-                const h = parseInt(s.start_time.split(':')[0]);
-                return h < 12;
-            });
-            const pmSlots = data.slots.filter(s => {
-                const h = parseInt(s.start_time.split(':')[0]);
-                return h >= 12;
-            });
-            let html = '';
-            if (amSlots.length) {
-                html += '<div class="time-group"><div class="time-group-header"><i class="fas fa-sun"></i> Morning</div>';
-                html += '<div class="time-slots-grid">';
-                amSlots.forEach(s => {
-                    html += `<button class="time-slot" data-time="${s.start_time}" onclick="BookingFlow.selectTime('${s.start_time}', '${s.end_time}', '${s.display}')">
-                        <span class="time-text">${s.display}</span>
-                    </button>`;
-                });
-                html += '</div></div>';
-            }
-            if (pmSlots.length) {
-                html += '<div class="time-group"><div class="time-group-header"><i class="fas fa-cloud-sun"></i> Afternoon</div>';
-                html += '<div class="time-slots-grid">';
-                pmSlots.forEach(s => {
-                    html += `<button class="time-slot" data-time="${s.start_time}" onclick="BookingFlow.selectTime('${s.start_time}', '${s.end_time}', '${s.display}')">
-                        <span class="time-text">${s.display}</span>
-                    </button>`;
-                });
-                html += '</div></div>';
-            }
-            container.innerHTML = html;
-        } catch (e) { console.error('Failed to load time slots:', e); }
+            this.allSlots = data.slots || [];
+            this.renderTimeList();
+        } catch (e) { console.error(e); timeList.innerHTML = '<p class="bp-time-empty">Failed to load times.</p>'; }
     },
 
-    selectTime(startTime, endTime, display) {
-        this.selectedTime = { start: startTime, end: endTime, display: display };
-        document.querySelectorAll('#time-slots-list .time-slot').forEach(c => c.classList.remove('selected'));
-        document.querySelector(`#time-slots-list .time-slot[data-time="${startTime}"]`)?.classList.add('selected');
-        this.renderStep(4);
+    setPeriod(p) {
+        this.currentPeriod = p;
+        document.querySelectorAll('.bp-amp').forEach(b => b.classList.toggle('active', b.dataset.period === p));
+        this.renderTimeList();
+    },
+
+    renderTimeList() {
+        const list = document.getElementById('time-list');
+        if (!list) return;
+        const filtered = this.allSlots.filter(s => {
+            const h = parseInt(s.start_time.split(':')[0]);
+            return this.currentPeriod === 'AM' ? h < 12 : h >= 12;
+        });
+        if (filtered.length === 0) {
+            list.innerHTML = '<p class="bp-time-empty">No times available in this period.</p>';
+            return;
+        }
+        list.innerHTML = filtered.map(s => {
+            const isSelected = this.selectedTime && this.selectedTime.start === s.start_time;
+            return `<button class="bp-time-item${isSelected ? ' selected' : ''}" onclick="BookingFlow.pickTime('${s.start_time}','${s.end_time}','${s.display}')">${s.display}</button>`;
+        }).join('');
+    },
+
+    pickTime(start, end, display) {
+        this.selectedTime = { start, end, display };
+        document.querySelectorAll('.bp-time-item').forEach(b => b.classList.toggle('selected', b.textContent.trim() === display));
+        document.getElementById('patient-form-section').style.display = 'block';
+        this.updateSummary();
+        document.getElementById('patient-form-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+
+    hideTimeCard() {
+        const tc = document.getElementById('time-card');
+        if (tc) tc.style.display = 'none';
+    },
+
+    hideForm() {
+        const fs = document.getElementById('patient-form-section');
+        if (fs) fs.style.display = 'none';
     },
 
     updateSummary() {
-        const summary = document.getElementById('booking-summary-content');
-        if (!summary) return;
+        const el = document.getElementById('summary-content');
+        if (!el) return;
+        const serviceSel = document.getElementById('service-select');
+        const pracSel = document.getElementById('practitioner-select');
         let html = '';
-        if (this.selectedService) html += `<div class="summary-row"><span class="summary-label">Service</span><span class="summary-value" id="summary-service"></span></div>`;
-        if (this.selectedPractitioner) html += `<div class="summary-row"><span class="summary-label">Practitioner</span><span class="summary-value" id="summary-practitioner"></span></div>`;
-        if (this.selectedDate) html += `<div class="summary-row"><span class="summary-label">Date</span><span class="summary-value" id="summary-date"></span></div>`;
-        if (this.selectedTime) html += `<div class="summary-row"><span class="summary-label">Time</span><span class="summary-value" id="summary-time"></span></div>`;
-        summary.innerHTML = html;
+
+        if (this.selectedService && serviceSel) {
+            const opt = serviceSel.options[serviceSel.selectedIndex];
+            html += `<div class="bp-sum-row"><span class="bp-sum-label">Service</span><span class="bp-sum-value">${opt.text}</span></div>`;
+        }
+        if (this.selectedPractitioner && pracSel) {
+            const opt = pracSel.options[pracSel.selectedIndex];
+            html += `<div class="bp-sum-row"><span class="bp-sum-label">Practitioner</span><span class="bp-sum-value">${opt.text}</span></div>`;
+        } else if (this.selectedService) {
+            html += `<div class="bp-sum-row"><span class="bp-sum-label">Practitioner</span><span class="bp-sum-value">Any available</span></div>`;
+        }
+        if (this.selectedDate) {
+            const dt = new Date(this.selectedDate + 'T00:00:00');
+            html += `<div class="bp-sum-row"><span class="bp-sum-label">Date</span><span class="bp-sum-value">${dt.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}</span></div>`;
+        }
+        if (this.selectedTime) {
+            html += `<div class="bp-sum-row"><span class="bp-sum-label">Time</span><span class="bp-sum-value">${this.selectedTime.display}</span></div>`;
+        }
+        if (this.selectedService && serviceSel) {
+            const opt = serviceSel.options[serviceSel.selectedIndex];
+            const price = opt.dataset.price;
+            if (price && parseFloat(price) > 0) {
+                html += `<div class="bp-sum-row total"><span class="bp-sum-label">Estimated Cost</span><span class="bp-sum-value">$${parseFloat(price).toFixed(2)}</span></div>`;
+            }
+        }
+
+        const btn = document.getElementById('confirm-btn');
+        if (btn) btn.disabled = !(this.selectedService && this.selectedDate && this.selectedTime);
+
+        el.innerHTML = html || '<p class="bp-summary-empty">Complete the form to see your booking summary.</p>';
     },
 
     async submitBooking() {
         const form = document.getElementById('booking-form');
-        if (!form) return;
-        const formData = new FormData(form);
+        if (!form || !this.selectedService || !this.selectedDate || !this.selectedTime) return;
+        const fd = new FormData(form);
         const data = {
             service_id: this.selectedService,
             practitioner_id: this.selectedPractitioner,
             date: this.selectedDate,
             start_time: this.selectedTime.start,
             end_time: this.selectedTime.end,
-            first_name: formData.get('first_name'),
-            last_name: formData.get('last_name'),
-            email: formData.get('email'),
-            phone: formData.get('phone'),
-            date_of_birth: formData.get('date_of_birth'),
-            gender: formData.get('gender'),
-            reason: formData.get('reason'),
-            notes: formData.get('notes')
+            first_name: fd.get('first_name'),
+            last_name: fd.get('last_name'),
+            email: fd.get('email'),
+            phone: fd.get('phone'),
+            date_of_birth: fd.get('date_of_birth'),
+            gender: fd.get('gender'),
+            reason: fd.get('reason'),
+            notes: fd.get('notes')
         };
         try {
-            App.showLoading();
-            const result = await App.fetchData('/api/booking/create', {
-                method: 'POST',
-                body: JSON.stringify(data)
-            });
-            App.hideLoading();
+            const btn = document.getElementById('confirm-btn');
+            if (btn) { btn.disabled = true; btn.innerHTML = '<div class="bp-spinner" style="width:16px;height:16px;border-width:2px;"></div> Booking...'; }
+            const result = await App.fetchData('/api/booking/create', { method: 'POST', body: JSON.stringify(data) });
             if (result.success) {
                 window.location.href = `/booking/confirmation/${result.reference}`;
             } else {
                 App.showToast(result.message || 'Booking failed. Please try again.', 'error');
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check me-1"></i>Confirm Booking'; }
             }
         } catch (e) {
-            App.hideLoading();
             App.showToast('An error occurred. Please try again.', 'error');
+            const btn = document.getElementById('confirm-btn');
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check me-1"></i>Confirm Booking'; }
         }
-    },
-
-    goBack(step) { this.renderStep(step); }
+    }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.querySelector('.booking-page')) {
-        BookingFlow.init();
-    }
+    if (document.querySelector('.booking-page')) BookingFlow.init();
 });
