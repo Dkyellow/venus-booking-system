@@ -12,5 +12,15 @@
 <table cellpadding="0" cellspacing="0" style="margin:20px 0;">
 <tr><td><a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ appointment.service.name }}&dates={{ appointment.start_time.strftime('%Y%m%dT%H%M%S') }}/{{ appointment.end_time.strftime('%Y%m%dT%H%M%S') }}" style="display:inline-block;padding:12px 24px;background-color:#69A83F;color:#FFFFFF;text-decoration:none;border-radius:8px;font-weight:600;font-size:14px;">Add to Google Calendar</a></td></tr>
 </table>
-<p style="font-size:14px;color:#6B7280;line-height:1.6;">Please arrive 10 minutes before your appointment. If you need to reschedule or cancel, please contact us at +263 (0242) 339 769.</p>
+<p style="font-size:14px;color:#6B7280;line-height:1.6;margin:0 0 8px;">Manage your booking using the buttons below:</p>
+<table cellpadding="0" cellspacing="0" style="margin:12px 0 20px;">
+<tr>
+<td style="padding-right:12px;"><a href="{{ manage_url }}" style="display:inline-block;padding:12px 24px;background-color:#69A83F;color:#FFFFFF;text-decoration:none;border-radius:8px;font-weight:600;font-size:14px;">Manage Booking</a></td>
+<td><a href="{{ reschedule_url }}" style="display:inline-block;padding:12px 24px;background-color:#F59E0B;color:#FFFFFF;text-decoration:none;border-radius:8px;font-weight:600;font-size:14px;">Reschedule</a></td>
+</tr>
+</table>
+<table cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
+<tr><td><a href="{{ cancel_url }}" style="display:inline-block;padding:12px 24px;background-color:#EF4444;color:#FFFFFF;text-decoration:none;border-radius:8px;font-weight:600;font-size:14px;">Cancel Appointment</a></td></tr>
+</table>
+<p style="font-size:14px;color:#6B7280;line-height:1.6;">Please arrive 10 minutes before your appointment. If you need any help, please contact us at +263 (0242) 339 769.</p>
 {% endblock %}

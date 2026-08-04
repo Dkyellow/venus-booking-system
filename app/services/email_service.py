@@ -14,12 +14,23 @@ class EmailService:
     @staticmethod
     def send_email(to, subject, html_body, template_name=None, appointment_id=None):
         try:
+            import base64
+            logo_path = os.path.join(current_app.static_folder, 'logo.png')
+            if os.path.exists(logo_path):
+                with open(logo_path, 'rb') as f:
+                    logo_b64 = base64.b64encode(f.read()).decode()
+                logo_data_uri = f'data:image/png;base64,{logo_b64}'
+                html_body = html_body.replace(
+                    'https://venus-booking-system.onrender.com/static/logo.png',
+                    logo_data_uri
+                )
+                html_body = html_body.replace('cid:logo', logo_data_uri)
+            
             mailjet_key = os.getenv('MAILJET_API_KEY')
             mailjet_secret = os.getenv('MAILJET_SECRET_KEY')
             
             if mailjet_key and mailjet_secret:
                 import requests
-                import base64
                 
                 sender_email = os.getenv('MAIL_DEFAULT_SENDER_EMAIL') or 'lesliesarai321@gmail.com'
                 sender_name = 'Venus Healthcare'
@@ -40,18 +51,6 @@ class EmailService:
                     'TextPart': text_body,
                     'HTMLPart': html_body
                 }
-                
-                logo_path = os.path.join(current_app.static_folder, 'logo.png')
-                if os.path.exists(logo_path):
-                    with open(logo_path, 'rb') as f:
-                        logo_data = base64.b64encode(f.read()).decode()
-                    message['Attachments'] = [{
-                        'ContentType': 'image/png',
-                        'Filename': 'logo.png',
-                        'Base64Content': logo_data,
-                        'ContentID': 'logo',
-                        'ContentDisposition': 'inline'
-                    }]
                 
                 data = {'Messages': [message]}
                 
@@ -131,12 +130,19 @@ class EmailService:
     @staticmethod
     def send_booking_confirmation(appointment):
         try:
+            base_url = 'https://venus-booking-system.onrender.com'
+            manage_url = f'{base_url}/booking/manage/{appointment.reference}'
+            reschedule_url = f'{base_url}/booking/manage/{appointment.reference}'
+            cancel_url = f'{base_url}/booking/manage/{appointment.reference}'
             html = render_template(
                 'emails/confirmation.html',
                 appointment=appointment,
                 patient=appointment.patient,
                 practitioner=appointment.practitioner,
-                service=appointment.service
+                service=appointment.service,
+                manage_url=manage_url,
+                reschedule_url=reschedule_url,
+                cancel_url=cancel_url
             )
             return EmailService.send_email(
                 to=appointment.patient.email,
@@ -152,12 +158,19 @@ class EmailService:
     @staticmethod
     def send_booking_received(appointment):
         try:
+            base_url = 'https://venus-booking-system.onrender.com'
+            manage_url = f'{base_url}/booking/manage/{appointment.reference}'
+            reschedule_url = f'{base_url}/booking/manage/{appointment.reference}'
+            cancel_url = f'{base_url}/booking/manage/{appointment.reference}'
             html = render_template(
                 'emails/booking_received.html',
                 appointment=appointment,
                 patient=appointment.patient,
                 practitioner=appointment.practitioner,
-                service=appointment.service
+                service=appointment.service,
+                manage_url=manage_url,
+                reschedule_url=reschedule_url,
+                cancel_url=cancel_url
             )
             return EmailService.send_email(
                 to=appointment.patient.email,
@@ -173,13 +186,18 @@ class EmailService:
     @staticmethod
     def send_reminder(appointment, hours_before=24):
         try:
+            base_url = 'https://venus-booking-system.onrender.com'
+            manage_url = f'{base_url}/booking/manage/{appointment.reference}'
+            reschedule_url = f'{base_url}/booking/manage/{appointment.reference}'
             html = render_template(
                 'emails/reminder.html',
                 appointment=appointment,
                 patient=appointment.patient,
                 practitioner=appointment.practitioner,
                 service=appointment.service,
-                hours_before=hours_before
+                hours_before=hours_before,
+                manage_url=manage_url,
+                reschedule_url=reschedule_url
             )
             return EmailService.send_email(
                 to=appointment.patient.email,
@@ -195,6 +213,9 @@ class EmailService:
     @staticmethod
     def send_rescheduled(appointment, old_date, old_time):
         try:
+            base_url = 'https://venus-booking-system.onrender.com'
+            manage_url = f'{base_url}/booking/manage/{appointment.reference}'
+            reschedule_url = f'{base_url}/booking/manage/{appointment.reference}'
             html = render_template(
                 'emails/rescheduled.html',
                 appointment=appointment,
@@ -202,7 +223,9 @@ class EmailService:
                 practitioner=appointment.practitioner,
                 service=appointment.service,
                 old_date=old_date,
-                old_time=old_time
+                old_time=old_time,
+                manage_url=manage_url,
+                reschedule_url=reschedule_url
             )
             return EmailService.send_email(
                 to=appointment.patient.email,
