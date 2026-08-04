@@ -85,7 +85,7 @@ def cancel_appointment(reference):
     NotificationService.notify_booking_cancelled(appointment, request.form.get('reason'))
     
     flash('Your appointment has been cancelled.', 'info')
-    return redirect(url_for('booking.manage', reference=reference))
+    return redirect(url_for('main.index'))
 
 
 @booking_bp.route('/manage/<reference>/reschedule', methods=['POST'])
