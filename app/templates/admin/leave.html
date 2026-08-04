@@ -45,6 +45,7 @@
 <td>
 {% if leave.is_active_today %}<span class="badge bg-primary me-1">Active Now</span>{% endif %}
 <form method="POST" action="{{ url_for('admin.delete_leave', id=leave.id) }}" class="d-inline" onsubmit="return confirm('Delete this leave entry?')">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
 </form>
 </td>
@@ -61,6 +62,7 @@
 <div class="modal fade" id="addLeaveModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
 <div class="modal-header"><h5 class="modal-title fw-bold">Add Staff Leave</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
 <form method="POST" action="{{ url_for('admin.add_leave') }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 <div class="modal-body">
 <div class="mb-3"><label class="form-label">Staff Member *</label>
 <select name="staff_id" class="form-select" required>
