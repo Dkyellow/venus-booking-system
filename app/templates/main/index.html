@@ -303,7 +303,6 @@
         <div class="service-home-bottom">
           <div class="service-home-meta">
             <span><i class="far fa-clock"></i> {{ service.duration }} min</span>
-            {% if service.price > 0 %}<span><i class="fas fa-tag"></i> ${{ '%.0f'|format(service.price) }}</span>{% endif %}
           </div>
           <a href="{{ url_for('booking.book') }}" style="font-size:0.8125rem;color:#69A83F;font-weight:600;text-decoration:none">Book <i class="fas fa-arrow-right ms-1" style="font-size:0.6875rem"></i></a>
         </div>

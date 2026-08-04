@@ -238,13 +238,7 @@ const BookingFlow = {
         if (this.selectedTime) {
             html += `<div class="bp-sum-row"><span class="bp-sum-label">Time</span><span class="bp-sum-value">${this.selectedTime.display}</span></div>`;
         }
-        if (this.selectedService && serviceSel) {
-            const opt = serviceSel.options[serviceSel.selectedIndex];
-            const price = opt.dataset.price;
-            if (price && parseFloat(price) > 0) {
-                html += `<div class="bp-sum-row total"><span class="bp-sum-label">Estimated Cost</span><span class="bp-sum-value">$${parseFloat(price).toFixed(2)}</span></div>`;
-            }
-        }
+
 
         const btn = document.getElementById('confirm-btn');
         if (btn) btn.disabled = !(this.selectedService && this.selectedDate && this.selectedTime);

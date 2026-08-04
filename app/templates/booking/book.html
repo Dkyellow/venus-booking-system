@@ -20,7 +20,7 @@
         <select id="service-select" class="bp-select" onchange="BookingFlow.onServiceChange(this.value)">
           <option value="">Choose a service...</option>
           {% for service in services %}
-          <option value="{{ service.id }}" data-duration="{{ service.duration }}" data-price="{{ service.price }}">{{ service.name }} ({{ service.duration }}min){% if service.price > 0 %} - ${{ '%.2f'|format(service.price) }}{% endif %}</option>
+          <option value="{{ service.id }}" data-duration="{{ service.duration }}">{{ service.name }} ({{ service.duration }}min)</option>
           {% endfor %}
         </select>
         <i class="fas fa-chevron-down bp-select-arrow"></i>
