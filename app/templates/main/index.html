@@ -151,6 +151,15 @@
   .stats-bar{grid-template-columns:1fr 1fr;padding:20px}
   .stats-bar-num{font-size:1.5rem}
 }
+#faqAccordion .accordion-item{border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden}
+#faqAccordion .accordion-button{font-weight:600;color:#69A83F;box-shadow:none;background:transparent;border-radius:12px}
+#faqAccordion .accordion-button:not(.collapsed){background:transparent;color:#4E8C36}
+#faqAccordion .accordion-button::after{filter:invert(40%) sepia(50%) saturate(500%) hue-rotate(85deg)}
+#faqAccordion .accordion-body{color:#6B7280;font-size:0.9375rem;line-height:1.7;padding:16px 24px}
+.faq-accordion .accordion-item{border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.faq-accordion .accordion-button{font-weight:600;color:#111827;box-shadow:none;background:transparent}
+.faq-accordion .accordion-button:not(.collapsed){background:transparent}
+.faq-accordion .accordion-body{color:#6B7280;font-size:0.9375rem;line-height:1.7;padding:16px 24px}
 </style>
 
 <!-- Nav -->
@@ -226,42 +235,42 @@
   <div class="row g-4">
     <div class="col-md-4">
       <div class="feature-card">
-        <div class="feature-icon-lg" style="background:#E8EAF6;color:#C62828"><i class="fas fa-bolt"></i></div>
+        <div class="feature-icon-lg" style="color:#C62828"><i class="fas fa-bolt"></i></div>
         <h5>Lightning Fast Booking</h5>
         <p>Book your appointment in under 2 minutes with our intelligent scheduling system. No phone calls, no waiting.</p>
       </div>
     </div>
     <div class="col-md-4">
       <div class="feature-card">
-        <div class="feature-icon-lg" style="background:#E8EAF6;color:#C62828"><i class="fas fa-shield-alt"></i></div>
+        <div class="feature-icon-lg" style="color:#C62828"><i class="fas fa-shield-alt"></i></div>
         <h5>Verified Professionals</h5>
         <p>All our doctors are fully qualified, certified, and reviewed by real patients for your peace of mind.</p>
       </div>
     </div>
     <div class="col-md-4">
       <div class="feature-card">
-        <div class="feature-icon-lg" style="background:#E8EAF6;color:#C62828"><i class="fas fa-bell"></i></div>
+        <div class="feature-icon-lg" style="color:#C62828"><i class="fas fa-bell"></i></div>
         <h5>Smart Reminders</h5>
         <p>Never miss an appointment with automatic email and SMS reminders sent before your visit.</p>
       </div>
     </div>
     <div class="col-md-4">
       <div class="feature-card">
-        <div class="feature-icon-lg" style="background:#E8EAF6;color:#C62828"><i class="fas fa-clock"></i></div>
+        <div class="feature-icon-lg" style="color:#C62828"><i class="fas fa-clock"></i></div>
         <h5>24/7 Online Access</h5>
         <p>Book, reschedule, or cancel appointments anytime. Our platform is always available when you need it.</p>
       </div>
     </div>
     <div class="col-md-4">
       <div class="feature-card">
-        <div class="feature-icon-lg" style="background:#E8EAF6;color:#C62828"><i class="fas fa-lock"></i></div>
+        <div class="feature-icon-lg" style="color:#C62828"><i class="fas fa-lock"></i></div>
         <h5>Secure & Private</h5>
         <p>Your health data is protected with enterprise-grade encryption. We never share your information.</p>
       </div>
     </div>
     <div class="col-md-4">
       <div class="feature-card">
-        <div class="feature-icon-lg" style="background:#E8EAF6;color:#C62828"><i class="fas fa-headset"></i></div>
+        <div class="feature-icon-lg" style="color:#C62828"><i class="fas fa-headset"></i></div>
         <h5>Dedicated Support</h5>
         <p>Our friendly support team is here to help you with any questions or concerns about your care.</p>
       </div>
@@ -289,7 +298,7 @@
     <div class="col-md-6 col-lg-4">
       <div class="service-home-card">
         <div class="service-home-top">
-          <div class="service-home-icon" style="background:#E8EAF6;color:#C62828;border:2px solid #C62828;border-radius:12px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas {{ service.icon or 'fa-stethoscope' }}" style="font-size:1.5rem"></i></div>
+          <div class="service-home-icon" style="color:#C62828;width:56px;height:56px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas {{ service.icon or 'fa-stethoscope' }}" style="font-size:1.5rem"></i></div>
           <div class="service-home-info">
             <h5>{{ service.name }}</h5>
             <p>{{ service.description[:120] if service.description else '' }}{% if service.description and service.description|length > 120 %}...{% endif %}</p>
@@ -369,8 +378,8 @@
       <p style="font-size:1.0625rem;color:#6B7280;line-height:1.8;margin-bottom:16px;">Founded in 2014 by Dr. Knowledge Tsungu, Venus Medical & Dental Centre has grown from a single dental practice into a multidisciplinary healthcare provider. Today, we offer medical, dental, mental health, diagnostic, preventative, and specialist services under one roof in Mount Pleasant, Harare.</p>
       <p style="font-size:1.0625rem;color:#6B7280;line-height:1.8;margin-bottom:28px;">Our team of experienced professionals is committed to delivering compassionate, patient-centred care. We combine modern technology with personalised attention to ensure every patient receives the best possible outcome.</p>
       <div class="d-flex gap-4 flex-wrap">
-        <div class="d-flex align-items-center gap-2"><div style="width:40px;height:40px;border-radius:10px;background:#E8EAF6;color:#C62828;display:flex;align-items:center;justify-content:center"><i class="fas fa-award"></i></div><div><div style="font-weight:700;color:#111827">Licensed</div><div style="font-size:0.8125rem;color:#6B7280">Certified Clinic</div></div></div>
-        <div class="d-flex align-items-center gap-2"><div style="width:40px;height:40px;border-radius:10px;background:#E8EAF6;color:#C62828;display:flex;align-items:center;justify-content:center"><i class="fas fa-users"></i></div><div><div style="font-weight:700;color:#111827">2,000+</div><div style="font-size:0.8125rem;color:#6B7280">Patients Served</div></div></div>
+        <div class="d-flex align-items-center gap-2"><div style="width:40px;height:40px;border-radius:10px;color:#C62828;display:flex;align-items:center;justify-content:center"><i class="fas fa-award"></i></div><div><div style="font-weight:700;color:#111827">Licensed</div><div style="font-size:0.8125rem;color:#6B7280">Certified Clinic</div></div></div>
+        <div class="d-flex align-items-center gap-2"><div style="width:40px;height:40px;border-radius:10px;color:#C62828;display:flex;align-items:center;justify-content:center"><i class="fas fa-users"></i></div><div><div style="font-weight:700;color:#111827">2,000+</div><div style="font-size:0.8125rem;color:#6B7280">Patients Served</div></div></div>
       </div>
     </div>
     <div class="col-lg-6">
@@ -431,11 +440,6 @@
   </div>
   <div class="row justify-content-center">
     <div class="col-lg-8">
-#faqAccordion .accordion-item{border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden}
-#faqAccordion .accordion-button{font-weight:600;color:#69A83F;box-shadow:none;background:transparent;border-radius:12px}
-#faqAccordion .accordion-button:not(.collapsed){background:transparent;color:#4E8C36}
-#faqAccordion .accordion-button::after{filter:invert(40%) sepia(50%) saturate(500%) hue-rotate(85deg)}
-#faqAccordion .accordion-body{color:#6B7280;font-size:0.9375rem;line-height:1.7;padding:16px 24px}
         <div class="accordion" id="faqAccordion">
         <div class="accordion-item">
           <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">Do I need an appointment or can I just walk in?</button></h2>
@@ -447,15 +451,15 @@
         </div>
         <div class="accordion-item">
           <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">Can I make same day appointments?</button></h2>
-          <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">Yes. We keep appointments open each day for same day emergency appointments however these can get filled. Therefore, for your convenience, please phone ahead and book appointments in advance.</div></div>
+          <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Yes. We keep appointments open each day for same day emergency appointments however these can get filled. Therefore, for your convenience, please phone ahead and book appointments in advance.</div></div>
         </div>
-        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" style="font-weight:600;color:#111827;box-shadow:none">What should I bring?</button></h2>
-          <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">Your ID, Medical Aid card, previous medical records and referral letter where applicable.</div></div>
+        <div class="accordion-item">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">What should I bring?</button></h2>
+          <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Your ID, Medical Aid card, previous medical records and referral letter where applicable.</div></div>
         </div>
-        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5" style="font-weight:600;color:#111827;box-shadow:none">Do you accept my Medical Aid?</button></h2>
-          <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">Yes! But conditions do apply on certain medical aids; please call or message us for more details.</div></div>
+        <div class="accordion-item">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">Do you accept my Medical Aid?</button></h2>
+          <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Yes! But conditions do apply on certain medical aids; please call or message us for more details.</div></div>
         </div>
         <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
           <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6" style="font-weight:600;color:#111827;box-shadow:none">What time do you close?</button></h2>
@@ -504,19 +508,19 @@
       <div class="contact-card" style="background:var(--bg-card);border-radius:20px;border:1px solid var(--border-color);padding:36px;height:100%">
         <h5 style="font-weight:700;color:#111827;margin-bottom:24px">Contact Information</h5>
         <div class="d-flex align-items-start gap-3 mb-4">
-          <div style="width:44px;height:44px;border-radius:12px;background:#E8EAF6;color:#C62828;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-map-marker-alt"></i></div>
+          <div style="width:44px;height:44px;border-radius:12px;color:#C62828;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-map-marker-alt"></i></div>
           <div><div style="font-weight:600;color:#111827;margin-bottom:2px">Address</div><div style="font-size:0.9375rem;color:#6B7280;line-height:1.6">4 Cuba Ave, Mount Pleasant<br>Opposite Billy's Meats (Along the Bond Shops)<br>Harare, Zimbabwe</div></div>
         </div>
         <div class="d-flex align-items-start gap-3 mb-4">
-          <div style="width:44px;height:44px;border-radius:12px;background:#E8EAF6;color:#C62828;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-phone"></i></div>
+          <div style="width:44px;height:44px;border-radius:12px;color:#C62828;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-phone"></i></div>
           <div><div style="font-weight:600;color:#111827;margin-bottom:2px">Phone</div><div style="font-size:0.9375rem;color:#6B7280;line-height:1.8"><a href="tel:+263777289797" style="color:#6B7280;text-decoration:none">+263 777 289 797</a><br><a href="tel:+263774890158" style="color:#6B7280;text-decoration:none">+263 774 890 158</a><br><a href="tel:+263242339769" style="color:#6B7280;text-decoration:none">+263 (0242) 339 769</a></div></div>
         </div>
         <div class="d-flex align-items-start gap-3 mb-4">
-          <div style="width:44px;height:44px;border-radius:12px;background:#E8EAF6;color:#C62828;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-envelope"></i></div>
+          <div style="width:44px;height:44px;border-radius:12px;color:#C62828;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-envelope"></i></div>
           <div><div style="font-weight:600;color:#111827;margin-bottom:2px">Email</div><div style="font-size:0.9375rem;color:#6B7280;line-height:1.8"><a href="mailto:medical@venushealthcare.co.zw" style="color:#6B7280;text-decoration:none">medical@venushealthcare.co.zw</a><br><a href="mailto:dental@venushealthcare.co.zw" style="color:#6B7280;text-decoration:none">dental@venushealthcare.co.zw</a></div></div>
         </div>
         <div class="d-flex align-items-start gap-3">
-          <div style="width:44px;height:44px;border-radius:12px;background:#E8EAF6;color:#C62828;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-clock"></i></div>
+          <div style="width:44px;height:44px;border-radius:12px;color:#C62828;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-clock"></i></div>
           <div><div style="font-weight:600;color:#111827;margin-bottom:2px">Opening Hours</div><div style="font-size:0.9375rem;color:#6B7280;line-height:1.6">Monday–Friday: 08:00–17:00<br>Saturday: 08:00–13:00<br>Sunday & Public Holidays: Closed</div></div>
         </div>
       </div>
