@@ -161,16 +161,20 @@
   </a>
   <button class="hamburger" id="hpHamburger"><i class="fas fa-bars"></i></button>
   <div class="d-flex align-items-center gap-4 nav-links-desktop">
+    <a href="#about" class="nav-link">About</a>
     <a href="#services" class="nav-link">Services</a>
-    <a href="#how" class="nav-link">How It Works</a>
-    <a href="#why" class="nav-link">Why Us</a>
+    <a href="#team" class="nav-link">Team</a>
+    <a href="#faq" class="nav-link">FAQ</a>
+    <a href="#contact" class="nav-link">Contact</a>
     <a href="{{ url_for('booking.book') }}" class="btn-nav">Book Now</a>
   </div>
 </div>
 <div class="mobile-menu" id="hpMobileMenu">
+  <a href="#about" class="nav-link">About</a>
   <a href="#services" class="nav-link">Services</a>
-  <a href="#how" class="nav-link">How It Works</a>
-  <a href="#why" class="nav-link">Why Us</a>
+  <a href="#team" class="nav-link">Team</a>
+  <a href="#faq" class="nav-link">FAQ</a>
+  <a href="#contact" class="nav-link">Contact</a>
   <a href="{{ url_for('booking.book') }}" class="nav-link" style="color:#69A83F;font-weight:600">Book Now</a>
   {% if current_user.is_authenticated %}<a href="{{ url_for('auth.logout') }}" class="nav-link">Logout</a>{% else %}<a href="{{ url_for('auth.login') }}" class="nav-link">Login</a>{% endif %}
 </div>
@@ -341,6 +345,138 @@
 </div>
 </section>
 
+<!-- About Us -->
+<section class="about-section" id="about">
+<div class="container">
+  <div class="row align-items-center g-5">
+    <div class="col-lg-6">
+      <div class="section-badge"><i class="fas fa-heart"></i> About Us</div>
+      <h2 style="font-size:2.25rem;font-weight:800;color:#111827;margin-bottom:20px;letter-spacing:-0.02em;">Trusted Healthcare<br>Since 2014</h2>
+      <p style="font-size:1.0625rem;color:#6B7280;line-height:1.8;margin-bottom:16px;">Venus Healthcare has been serving the Harare community with compassionate, world-class medical care for over a decade. Our mission is to make quality healthcare accessible, affordable, and convenient for everyone.</p>
+      <p style="font-size:1.0625rem;color:#6B7280;line-height:1.8;margin-bottom:28px;">We combine modern technology with personalised care to ensure every patient receives the attention they deserve. From general consultations to specialist services, we are your trusted partner in health.</p>
+      <div class="d-flex gap-4 flex-wrap">
+        <div class="d-flex align-items-center gap-2"><div style="width:40px;height:40px;border-radius:10px;background:#EDF5E6;color:#69A83F;display:flex;align-items:center;justify-content:center"><i class="fas fa-award"></i></div><div><div style="font-weight:700;color:#111827">Licensed</div><div style="font-size:0.8125rem;color:#6B7280">Certified Clinic</div></div></div>
+        <div class="d-flex align-items-center gap-2"><div style="width:40px;height:40px;border-radius:10px;background:#DBEAFE;color:#1E40AF;display:flex;align-items:center;justify-content:center"><i class="fas fa-users"></i></div><div><div style="font-weight:700;color:#111827">10,000+</div><div style="font-size:0.8125rem;color:#6B7280">Patients Served</div></div></div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div style="background:linear-gradient(135deg,#EDF5E6,#F0F7E6);border-radius:24px;padding:48px;display:flex;align-items:center;justify-content:center;min-height:380px;position:relative;overflow:hidden">
+        <div style="text-align:center;position:relative;z-index:2">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="Venus" style="height:80px;width:auto;margin-bottom:20px;">
+          <h3 style="font-weight:800;color:#69A83F;font-size:2rem;margin-bottom:8px">10+ Years</h3>
+          <p style="color:#4B5563;font-weight:500">of Caring for Our Community</p>
+        </div>
+        <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(105,168,63,0.1)"></div>
+        <div style="position:absolute;bottom:-20px;left:-20px;width:80px;height:80px;border-radius:50%;background:rgba(105,168,63,0.08)"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- Our Team -->
+<section class="team-section" id="team" style="padding:100px 0;background:var(--bg-secondary)">
+<div class="container">
+  <div class="section-header">
+    <div class="section-badge"><i class="fas fa-user-md"></i> Our Team</div>
+    <h2>Meet Our Experts</h2>
+    <p>Our team of experienced healthcare professionals is dedicated to providing you with the best care.</p>
+  </div>
+  <div class="row g-4">
+    {% for p in practitioners %}
+    <div class="col-md-6 col-lg-3">
+      <div class="team-card" style="background:var(--bg-card);border-radius:20px;border:1px solid var(--border-color);overflow:hidden;transition:all .3s;height:100%">
+        <div style="height:180px;background:linear-gradient(135deg,{{ p.color or '#69A83F' }},{{ p.color or '#69A83F' }}dd);display:flex;align-items:center;justify-content:center">
+          <div style="width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:white;font-weight:700">{{ p.first_name[0] }}{{ p.last_name[0] }}</div>
+        </div>
+        <div style="padding:20px;text-align:center">
+          <h5 style="font-weight:700;color:#111827;margin-bottom:4px">{{ p.title or 'Dr.' }} {{ p.first_name }} {{ p.last_name }}</h5>
+          <p style="font-size:0.8125rem;color:#6B7280;margin-bottom:12px">{{ p.specialization or 'General Practice' }}</p>
+          <a href="{{ url_for('booking.book') }}" style="display:inline-block;padding:8px 20px;background:#EDF5E6;color:#69A83F;border-radius:8px;font-size:0.8125rem;font-weight:600;text-decoration:none;transition:all .2s">Book Now</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section" id="faq" style="padding:100px 0">
+<div class="container">
+  <div class="section-header">
+    <div class="section-badge"><i class="fas fa-question-circle"></i> FAQ</div>
+    <h2>Frequently Asked Questions</h2>
+    <p>Find answers to common questions about our services and booking process.</p>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="accordion" id="faqAccordion">
+        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
+          <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" style="font-weight:600;color:#111827;box-shadow:none">How do I book an appointment?</button></h2>
+          <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">Click "Book Appointment" on our website, select your service, choose a practitioner and available time slot, then fill in your details. You'll receive a confirmation email once our team approves your booking.</div></div>
+        </div>
+        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" style="font-weight:600;color:#111827;box-shadow:none">Can I cancel or reschedule my appointment?</button></h2>
+          <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">Yes! You can cancel or reschedule directly from the confirmation email you received, or by visiting our Manage Booking page. Please cancel at least 24 hours before your appointment.</div></div>
+        </div>
+        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" style="font-weight:600;color:#111827;box-shadow:none">What payment methods do you accept?</button></h2>
+          <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">We accept cash, EcoCash, bank transfers, and major credit/debit cards. Payment is made at the clinic on the day of your appointment.</div></div>
+        </div>
+        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" style="font-weight:600;color:#111827;box-shadow:none">What are your operating hours?</button></h2>
+          <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">We are open every day from 9:00 AM to 5:00 PM, including weekends. Our online booking system is available 24/7.</div></div>
+        </div>
+        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5" style="font-weight:600;color:#111827;box-shadow:none">Do I need a referral?</button></h2>
+          <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">No referral is needed for general consultations and most services. However, specialist referrals may be recommended for certain procedures.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- Contact -->
+<section class="contact-section" id="contact" style="padding:100px 0;background:var(--bg-secondary)">
+<div class="container">
+  <div class="section-header">
+    <div class="section-badge"><i class="fas fa-map-marker-alt"></i> Contact Us</div>
+    <h2>Get In Touch</h2>
+    <p>Have questions? We'd love to hear from you. Reach out to us through any of the channels below.</p>
+  </div>
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="contact-card" style="background:var(--bg-card);border-radius:20px;border:1px solid var(--border-color);padding:36px;height:100%">
+        <h5 style="font-weight:700;color:#111827;margin-bottom:24px">Contact Information</h5>
+        <div class="d-flex align-items-start gap-3 mb-4">
+          <div style="width:44px;height:44px;border-radius:12px;background:#EDF5E6;color:#69A83F;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-map-marker-alt"></i></div>
+          <div><div style="font-weight:600;color:#111827;margin-bottom:2px">Address</div><div style="font-size:0.9375rem;color:#6B7280;line-height:1.6">Venus Healthcare<br>Harare, Zimbabwe</div></div>
+        </div>
+        <div class="d-flex align-items-start gap-3 mb-4">
+          <div style="width:44px;height:44px;border-radius:12px;background:#DBEAFE;color:#1E40AF;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-phone"></i></div>
+          <div><div style="font-weight:600;color:#111827;margin-bottom:2px">Phone</div><div style="font-size:0.9375rem;color:#6B7280;line-height:1.8"><a href="tel:+263242339769" style="color:#6B7280;text-decoration:none">+263 (0242) 339 769</a><br><a href="tel:+263777289797" style="color:#6B7280;text-decoration:none">+263 777 289 797</a><br><a href="tel:+263774890158" style="color:#6B7280;text-decoration:none">+263 774 890 158</a></div></div>
+        </div>
+        <div class="d-flex align-items-start gap-3 mb-4">
+          <div style="width:44px;height:44px;border-radius:12px;background:#FEF3C7;color:#92400E;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-envelope"></i></div>
+          <div><div style="font-weight:600;color:#111827;margin-bottom:2px">Email</div><div style="font-size:0.9375rem;color:#6B7280;line-height:1.8"><a href="mailto:medical@venushealthcare.co.zw" style="color:#6B7280;text-decoration:none">medical@venushealthcare.co.zw</a><br><a href="mailto:dental@venushealthcare.co.zw" style="color:#6B7280;text-decoration:none">dental@venushealthcare.co.zw</a></div></div>
+        </div>
+        <div class="d-flex align-items-start gap-3">
+          <div style="width:44px;height:44px;border-radius:12px;background:#E0E7FF;color:#3730A3;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-clock"></i></div>
+          <div><div style="font-weight:600;color:#111827;margin-bottom:2px">Hours</div><div style="font-size:0.9375rem;color:#6B7280;line-height:1.6">Every Day: 9:00 AM - 5:00 PM</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-7">
+      <div style="border-radius:20px;overflow:hidden;border:1px solid var(--border-color);height:100%;min-height:420px">
+        <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=31.03,-17.84,31.07,-17.80&layer=mapnik&marker=-17.82,31.05" style="width:100%;height:100%;min-height:420px;border:0" loading="lazy" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
 <!-- CTA -->
 <section class="cta-section">
 <div class="container">
@@ -362,9 +498,11 @@
     </div>
     <div class="footer-col">
       <h6>Quick Links</h6>
+      <a href="#about">About Us</a>
       <a href="#services">Services</a>
-      <a href="#why">Why Us</a>
-      <a href="#how">How It Works</a>
+      <a href="#team">Our Team</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
       <a href="{{ url_for('booking.book') }}">Book Now</a>
     </div>
     <div class="footer-col">
