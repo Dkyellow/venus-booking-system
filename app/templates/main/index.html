@@ -64,7 +64,7 @@
 
 /* Section Shared */
 .section-header{text-align:center;max-width:600px;margin:0 auto 48px}
-.section-badge{display:inline-flex;align-items:center;gap:6px;background:transparent;color:#C62828;padding:6px 16px;border-radius:100px;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px;border:2px solid #C62828}
+.section-badge{display:inline-flex;align-items:center;gap:6px;background:transparent;color:#69A83F;padding:6px 16px;border-radius:100px;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px}
 .section-header h2{font-size:2.25rem;font-weight:800;color:#111827;margin-bottom:12px;letter-spacing:-0.02em}
 .section-header p{font-size:1.0625rem;color:#6B7280;line-height:1.7}
 
@@ -432,10 +432,10 @@
   <div class="row justify-content-center">
     <div class="col-lg-8">
 #faqAccordion .accordion-item{border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden}
-#faqAccordion .accordion-button{font-weight:600;color:#2D5016;box-shadow:none;background:#F0F7E6;border-radius:12px}
-#faqAccordion .accordion-button:not(.collapsed){background:#E0EFCC;color:#2D5016}
+#faqAccordion .accordion-button{font-weight:600;color:#69A83F;box-shadow:none;background:transparent;border-radius:12px}
+#faqAccordion .accordion-button:not(.collapsed){background:transparent;color:#4E8C36}
 #faqAccordion .accordion-button::after{filter:invert(40%) sepia(50%) saturate(500%) hue-rotate(85deg)}
-#faqAccordion .accordion-body{color:#2D5016;font-size:0.9375rem;line-height:1.7;padding:16px 24px}
+#faqAccordion .accordion-body{color:#6B7280;font-size:0.9375rem;line-height:1.7;padding:16px 24px}
         <div class="accordion" id="faqAccordion">
         <div class="accordion-item">
           <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">Do I need an appointment or can I just walk in?</button></h2>
@@ -449,45 +449,41 @@
           <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">Can I make same day appointments?</button></h2>
           <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">Yes. We keep appointments open each day for same day emergency appointments however these can get filled. Therefore, for your convenience, please phone ahead and book appointments in advance.</div></div>
         </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">Can I make same day appointments?</button></h2>
-          <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Yes. We keep appointments open each day for same day emergency appointments however these can get filled. Therefore, for your convenience, please phone ahead and book appointments in advance.</div></div>
+        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" style="font-weight:600;color:#111827;box-shadow:none">What should I bring?</button></h2>
+          <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">Your ID, Medical Aid card, previous medical records and referral letter where applicable.</div></div>
         </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">What should I bring?</button></h2>
-          <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Your ID, Medical Aid card, previous medical records and referral letter where applicable.</div></div>
+        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5" style="font-weight:600;color:#111827;box-shadow:none">Do you accept my Medical Aid?</button></h2>
+          <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">Yes! But conditions do apply on certain medical aids; please call or message us for more details.</div></div>
         </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">Do you accept my Medical Aid?</button></h2>
-          <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Yes! But conditions do apply on certain medical aids; please call or message us for more details.</div></div>
+        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6" style="font-weight:600;color:#111827;box-shadow:none">What time do you close?</button></h2>
+          <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">During week days, we are open from 08:00 until 16:30. On Saturdays, we close at 13:00. We are closed on Sundays and all public holidays.</div></div>
         </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">What time do you close?</button></h2>
-          <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">During week days, we are open from 08:00 until 16:30. On Saturdays, we close at 13:00. We are closed on Sundays and all public holidays.</div></div>
+        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7" style="font-weight:600;color:#111827;box-shadow:none">Where are you located?</button></h2>
+          <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">We are at Number 4 Cuba Avenue, Mt Pleasant in Harare, Zimbabwe. Please visit our <a href="#contact" style="color:#69A83F">Contact Us section</a> for the map and contact details.</div></div>
         </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7">Where are you located?</button></h2>
-          <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">We are at Number 4 Cuba Avenue, Mt Pleasant in Harare, Zimbabwe. Please visit our <a href="#contact" style="color:#69A83F">Contact Us section</a> for the map and contact details.</div></div>
+        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq8" style="font-weight:600;color:#111827;box-shadow:none">Do you offer online mental health services?</button></h2>
+          <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">Yes, we offer telephone consultations for medical and mental health services. Call or send a message on <a href="tel:+263777289797" style="color:#69A83F">+263 777 289 797</a>, to get more information on how to make a booking.</div></div>
         </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq8">Do you offer online mental health services?</button></h2>
-          <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Yes, we offer telephone consultations for medical and mental health services. Call or send a message on <a href="tel:+263777289797" style="color:#69A83F">+263 777 289 797</a>, to get more information on how to make a booking.</div></div>
+        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq9" style="font-weight:600;color:#111827;box-shadow:none">At what age can a child have their first dental visit?</button></h2>
+          <div id="faq9" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">When your child has their first tooth, it's time to visit the dentist.</div></div>
         </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq9">At what age can a child have their first dental visit?</button></h2>
-          <div id="faq9" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">When your child has their first tooth, it's time to visit the dentist.</div></div>
+        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq10" style="font-weight:600;color:#111827;box-shadow:none">How often should I get a dental checkup?</button></h2>
+          <div id="faq10" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">Every 6 months.</div></div>
         </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq10">How often should I get a dental checkup?</button></h2>
-          <div id="faq10" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Every 6 months.</div></div>
+        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq11" style="font-weight:600;color:#111827;box-shadow:none">Do you provide vaccinations?</button></h2>
+          <div id="faq11" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">Yes! We provide a variety of travel vaccinations.</div></div>
         </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq11">Do you provide vaccinations?</button></h2>
-          <div id="faq11" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Yes! We provide a variety of travel vaccinations.</div></div>
-        </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq12">Which vaccinations can I get at your center?</button></h2>
-          <div id="faq12" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">We offer all travel vaccinations as well as the COVID vaccine.</div></div>
+        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
+          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq12" style="font-weight:600;color:#111827;box-shadow:none">Which vaccinations can I get at your center?</button></h2>
+          <div id="faq12" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">We offer all travel vaccinations as well as the COVID vaccine.</div></div>
         </div>
       </div>
     </div>
