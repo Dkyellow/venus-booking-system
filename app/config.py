@@ -14,7 +14,7 @@ class Config:
     MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'true').lower() == 'true'
     MAIL_USERNAME = os.getenv('MAIL_USERNAME')
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
-    MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'Venus Healthcare <medical@venushealthcare.co.zw>')
+    MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'Venus Medical & Dental Centre <medical@venushealthcare.co.zw>')
     
     GOOGLE_CALENDAR_CLIENT_ID = os.getenv('GOOGLE_CALENDAR_CLIENT_ID')
     GOOGLE_CALENDAR_CLIENT_SECRET = os.getenv('GOOGLE_CALENDAR_CLIENT_SECRET')
@@ -23,11 +23,11 @@ class Config:
     WHATSAPP_API_URL = os.getenv('WHATSAPP_API_URL')
     WHATSAPP_API_TOKEN = os.getenv('WHATSAPP_API_TOKEN')
     
-    CLINIC_NAME = os.getenv('CLINIC_NAME', 'Venus Healthcare')
+    CLINIC_NAME = os.getenv('CLINIC_NAME', 'Venus Medical & Dental Centre')
     CLINIC_PHONE = os.getenv('CLINIC_PHONE', '+263 (0242) 339 769')
     CLINIC_EMAIL = os.getenv('CLINIC_EMAIL', 'medical@venushealthcare.co.zw')
-    CLINIC_ADDRESS = os.getenv('CLINIC_ADDRESS', '')
-    CLINIC_WEBSITE = os.getenv('CLINIC_WEBSITE', '')
+    CLINIC_ADDRESS = os.getenv('CLINIC_ADDRESS', '4 Cuba Ave, Mount Pleasant, Harare, Zimbabwe')
+    CLINIC_WEBSITE = os.getenv('CLINIC_WEBSITE', 'https://venushealthcare.co.zw')
     
     APPOINTMENT_BUFFER_MINUTES = int(os.getenv('APPOINTMENT_BUFFER_MINUTES', 15))
     MAX_APPOINTMENTS_PER_SLOT = int(os.getenv('MAX_APPOINTMENTS_PER_SLOT', 1))

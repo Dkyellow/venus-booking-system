@@ -21,7 +21,7 @@ class EmailService:
                 import requests
                 
                 sender_email = os.getenv('MAIL_DEFAULT_SENDER_EMAIL') or 'lesliesarai321@gmail.com'
-                sender_name = 'Venus Healthcare'
+                sender_name = 'Venus Medical & Dental Centre'
                 
                 to_email = to if isinstance(to, list) else [to]
                 
@@ -61,7 +61,7 @@ class EmailService:
                 import base64
                 
                 message = Mail(
-                    from_email=current_app.config.get('MAIL_DEFAULT_SENDER', 'Venus Healthcare <lesliesarai321@gmail.com>'),
+                    from_email=current_app.config.get('MAIL_DEFAULT_SENDER', 'Venus Medical & Dental Centre <lesliesarai321@gmail.com>'),
                     to_emails=to if isinstance(to, list) else [to],
                     subject=subject,
                     html_content=html_body

@@ -6,7 +6,7 @@ class ClinicSettings(db.Model):
     __tablename__ = 'settings'
     
     id = db.Column(db.Integer, primary_key=True)
-    clinic_name = db.Column(db.String(200), default='Venus Medical Clinic')
+    clinic_name = db.Column(db.String(200), default='Venus Medical & Dental Centre')
     clinic_email = db.Column(db.String(120))
     clinic_phone = db.Column(db.String(20))
     clinic_address = db.Column(db.Text)

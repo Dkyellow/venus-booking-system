@@ -112,7 +112,7 @@ with app.app_context():
         existing_days = {sched.day_of_week for sched in StaffSchedule.query.filter_by(staff_id=s.id, is_active=True).all()}
         for day in range(7):
             if day not in existing_days:
-                sched = StaffSchedule(staff_id=s.id, day_of_week=day, start_time=time(9, 0), end_time=time(17, 0), is_active=True)
+                sched = StaffSchedule(staff_id=s.id, day_of_week=day, start_time=time(8, 0), end_time=time(17, 0), is_active=True)
                 db.session.add(sched)
                 print(f"[MIGRATE] Added day {day} schedule for {s.first_name} {s.last_name}")
     db.session.commit()
@@ -136,14 +136,40 @@ with app.app_context():
         db.session.add(receptionist)
         
         service_data = [
-            ('General Consultation', 'Comprehensive health check-up and consultation', 30, 15, '#69A83F', 'fa-stethoscope', 50.00),
-            ('Dental Checkup', 'Professional dental examination and cleaning', 45, 15, '#10B981', 'fa-tooth', 75.00),
-            ('Physiotherapy', 'Physical therapy and rehabilitation session', 60, 15, '#F59E0B', 'fa-bone', 80.00),
-            ('Ultrasound', 'Diagnostic ultrasound imaging', 30, 15, '#06B6D4', 'fa-x-ray', 120.00),
-            ('Vaccination', 'Immunization and vaccination services', 20, 10, '#EF4444', 'fa-syringe', 35.00),
-            ('Eye Examination', 'Comprehensive eye health and vision testing', 30, 15, '#8B5CF6', 'fa-eye', 60.00),
-            ('ENT Consultation', 'Ear, Nose, and Throat specialist consultation', 30, 15, '#EC4899', 'fa-head-side-virus', 85.00),
-            ('Laboratory Tests', 'Blood work and diagnostic laboratory testing', 15, 10, '#14B8A6', 'fa-flask', 45.00),
+            ('General Consultation', 'Comprehensive medical consultations for adults and children.', 30, 15, '#69A83F', 'fa-stethoscope', 50.00),
+            ('Dental Checkup', 'Professional dental examination, cleaning, and oral health assessment.', 45, 15, '#10B981', 'fa-tooth', 75.00),
+            ('Dental Fillings', 'Tooth-coloured composite fillings to restore decayed or damaged teeth.', 45, 15, '#10B981', 'fa-tooth', 80.00),
+            ('Dental Cleaning', 'Professional teeth cleaning and polishing to prevent gum disease.', 30, 15, '#10B981', 'fa-tooth', 60.00),
+            ('Orthodontics', 'Braces and clear aligners to straighten teeth and correct bite issues.', 60, 15, '#10B981', 'fa-teeth', 150.00),
+            ('Dental Implants', 'Permanent tooth replacement using titanium implants.', 90, 30, '#10B981', 'fa-tooth', 500.00),
+            ('Teeth Whitening', 'Professional teeth whitening for a brighter, whiter smile.', 60, 15, '#10B981', 'fa-sun', 120.00),
+            ('Dental Crowns & Bridges', 'Custom-made crowns and bridges to restore damaged or missing teeth.', 60, 30, '#10B981', 'fa-tooth', 200.00),
+            ('Veneers', 'Thin porcelain shells bonded to teeth to improve appearance.', 60, 30, '#10B981', 'fa-tooth', 250.00),
+            ('Paediatric Dentistry', 'Gentle dental care for children in a friendly environment.', 30, 15, '#10B981', 'fa-baby', 50.00),
+            ('Dental Extractions', 'Safe and painless tooth extraction when necessary.', 45, 15, '#10B981', 'fa-tooth', 100.00),
+            ('Dental X-Rays', 'Digital dental X-rays for accurate diagnosis.', 15, 10, '#10B981', 'fa-x-ray', 40.00),
+            ('Dental Emergencies', 'Same-day emergency dental care for toothaches and trauma.', 30, 15, '#10B981', 'fa-exclamation-triangle', 75.00),
+            ('Smile Makeover', 'Complete smile transformation combining multiple treatments.', 90, 30, '#10B981', 'fa-smile', 800.00),
+            ('Clear Aligners', 'Invisible aligners for discreet teeth straightening.', 60, 15, '#10B981', 'fa-teeth-open', 200.00),
+            ('General Practice', 'Comprehensive primary healthcare for individuals and families.', 30, 15, '#69A83F', 'fa-stethoscope', 50.00),
+            ('Family Medicine', 'Holistic healthcare for the whole family.', 30, 15, '#69A83F', 'fa-users', 50.00),
+            ('Chronic Disease Management', 'Ongoing management of diabetes, hypertension, asthma, and heart disease.', 30, 15, '#69A83F', 'fa-heartbeat', 60.00),
+            ('Travel Clinic', 'Travel health consultations, vaccinations, and medications.', 30, 15, '#69A83F', 'fa-plane', 75.00),
+            ('Laboratory Testing', 'On-site laboratory for blood work and diagnostic testing.', 15, 10, '#14B8A6', 'fa-flask', 45.00),
+            ('ECG', 'Electrocardiogram testing for heart health assessment.', 15, 10, '#14B8A6', 'fa-heartbeat', 40.00),
+            ('Specialist Consultations', 'Access to specialist doctors in psychiatry, dermatology, and other specialties.', 45, 15, '#8B5CF6', 'fa-user-md', 100.00),
+            ('Vaccination Clinic', 'Comprehensive vaccination services including childhood immunisations and travel vaccines.', 20, 10, '#EF4444', 'fa-syringe', 35.00),
+            ('Dermatology', 'Skin care consultations, diagnosis, and treatment of skin conditions.', 30, 15, '#F59E0B', 'fa-hand-holding-medical', 80.00),
+            ('Paediatrics', 'Specialised healthcare for infants, children, and adolescents.', 30, 15, '#EC4899', 'fa-baby', 60.00),
+            ('Mental Health Services', 'Comprehensive psychiatric and psychological care.', 60, 15, '#8B5CF6', 'fa-brain', 100.00),
+            ('Psychiatric Evaluations', 'Comprehensive psychiatric assessments for diagnosis and treatment planning.', 60, 15, '#8B5CF6', 'fa-brain', 120.00),
+            ('Clinical Psychology', 'Individual therapy with qualified clinical psychologists.', 50, 15, '#8B5CF6', 'fa-comments', 80.00),
+            ('Educational Assessments', 'Comprehensive educational and learning assessments for children and adults.', 90, 30, '#8B5CF6', 'fa-graduation-cap', 150.00),
+            ('Physiotherapy', 'Physical therapy and rehabilitation sessions.', 60, 15, '#F59E0B', 'fa-bone', 80.00),
+            ('Diagnostic Imaging', 'Digital X-rays, ultrasound, and other diagnostic imaging services.', 30, 15, '#06B6D4', 'fa-x-ray', 120.00),
+            ('Preventative Health Screenings', 'Comprehensive health screenings and wellness checks.', 30, 15, '#69A83F', 'fa-shield-alt', 70.00),
+            ('Smile Design', 'Digital smile design using advanced technology.', 45, 15, '#10B981', 'fa-magic', 100.00),
+            ('Pharmacy', 'On-site pharmacy for prescription filling and OTC medications.', 15, 5, '#14B8A6', 'fa-prescription-bottle-alt', 0.00),
         ]
         
         services = {}
@@ -154,13 +180,16 @@ with app.app_context():
         db.session.flush()
         
         practitioners_data = [
-            ('Dr. James', 'Wilson', 'james.wilson@venushealthcare.co.zw', 'General Practice', 'Dr.', '#69A83F', ['General Consultation', 'Vaccination']),
-            ('Dr. Emily', 'Chen', 'emily.chen@venushealthcare.co.zw', 'Dentistry', 'Dr.', '#10B981', ['Dental Checkup']),
-            ('Dr. Michael', 'Brown', 'michael.brown@venushealthcare.co.zw', 'Physiotherapy', 'Dr.', '#F59E0B', ['Physiotherapy']),
-            ('Dr. Sarah', 'Davis', 'sarah.davis@venushealthcare.co.zw', 'Radiology', 'Dr.', '#06B6D4', ['Ultrasound']),
-            ('Dr. David', 'Kim', 'david.kim@venushealthcare.co.zw', 'Ophthalmology', 'Dr.', '#8B5CF6', ['Eye Examination']),
-            ('Dr. Lisa', 'Anderson', 'lisa.anderson@venushealthcare.co.zw', 'ENT', 'Dr.', '#EC4899', ['ENT Consultation']),
-            ('Nurse Amy', 'Taylor', 'amy.taylor@venushealthcare.co.zw', 'Laboratory', 'Nurse', '#14B8A6', ['Laboratory Tests', 'Vaccination']),
+            ('Knowledge', 'Tsungu', 'knowledge.tsungu@venushealthcare.co.zw', 'Dentistry', 'Dr.', '#69A83F', ['General Consultation', 'Dental Checkup', 'Dental Fillings', 'Dental Cleaning', 'Orthodontics', 'Dental Implants', 'Teeth Whitening', 'Dental Crowns & Bridges', 'Veneers', 'Paediatric Dentistry', 'Dental Extractions', 'Dental X-Rays', 'Dental Emergencies', 'Smile Makeover', 'Clear Aligners', 'Smile Design']),
+            ('Rukudzo', 'Mwamuka', 'rukudzo.mwamuka@venushealthcare.co.zw', 'Psychiatry', 'Dr.', '#8B5CF6', ['Mental Health Services', 'Psychiatric Evaluations', 'Clinical Psychology']),
+            ('James', 'Wilson', 'james.wilson@venushealthcare.co.zw', 'General Practice', 'Dr.', '#69A83F', ['General Consultation', 'Family Medicine', 'Chronic Disease Management', 'Travel Clinic', 'Preventative Health Screenings']),
+            ('Emily', 'Chen', 'emily.chen@venushealthcare.co.zw', 'Dentistry', 'Dr.', '#10B981', ['Dental Checkup', 'Dental Fillings', 'Dental Cleaning', 'Dental Emergencies']),
+            ('Sarah', 'Davis', 'sarah.davis@venushealthcare.co.zw', 'Paediatrics', 'Dr.', '#EC4899', ['Paediatrics', 'Vaccination Clinic']),
+            ('Michael', 'Brown', 'michael.brown@venushealthcare.co.zw', 'Physiotherapy', 'Dr.', '#F59E0B', ['Physiotherapy']),
+            ('Lisa', 'Anderson', 'lisa.anderson@venushealthcare.co.zw', 'Dermatology', 'Dr.', '#F59E0B', ['Dermatology', 'General Consultation']),
+            ('David', 'Kim', 'david.kim@venushealthcare.co.zw', 'Clinical Psychology', 'Dr.', '#8B5CF6', ['Clinical Psychology', 'Educational Assessments', 'Mental Health Services']),
+            ('Amy', 'Taylor', 'amy.taylor@venushealthcare.co.zw', 'Nursing', 'Nurse', '#14B8A6', ['Vaccination Clinic', 'Laboratory Testing', 'ECG']),
+            ('Grace', 'Moyo', 'grace.moyo@venushealthcare.co.zw', 'Diagnostic Imaging', 'Dr.', '#06B6D4', ['Diagnostic Imaging', 'Laboratory Testing']),
         ]
         
         for first, last, email, spec, title, color, svc_names in practitioners_data:
@@ -171,20 +200,24 @@ with app.app_context():
                 if sn in services:
                     s.services.append(services[sn])
             for day in range(7):
-                sched = StaffSchedule(staff_id=s.id, day_of_week=day, start_time=time(9, 0), end_time=time(17, 0), is_active=True)
+                sched = StaffSchedule(staff_id=s.id, day_of_week=day, start_time=time(8, 0), end_time=time(17, 0), is_active=True)
                 db.session.add(sched)
         
         rooms_data = [
             ('Consultation Room 1', 'Standard consultation room for general practice', 'Consultation', 1, '1st', 'Blood pressure monitor, Thermometer'),
             ('Consultation Room 2', 'General consultation room', 'Consultation', 1, '1st', 'Stethoscope, Otoscope'),
-            ('Dental Suite 1', 'Fully equipped dental examination room', 'Examination', 1, '1st', 'Dental chair, X-Ray, Ultrasonic scaler'),
+            ('Dental Suite 1', 'Fully equipped dental examination room with CEREC technology', 'Examination', 1, '1st', 'Dental chair, CEREC, Panorex, Digital Intraoral Camera'),
             ('Dental Suite 2', 'Secondary dental room for procedures', 'Procedure', 1, '1st', 'Dental chair, Compressor'),
+            ('Dental Suite 3', 'Specialist dental room for orthodontics and implants', 'Procedure', 1, '1st', 'Dental chair, Implant surgical kit, Orthodontic instruments'),
             ('Physiotherapy Room', 'Physical therapy and rehabilitation space', 'Procedure', 2, '2nd', 'Treatment table, Exercise equipment, Ultrasound therapy'),
-            ('Ultrasound Room', 'Diagnostic imaging suite', 'Imaging', 1, '2nd', 'Ultrasound machine, Exam table'),
-            ('Laboratory', 'Sample collection and basic testing', 'Laboratory', 2, '1st', 'Centrifuge, Microscope, Sample storage'),
-            ('Examination Room 1', 'Multi-purpose examination room', 'Examination', 1, '1st', 'Exam table, Basic diagnostics'),
-            ('Vaccination Room', 'Dedicated immunization room', 'Consultation', 1, '1st', 'Vaccine storage, Syringes, Emergency kit'),
-            ('ENT Suite', 'Specialist ENT examination room', 'Examination', 1, '2nd', 'Otoscope, Nasoscope, Audiometer'),
+            ('Mental Health Suite', 'Private consultation room for psychiatric and psychological services', 'Consultation', 1, '2nd', 'Comfortable seating, Sound insulation, Therapy materials'),
+            ('Paediatric Room', 'Child-friendly examination and treatment room', 'Examination', 1, '1st', 'Child-sized equipment, Colourful decor, Toys'),
+            ('Dermatology Room', 'Specialist dermatology examination room', 'Examination', 1, '2nd', 'Dermatoscope, Exam table, Good lighting'),
+            ('Laboratory', 'On-site laboratory for blood work and diagnostic testing', 'Laboratory', 2, '1st', 'Centrifuge, Microscope, Sample storage, Blood collection equipment'),
+            ('Vaccination Room', 'Dedicated immunisation room with vaccine storage', 'Consultation', 1, '1st', 'Vaccine refrigerator, Syringes, Emergency kit'),
+            ('Pharmacy', 'On-site pharmacy for prescription and OTC medications', 'Pharmacy', 2, '1st', 'Medication storage, Dispensing counter'),
+            ('Diagnostic Imaging Room', 'Digital X-ray and ultrasound imaging suite', 'Imaging', 1, '2nd', 'Digital X-ray machine, Ultrasound machine'),
+            ('ECG Room', 'Electrocardiogram testing room', 'Examination', 1, '1st', 'ECG machine, Monitoring equipment'),
         ]
         
         for name, desc, rtype, cap, floor, equip in rooms_data:
@@ -192,11 +225,11 @@ with app.app_context():
             db.session.add(room)
         
         settings = ClinicSettings(
-            clinic_name='Venus Healthcare',
+            clinic_name='Venus Medical & Dental Centre',
             clinic_email='medical@venushealthcare.co.zw',
             clinic_phone='+263 (0242) 339 769',
-            clinic_address='',
-            clinic_website=''
+            clinic_address='4 Cuba Ave, Mount Pleasant, Harare, Zimbabwe',
+            clinic_website='https://venushealthcare.co.zw'
         )
         db.session.add(settings)
         

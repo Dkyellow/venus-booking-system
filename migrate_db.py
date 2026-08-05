@@ -77,16 +77,20 @@ def migrate():
             print(f"[MIGRATE] Table creation: {e}")
     
     rooms_data = [
-        ('Consultation Room 1', 'Standard consultation room', 'Consultation', 1, '1st', 'Blood pressure monitor, Thermometer'),
+        ('Consultation Room 1', 'Standard consultation room for general practice', 'Consultation', 1, '1st', 'Blood pressure monitor, Thermometer'),
         ('Consultation Room 2', 'General consultation room', 'Consultation', 1, '1st', 'Stethoscope, Otoscope'),
-        ('Dental Suite 1', 'Fully equipped dental room', 'Examination', 1, '1st', 'Dental chair, X-Ray'),
-        ('Dental Suite 2', 'Secondary dental room', 'Procedure', 1, '1st', 'Dental chair, Compressor'),
-        ('Physiotherapy Room', 'Physical therapy space', 'Procedure', 2, '2nd', 'Treatment table, Exercise equipment'),
-        ('Ultrasound Room', 'Diagnostic imaging suite', 'Imaging', 1, '2nd', 'Ultrasound machine'),
-        ('Laboratory', 'Sample collection and testing', 'Laboratory', 2, '1st', 'Centrifuge, Microscope'),
-        ('Examination Room 1', 'Multi-purpose exam room', 'Examination', 1, '1st', 'Exam table, Basic diagnostics'),
-        ('Vaccination Room', 'Dedicated immunization room', 'Consultation', 1, '1st', 'Vaccine storage, Emergency kit'),
-        ('ENT Suite', 'Specialist ENT room', 'Examination', 1, '2nd', 'Otoscope, Nasoscope, Audiometer'),
+        ('Dental Suite 1', 'Fully equipped dental examination room with CEREC technology', 'Examination', 1, '1st', 'Dental chair, CEREC, Panorex, Digital Intraoral Camera'),
+        ('Dental Suite 2', 'Secondary dental room for procedures', 'Procedure', 1, '1st', 'Dental chair, Compressor'),
+        ('Dental Suite 3', 'Specialist dental room for orthodontics and implants', 'Procedure', 1, '1st', 'Dental chair, Implant surgical kit, Orthodontic instruments'),
+        ('Physiotherapy Room', 'Physical therapy and rehabilitation space', 'Procedure', 2, '2nd', 'Treatment table, Exercise equipment, Ultrasound therapy'),
+        ('Mental Health Suite', 'Private consultation room for psychiatric and psychological services', 'Consultation', 1, '2nd', 'Comfortable seating, Sound insulation, Therapy materials'),
+        ('Paediatric Room', 'Child-friendly examination and treatment room', 'Examination', 1, '1st', 'Child-sized equipment, Colourful decor, Toys'),
+        ('Dermatology Room', 'Specialist dermatology examination room', 'Examination', 1, '2nd', 'Dermatoscope, Exam table, Good lighting'),
+        ('Laboratory', 'On-site laboratory for blood work and diagnostic testing', 'Laboratory', 2, '1st', 'Centrifuge, Microscope, Sample storage, Blood collection equipment'),
+        ('Vaccination Room', 'Dedicated immunisation room with vaccine storage', 'Consultation', 1, '1st', 'Vaccine refrigerator, Syringes, Emergency kit'),
+        ('Pharmacy', 'On-site pharmacy for prescription and OTC medications', 'Pharmacy', 2, '1st', 'Medication storage, Dispensing counter'),
+        ('Diagnostic Imaging Room', 'Digital X-ray and ultrasound imaging suite', 'Imaging', 1, '2nd', 'Digital X-ray machine, Ultrasound machine'),
+        ('ECG Room', 'Electrocardiogram testing room', 'Examination', 1, '1st', 'ECG machine, Monitoring equipment'),
     ]
     
     for name, desc, rtype, cap, floor, equip in rooms_data:
@@ -122,7 +126,7 @@ def migrate_schedules():
             existing_days = {sched.day_of_week for sched in StaffSchedule.query.filter_by(staff_id=s.id, is_active=True).all()}
             for day in range(7):
                 if day not in existing_days:
-                    sched = StaffSchedule(staff_id=s.id, day_of_week=day, start_time=time(9, 0), end_time=time(17, 0), is_active=True)
+                    sched = StaffSchedule(staff_id=s.id, day_of_week=day, start_time=time(8, 0), end_time=time(17, 0), is_active=True)
                     db.session.add(sched)
                     print(f"[MIGRATE] Added day {day} schedule for {s.first_name} {s.last_name}")
         db.session.commit()
