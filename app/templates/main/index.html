@@ -35,10 +35,18 @@
 .hp-nav .btn-nav:hover{background:#5A9033;border-color:#5A9033;transform:translateY(-2px);box-shadow:0 4px 12px rgba(105,168,63,0.3)}
 .hp-nav .hamburger{display:none;background:none;border:none;color:#111827;font-size:1.5rem;cursor:pointer;padding:4px;transition:all 0.3s ease}
 .hp-nav .hamburger:hover{color:#69A83F;transform:scale(1.1)}
-.hp-nav .mobile-menu{display:none;position:absolute;top:100%;left:0;right:0;background:white;flex-direction:column;padding:16px 24px;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,0.1);border-radius:0 0 16px 16px;animation:slideDown 0.3s ease}
-.hp-nav .mobile-menu.show{display:flex}
-.hp-nav .mobile-menu .nav-link{color:#374151;padding:10px 0;transition:all 0.3s ease}
-.hp-nav .mobile-menu .nav-link:hover{padding-left:10px;color:#69A83F}
+.hp-nav .mobile-menu{display:none;position:absolute;top:100%;left:0;right:0;background:white;flex-direction:column;padding:16px 24px;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,0.1);border-radius:0 0 16px 16px}
+.hp-nav .mobile-menu.show{display:flex;animation:slideDown 0.3s cubic-bezier(0.4,0,0.2,1)}
+.hp-nav .mobile-menu .nav-link{color:#374151;padding:12px 16px;border-radius:8px;transition:all 0.3s ease;opacity:0;animation:fadeInUp 0.3s ease forwards}
+.hp-nav .mobile-menu .nav-link:nth-child(1){animation-delay:0.05s}
+.hp-nav .mobile-menu .nav-link:nth-child(2){animation-delay:0.1s}
+.hp-nav .mobile-menu .nav-link:nth-child(3){animation-delay:0.15s}
+.hp-nav .mobile-menu .nav-link:nth-child(4){animation-delay:0.2s}
+.hp-nav .mobile-menu .nav-link:nth-child(5){animation-delay:0.25s}
+.hp-nav .mobile-menu .nav-link:nth-child(6){animation-delay:0.3s}
+.hp-nav .mobile-menu .nav-link:nth-child(7){animation-delay:0.35s}
+.hp-nav .mobile-menu .nav-link:hover{background:#F0F7E6;color:#69A83F;padding-left:20px}
+.hp-nav .mobile-menu .btn-nav{opacity:0;animation:fadeInUp 0.3s ease 0.4s forwards;margin-top:8px}
 
 /* Hero */
 .hero{background:url("{{ url_for('static', filename='background.jpg') }}") center/cover no-repeat;min-height:100vh;display:flex;align-items:center;padding:120px 0 80px;position:relative;overflow:hidden}
@@ -53,11 +61,15 @@
 .hero h1 span{color:rgba(255,255,255,0.75);font-weight:600}
 .hero p{font-size:1.15rem;color:rgba(255,255,255,0.9);line-height:1.7;max-width:520px;margin-bottom:32px;text-shadow:0 1px 8px rgba(0,0,0,0.25);animation:fadeInUp 0.8s ease 0.2s both}
 .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
-.btn-hero{padding:14px 32px;border-radius:12px;font-weight:600;font-size:1rem;text-decoration:none;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);display:inline-flex;align-items:center;gap:10px;border:none;cursor:pointer;animation:fadeInUp 0.8s ease 0.4s both}
+.btn-hero{padding:14px 32px;border-radius:12px;font-weight:600;font-size:1rem;text-decoration:none;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);display:inline-flex;align-items:center;gap:10px;border:none;cursor:pointer;animation:fadeInUp 0.8s ease 0.4s both;position:relative;overflow:hidden}
+.btn-hero::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:rgba(255,255,255,0.2);border-radius:50%;transform:translate(-50%,-50%);transition:width 0.6s ease,height 0.6s ease}
+.btn-hero:active::after{width:300px;height:300px}
 .btn-hero-primary{background:white;color:#69A83F;box-shadow:0 4px 16px rgba(0,0,0,0.15)}
-.btn-hero-primary:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.2);color:#5A9033}
+.btn-hero-primary:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 12px 32px rgba(0,0,0,0.2);color:#5A9033}
+.btn-hero-primary:active{transform:translateY(-1px) scale(0.98)}
 .btn-hero-outline{background:transparent;color:white;border:2px solid rgba(255,255,255,0.35)}
-.btn-hero-outline:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.5);transform:translateY(-3px)}
+.btn-hero-outline:hover{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.6);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.15)}
+.btn-hero-outline:active{transform:translateY(-1px)}
 .hero-stats{display:flex;gap:32px;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.15)}
 .hero-stat-num{font-size:1.75rem;font-weight:800;color:white;text-shadow:0 2px 8px rgba(0,0,0,0.3)}
 .hero-stat-label{font-size:0.8125rem;color:rgba(255,255,255,0.8);margin-top:2px;text-shadow:0 1px 4px rgba(0,0,0,0.2)}
@@ -147,8 +159,17 @@
 .footer-brand .logo-text{color:white;font-size:1.25rem;font-weight:700;margin-bottom:12px}
 .footer-brand p{font-size:0.9rem;line-height:1.7;color:#9CA3AF}
 .footer-col h6{color:white;font-size:0.875rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px}
-.footer-col a{display:flex;align-items:center;gap:8px;color:#9CA3AF;font-size:0.8125rem;text-decoration:none;padding:4px 0;transition:color .2s;white-space:nowrap}
+.footer-col a{display:flex;align-items:center;gap:8px;color:#9CA3AF;font-size:0.8125rem;text-decoration:none;padding:4px 0;transition:all 0.3s ease;white-space:nowrap}
 .footer-col a:hover{color:#69A83F;transform:translateX(4px)}
+.gallery-section img{transition:all 0.4s cubic-bezier(0.4,0,0.2,1)}
+.gallery-section div:hover img{transform:scale(1.05);filter:brightness(1.05)}
+.gallery-section div{overflow:hidden;border-radius:16px}
+.team-card{transition:all 0.3s cubic-bezier(0.4,0,0.2,1)}
+.team-card:hover{transform:translateY(-8px);box-shadow:0 16px 48px rgba(0,0,0,0.12)}
+.team-card img{transition:transform 0.5s ease}
+.team-card:hover img{transform:scale(1.05)}
+.stats-bar-item{transition:all 0.3s ease;padding:16px;border-radius:12px}
+.stats-bar-item:hover{background:rgba(105,168,63,0.05);transform:translateY(-3px)}
 .footer-bottom div a{transition:all 0.3s ease}
 .footer-bottom div a:hover{transform:translateY(-3px);color:#69A83F!important}
 .footer-bottom{border-top:1px solid #1F2937;padding-top:24px;display:flex;justify-content:space-between;align-items:center;font-size:0.8125rem}
@@ -184,11 +205,14 @@
   .stats-bar{grid-template-columns:1fr 1fr;padding:20px}
   .stats-bar-num{font-size:1.5rem}
 }
-#faqAccordion .accordion-item{border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden}
-#faqAccordion .accordion-button{font-weight:600;color:#69A83F;box-shadow:none;background:transparent;border-radius:12px}
-#faqAccordion .accordion-button:not(.collapsed){background:transparent;color:#4E8C36}
-#faqAccordion .accordion-button::after{filter:invert(40%) sepia(50%) saturate(500%) hue-rotate(85deg)}
-#faqAccordion .accordion-body{color:#6B7280;font-size:0.9375rem;line-height:1.7;padding:16px 24px}
+#faqAccordion .accordion-item{border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden;transition:all 0.3s ease}
+#faqAccordion .accordion-item:hover{border-color:#69A83F;box-shadow:0 4px 16px rgba(105,168,63,0.1)}
+#faqAccordion .accordion-button{font-weight:600;color:#111827;box-shadow:none;background:transparent;transition:all 0.3s ease}
+#faqAccordion .accordion-button:hover{color:#69A83F}
+#faqAccordion .accordion-button:not(.collapsed){background:transparent;color:#69A83F}
+#faqAccordion .accordion-button::after{filter:invert(40%) sepia(50%) saturate(500%) hue-rotate(85deg);transition:transform 0.3s ease}
+#faqAccordion .accordion-button:not(.collapsed)::after{transform:rotate(-180deg)}
+#faqAccordion .accordion-body{color:#6B7280;font-size:0.9375rem;line-height:1.7;padding:16px 24px;animation:fadeInUp 0.3s ease}
 .faq-accordion .accordion-item{border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden}
 .faq-accordion .accordion-button{font-weight:600;color:#111827;box-shadow:none;background:transparent}
 .faq-accordion .accordion-button:not(.collapsed){background:transparent}
@@ -256,6 +280,28 @@
     <div class="stats-bar-item"><div class="stats-bar-num">10+</div><div class="stats-bar-label">Years Experience</div></div>
   </div>
 </div>
+<!-- About Us -->
+<section class="about-section" id="about">
+<div class="container">
+  <div class="row align-items-center g-5">
+    <div class="col-lg-6">
+      <div class="section-badge"><i class="fas fa-heart"></i> About Us</div>
+      <h2 style="font-size:2.25rem;font-weight:800;color:#111827;margin-bottom:20px;letter-spacing:-0.02em;">Trusted Healthcare<br>Since 2014</h2>
+      <p style="font-size:1.0625rem;color:#6B7280;line-height:1.8;margin-bottom:16px;">Founded in 2014 by Dr. Knowledge Tsungu, Venus Medical & Dental Centre has grown from a single dental practice into a multidisciplinary healthcare provider. Today, we offer medical, dental, mental health, diagnostic, preventative, and specialist services under one roof in Mount Pleasant, Harare.</p>
+      <p style="font-size:1.0625rem;color:#6B7280;line-height:1.8;margin-bottom:28px;">Our team of experienced professionals is committed to delivering compassionate, patient-centred care. We combine modern technology with personalised attention to ensure every patient receives the best possible outcome.</p>
+      <div class="d-flex gap-4 flex-wrap">
+        <div class="d-flex align-items-center gap-2"><div style="width:40px;height:40px;border-radius:10px;color:#C62828;display:flex;align-items:center;justify-content:center"><i class="fas fa-award"></i></div><div><div style="font-weight:700;color:#111827">Licensed</div><div style="font-size:0.8125rem;color:#6B7280">Certified Clinic</div></div></div>
+        <div class="d-flex align-items-center gap-2"><div style="width:40px;height:40px;border-radius:10px;color:#C62828;display:flex;align-items:center;justify-content:center"><i class="fas fa-users"></i></div><div><div style="font-weight:700;color:#111827">2,000+</div><div style="font-size:0.8125rem;color:#6B7280">Patients Served</div></div></div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div style="border-radius:24px;overflow:hidden;min-height:380px;position:relative">
+        <img src="{{ url_for('static', filename='images/about.jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover;min-height:380px">
+      </div>
+    </div>
+  </div>
+</div>
+</section>
 
 <!-- Features -->
 <section class="features-section" id="why">
@@ -396,29 +442,6 @@
       <div class="how-step-num">3</div>
       <h5>Confirm & Go</h5>
       <p>Confirm your booking and receive instant confirmation. We'll send you a reminder before your visit.</p>
-    </div>
-  </div>
-</div>
-</section>
-
-<!-- About Us -->
-<section class="about-section" id="about">
-<div class="container">
-  <div class="row align-items-center g-5">
-    <div class="col-lg-6">
-      <div class="section-badge"><i class="fas fa-heart"></i> About Us</div>
-      <h2 style="font-size:2.25rem;font-weight:800;color:#111827;margin-bottom:20px;letter-spacing:-0.02em;">Trusted Healthcare<br>Since 2014</h2>
-      <p style="font-size:1.0625rem;color:#6B7280;line-height:1.8;margin-bottom:16px;">Founded in 2014 by Dr. Knowledge Tsungu, Venus Medical & Dental Centre has grown from a single dental practice into a multidisciplinary healthcare provider. Today, we offer medical, dental, mental health, diagnostic, preventative, and specialist services under one roof in Mount Pleasant, Harare.</p>
-      <p style="font-size:1.0625rem;color:#6B7280;line-height:1.8;margin-bottom:28px;">Our team of experienced professionals is committed to delivering compassionate, patient-centred care. We combine modern technology with personalised attention to ensure every patient receives the best possible outcome.</p>
-      <div class="d-flex gap-4 flex-wrap">
-        <div class="d-flex align-items-center gap-2"><div style="width:40px;height:40px;border-radius:10px;color:#C62828;display:flex;align-items:center;justify-content:center"><i class="fas fa-award"></i></div><div><div style="font-weight:700;color:#111827">Licensed</div><div style="font-size:0.8125rem;color:#6B7280">Certified Clinic</div></div></div>
-        <div class="d-flex align-items-center gap-2"><div style="width:40px;height:40px;border-radius:10px;color:#C62828;display:flex;align-items:center;justify-content:center"><i class="fas fa-users"></i></div><div><div style="font-weight:700;color:#111827">2,000+</div><div style="font-size:0.8125rem;color:#6B7280">Patients Served</div></div></div>
-      </div>
-    </div>
-    <div class="col-lg-6">
-      <div style="border-radius:24px;overflow:hidden;min-height:380px;position:relative">
-        <img src="{{ url_for('static', filename='images/about.jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover;min-height:380px">
-      </div>
     </div>
   </div>
 </div>
@@ -627,11 +650,25 @@
 <script>
 // Hamburger
 document.getElementById('hpHamburger').addEventListener('click',function(){
-  document.getElementById('hpMobileMenu').classList.toggle('show');
+  var menu=document.getElementById('hpMobileMenu');
+  menu.classList.toggle('show');
+  var icon=this.querySelector('i');
+  if(menu.classList.contains('show')){
+    icon.classList.remove('fa-bars');icon.classList.add('fa-times');
+    this.style.transform='rotate(90deg)';
+  }else{
+    icon.classList.remove('fa-times');icon.classList.add('fa-bars');
+    this.style.transform='rotate(0deg)';
+  }
 });
 // Close mobile menu on link click
 document.querySelectorAll('#hpMobileMenu .nav-link').forEach(function(a){
-  a.addEventListener('click',function(){document.getElementById('hpMobileMenu').classList.remove('show')});
+  a.addEventListener('click',function(){
+    document.getElementById('hpMobileMenu').classList.remove('show');
+    var icon=document.getElementById('hpHamburger').querySelector('i');
+    icon.classList.remove('fa-times');icon.classList.add('fa-bars');
+    document.getElementById('hpHamburger').style.transform='rotate(0deg)';
+  });
 });
 // Smooth scroll
 document.querySelectorAll('a[href^="#"]').forEach(function(a){
@@ -642,30 +679,44 @@ document.querySelectorAll('a[href^="#"]').forEach(function(a){
 });
 
 // Nav scroll effect
+var lastScroll=0;
 window.addEventListener('scroll',function(){
   var nav=document.querySelector('.hp-nav');
-  if(window.scrollY>50){nav.classList.add('scrolled')}
+  var scrollY=window.scrollY;
+  if(scrollY>50){nav.classList.add('scrolled')}
   else{nav.classList.remove('scrolled')}
+  if(scrollY>lastScroll&&scrollY>100){nav.style.transform='translateY(-100%)'}
+  else{nav.style.transform='translateY(0)'}
+  lastScroll=scrollY;
 });
 
-// Scroll animations
+// Scroll animations with stagger
 function animateOnScroll(){
   var elements=document.querySelectorAll('.animate-on-scroll');
   elements.forEach(function(el){
     var rect=el.getBoundingClientRect();
-    if(rect.top<window.innerHeight-80){el.classList.add('visible')}
+    if(rect.top<window.innerHeight-60){el.classList.add('visible')}
   });
 }
 window.addEventListener('scroll',animateOnScroll);
 window.addEventListener('load',animateOnScroll);
 
-// Add animate-on-scroll class to sections
+// Add animate-on-scroll class to sections with stagger
 document.addEventListener('DOMContentLoaded',function(){
-  var sections=['.feature-card','.service-home-card','.how-step','.team-card','.gallery-section .row > div','.faq-section .accordion-item','.stats-bar-item'];
-  sections.forEach(function(sel){
-    document.querySelectorAll(sel).forEach(function(el,i){
+  var animGroups=[
+    {sel:'.feature-card',delay:0.1},
+    {sel:'.service-home-card',delay:0.08},
+    {sel:'.how-step',delay:0.15},
+    {sel:'.team-card',delay:0.15},
+    {sel:'.gallery-section .row > div',delay:0.1},
+    {sel:'.faq-section .accordion-item',delay:0.08},
+    {sel:'.stats-bar-item',delay:0.1},
+    {sel:'.contact-section > .container > .row > div',delay:0.2}
+  ];
+  animGroups.forEach(function(group){
+    document.querySelectorAll(group.sel).forEach(function(el,i){
       el.classList.add('animate-on-scroll');
-      el.style.transitionDelay=(i*0.1)+'s';
+      el.style.transitionDelay=(i*group.delay)+'s';
     });
   });
   animateOnScroll();
@@ -685,12 +736,12 @@ function animateCounters(){
         var target=parseInt(match[1]);
         var suffix=text.replace(match[1],'');
         var current=0;
-        var increment=Math.ceil(target/50);
+        var increment=Math.ceil(target/40);
         var timer=setInterval(function(){
           current+=increment;
           if(current>=target){current=target;clearInterval(timer)}
           counter.textContent=current+suffix;
-        },30);
+        },25);
       }
     }
   });
@@ -700,9 +751,73 @@ window.addEventListener('load',animateCounters);
 
 // Image lazy load with fade
 document.querySelectorAll('img').forEach(function(img){
+  img.style.transition='opacity 0.6s ease, transform 0.6s ease';
+  img.style.opacity='0';
   img.addEventListener('load',function(){this.style.opacity='1'});
-  if(img.complete){img.style.opacity='1'}
-  else{img.style.opacity='0';img.style.transition='opacity 0.5s ease'}
+  if(img.complete&&img.naturalHeight!==0){img.style.opacity='1'}
+});
+
+// Ripple effect on buttons
+document.querySelectorAll('.btn-hero, .btn-nav, .team-card a').forEach(function(btn){
+  btn.addEventListener('click',function(e){
+    var ripple=document.createElement('span');
+    ripple.style.cssText='position:absolute;border-radius:50%;background:rgba(255,255,255,0.4);transform:scale(0);animation:ripple 0.6s linear;pointer-events:none';
+    var rect=this.getBoundingClientRect();
+    var size=Math.max(rect.width,rect.height);
+    ripple.style.width=ripple.style.height=size+'px';
+    ripple.style.left=(e.clientX-rect.left-size/2)+'px';
+    ripple.style.top=(e.clientY-rect.top-size/2)+'px';
+    this.style.position='relative';this.style.overflow='hidden';
+    this.appendChild(ripple);
+    setTimeout(function(){ripple.remove()},600);
+  });
+});
+
+// Add ripple keyframe
+var style=document.createElement('style');
+style.textContent='@keyframes ripple{to{transform:scale(4);opacity:0}}';
+document.head.appendChild(style);
+
+// Parallax on hero
+window.addEventListener('scroll',function(){
+  var hero=document.querySelector('.hero');
+  if(hero&&window.innerWidth>768){
+    var scrolled=window.scrollY;
+    hero.style.backgroundPositionY=scrolled*0.5+'px';
+  }
+});
+
+// Tilt effect on feature cards
+document.querySelectorAll('.feature-card, .team-card').forEach(function(card){
+  card.addEventListener('mousemove',function(e){
+    var rect=this.getBoundingClientRect();
+    var x=e.clientX-rect.left;
+    var y=e.clientY-rect.top;
+    var centerX=rect.width/2;
+    var centerY=rect.height/2;
+    var rotateX=(y-centerY)/20;
+    var rotateY=(centerX-x)/20;
+    this.style.transform='perspective(1000px) rotateX('+rotateX+'deg) rotateY('+rotateY+'deg) translateY(-8px)';
+  });
+  card.addEventListener('mouseleave',function(){
+    this.style.transform='perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)';
+  });
+});
+
+// Smooth reveal for sections
+var observer=new IntersectionObserver(function(entries){
+  entries.forEach(function(entry){
+    if(entry.isIntersecting){
+      entry.target.style.opacity='1';
+      entry.target.style.transform='translateY(0)';
+    }
+  });
+},{threshold:0.1});
+document.querySelectorAll('section').forEach(function(sec){
+  sec.style.opacity='0';
+  sec.style.transform='translateY(30px)';
+  sec.style.transition='all 0.8s cubic-bezier(0.4,0,0.2,1)';
+  observer.observe(sec);
 });
 </script>
 {% endblock %}
