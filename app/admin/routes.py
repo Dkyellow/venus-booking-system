@@ -154,45 +154,52 @@ def new_appointment():
         start_dt = datetime.strptime(f"{form.date.data} {form.start_time.data}", '%Y-%m-%d %H:%M')
         end_dt = datetime.strptime(f"{form.date.data} {form.end_time.data}", '%Y-%m-%d %H:%M')
 
-        engine = SchedulingEngine()
-        can_book, message = engine.can_book_appointment(
-            form.service_id.data, practitioner_id, start_dt, end_dt
-        )
+        # Calculate end_time from service duration
+        service = Service.query.get(form.service_id.data)
+        calculated_end = start_dt + timedelta(minutes=service.duration)
+        if end_dt != calculated_end:
+            end_dt = calculated_end
 
-        if not can_book:
-            flash(message, 'danger')
-            return render_template('admin/new_appointment.html', form=form)
+        booking_service = BookingService()
 
-        reference = engine.create_booking_reference()
-        appointment = Appointment(
-            reference=reference,
-            patient_id=form.patient_id.data,
-            practitioner_id=practitioner_id if practitioner_id else None,
+        patient_data = {
+            'first_name': '',
+            'last_name': '',
+            'email': '',
+            'phone': '',
+            'date_of_birth': None,
+            'gender': None,
+        }
+
+        appointment, error = booking_service.create_booking(
             service_id=form.service_id.data,
-            date=form.date.data,
+            practitioner_id=practitioner_id,
             start_time=start_dt,
             end_time=end_dt,
-            status=AppointmentStatus.CONFIRMED,
+            patient_data=patient_data,
             reason=form.reason.data,
             notes=form.notes.data,
-            internal_notes=form.internal_notes.data,
-            created_by=current_user.id
+            created_by=current_user.id,
+            auto_confirm=True  # Admin-created appointments are confirmed immediately
         )
-        db.session.add(appointment)
+
+        if not appointment:
+            flash(error, 'danger')
+            return render_template('admin/new_appointment.html', form=form)
+
+        # Update additional fields
+        patient = Patient.query.get(form.patient_id.data)
+        appointment.patient_id = patient.id
+        appointment.internal_notes = form.internal_notes.data
         db.session.commit()
 
-        history = AppointmentHistory(
-            appointment_id=appointment.id,
-            action='created',
-            new_value=f'Appointment created by {current_user.full_name}',
-            changed_by=current_user.id
-        )
-        db.session.add(history)
-        db.session.commit()
+        try:
+            NotificationService.notify_booking_confirmed(appointment)
+        except Exception as e:
+            import logging
+            logging.error(f"Failed to send confirmation email: {e}")
 
-        NotificationService.notify_booking_confirmed(appointment)
-
-        flash(f'Appointment {reference} created successfully!', 'success')
+        flash(f'Appointment {appointment.reference} created successfully!', 'success')
         return redirect(url_for('admin.appointment_detail', id=appointment.id))
 
     preselected_date = request.args.get('date', '')
@@ -291,22 +298,27 @@ def reschedule_appointment(id):
     old_date = appointment.date
     old_time = appointment.start_time
 
-    appointment.date = datetime.strptime(new_date, '%Y-%m-%d').date()
-    appointment.start_time = datetime.strptime(f"{new_date} {new_start}", '%Y-%m-%d %H:%M')
-    appointment.end_time = datetime.strptime(f"{new_date} {new_end}", '%Y-%m-%d %H:%M')
-    appointment.status = AppointmentStatus.CONFIRMED
+    try:
+        new_start_dt = datetime.strptime(f"{new_date} {new_start}", '%Y-%m-%d %H:%M')
+        new_end_dt = datetime.strptime(f"{new_date} {new_end}", '%Y-%m-%d %H:%M')
+    except ValueError:
+        flash('Invalid date/time format', 'danger')
+        return redirect(url_for('admin.appointment_detail', id=id))
 
-    history = AppointmentHistory(
-        appointment_id=appointment.id,
-        action='rescheduled',
-        old_value=f'{old_date} {old_time}',
-        new_value=f'{new_date} {new_start}',
-        changed_by=current_user.id
+    booking_service = BookingService()
+    success, appointment, error = booking_service.reschedule_booking(
+        appointment.id, new_start_dt, new_end_dt, admin_id=current_user.id, is_admin=True
     )
-    db.session.add(history)
-    db.session.commit()
 
-    NotificationService.notify_booking_rescheduled(appointment, old_date, old_time)
+    if not success:
+        flash(f'Cannot reschedule: {error}', 'danger')
+        return redirect(url_for('admin.appointment_detail', id=id))
+
+    try:
+        NotificationService.notify_booking_rescheduled(appointment, old_date, old_time)
+    except Exception as e:
+        import logging
+        logging.error(f"Failed to send reschedule email: {e}")
 
     flash('Appointment rescheduled and confirmed successfully', 'success')
     return redirect(url_for('admin.appointment_detail', id=id))

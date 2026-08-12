@@ -29,6 +29,13 @@ with app.app_context():
             conn.autocommit = True
             cur = conn.cursor()
             
+            # Enable btree_gist extension for exclusion constraints
+            try:
+                cur.execute("CREATE EXTENSION IF NOT EXISTS btree_gist")
+                print("[MIGRATE] Enabled btree_gist extension")
+            except Exception as e:
+                print(f"[WARN] Could not enable btree_gist: {e}")
+            
             for table, column, coltype in [
                 ("services", "requires_room", "BOOLEAN DEFAULT FALSE"),
                 ("services", "required_room_type", "VARCHAR(50)"),
@@ -36,10 +43,56 @@ with app.app_context():
                 ("services", "max_duration", "INTEGER"),
             ]:
                 try:
-                    cur.execute(f"ALTER TABLE {table} ADD COLUMN {column} {coltype}")
+                    cur.execute(f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {column} {coltype}")
                     print(f"[MIGRATE] Added {table}.{column}")
                 except:
                     pass
+            
+            # Add confirmed_at column
+            try:
+                cur.execute("ALTER TABLE appointments ADD COLUMN IF NOT EXISTS confirmed_at TIMESTAMP WITH TIME ZONE")
+                print("[MIGRATE] Added confirmed_at column")
+            except Exception as e:
+                print(f"[WARN] confirmed_at column error: {e}")
+            
+            # Add exclusion constraints for overlap prevention
+            try:
+                cur.execute("""
+                    ALTER TABLE appointments
+                    ADD CONSTRAINT no_doctor_booking_overlap
+                    EXCLUDE USING GIST (
+                        practitioner_id WITH =,
+                        tstzrange(start_time, end_time, '[)') WITH &&
+                    )
+                    WHERE (coalesce(status::text, '') IN ('Confirmed', 'Checked In', 'In Progress'))
+                """)
+                print("[MIGRATE] Added doctor overlap exclusion constraint")
+            except psycopg2.errors.DuplicateObject:
+                print("[MIGRATE] Doctor overlap constraint already exists, skipping")
+            except Exception as e:
+                print(f"[WARN] Doctor exclusion constraint error: {e}")
+            
+            try:
+                cur.execute("""
+                    ALTER TABLE appointment_rooms
+                    ADD CONSTRAINT no_room_booking_overlap
+                    EXCLUDE USING GIST (
+                        room_id WITH =,
+                        tstzrange(
+                            (SELECT start_time FROM appointments WHERE appointments.id = appointment_rooms.appointment_id),
+                            (SELECT end_time FROM appointments WHERE appointments.id = appointment_rooms.appointment_id),
+                            '[)'
+                        ) WITH &&
+                    )
+                    WHERE (
+                        (SELECT coalesce(status::text, '') FROM appointments WHERE appointments.id = appointment_rooms.appointment_id) IN ('Confirmed', 'Checked In', 'In Progress')
+                    )
+                """)
+                print("[MIGRATE] Added room overlap exclusion constraint")
+            except psycopg2.errors.DuplicateObject:
+                print("[MIGRATE] Room overlap constraint already exists, skipping")
+            except Exception as e:
+                print(f"[WARN] Room exclusion constraint error: {e}")
             
             cur.execute("""CREATE TABLE IF NOT EXISTS staff_leave (
                 id SERIAL PRIMARY KEY,
@@ -89,6 +142,22 @@ with app.app_context():
             for name, desc, rtype, cap, floor, equip in rooms_data:
                 try:
                     cur.execute("INSERT INTO rooms (name, description, room_type, capacity, floor, equipment) VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (name) DO NOTHING", (name, desc, rtype, cap, floor, equip))
+                except:
+                    pass
+            
+            # Add indexes for performance
+            indexes = [
+                "CREATE INDEX IF NOT EXISTS idx_appointments_doctor_start ON appointments(practitioner_id, start_time, end_time)",
+                "CREATE INDEX IF NOT EXISTS idx_appointments_status_date ON appointments(status, date)",
+                "CREATE INDEX IF NOT EXISTS idx_appointments_patient_id ON appointments(patient_id)",
+                "CREATE INDEX IF NOT EXISTS idx_appointment_rooms_appointment_id ON appointment_rooms(appointment_id)",
+                "CREATE INDEX IF NOT EXISTS idx_appointment_rooms_room_id ON appointment_rooms(room_id)",
+            ]
+            for idx_sql in indexes:
+                try:
+                    cur.execute(f"DROP INDEX IF EXISTS {idx_sql.split('CREATE INDEX IF NOT EXISTS')[1].split(' ON')[0].strip()}")
+                    cur.execute(idx_sql.replace("IF NOT EXISTS", ""))
+                    print(f"[MIGRATE] Created index from: {idx_sql[:80]}")
                 except:
                     pass
             

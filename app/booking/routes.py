@@ -8,6 +8,7 @@ from app.models.patient import Patient
 from app.models.appointment import Appointment, AppointmentStatus, AppointmentHistory
 from app.extensions import db
 from app.services.scheduling_engine import SchedulingEngine
+from app.services.booking_service import BookingService
 from app.services.notification_service import NotificationService
 from app.services.google_calendar_service import GoogleCalendarService
 
@@ -68,21 +69,22 @@ def cancel_appointment(reference):
         flash('This appointment cannot be cancelled.', 'danger')
         return redirect(url_for('booking.manage_detail', reference=reference))
     
-    appointment.status = AppointmentStatus.CANCELLED
-    appointment.cancelled_at = datetime.utcnow()
-    appointment.cancellation_reason = request.form.get('reason', 'Cancelled by patient')
-    
-    history = AppointmentHistory(
-        appointment_id=appointment.id,
-        action='cancelled',
-        old_value=appointment.status.value,
-        new_value='Cancelled',
-        notes=request.form.get('reason', ''),
+    booking_service = BookingService()
+    success, error = booking_service.cancel_booking(
+        appointment.id,
+        reason=request.form.get('reason', 'Cancelled by patient') or 'Cancelled by patient',
+        cancelled_by=None
     )
-    db.session.add(history)
-    db.session.commit()
     
-    NotificationService.notify_booking_cancelled(appointment, request.form.get('reason'))
+    if not success:
+        flash(f'Cannot cancel appointment: {error}', 'danger')
+        return redirect(url_for('booking.manage_detail', reference=reference))
+    
+    try:
+        NotificationService.notify_booking_cancelled(appointment, request.form.get('reason'))
+    except Exception as e:
+        import logging
+        logging.error(f"Failed to send cancellation email: {e}")
     
     flash('Your appointment has been cancelled.', 'info')
     return redirect(url_for('main.index'))
@@ -104,22 +106,30 @@ def reschedule_appointment(reference):
         flash('Please provide date, start time, and end time.', 'danger')
         return redirect(url_for('booking.manage_detail', reference=reference))
     
+    try:
+        new_start_dt = datetime.strptime(f"{new_date} {new_start}", '%Y-%m-%d %H:%M')
+        new_end_dt = datetime.strptime(f"{new_date} {new_end}", '%Y-%m-%d %H:%M')
+    except ValueError:
+        flash('Invalid date/time format.', 'danger')
+        return redirect(url_for('booking.manage_detail', reference=reference))
+    
     old_date = appointment.date
     old_time = appointment.start_time
     
-    appointment.date = datetime.strptime(new_date, '%Y-%m-%d').date()
-    appointment.start_time = datetime.strptime(f"{new_date} {new_start}", '%Y-%m-%d %H:%M')
-    appointment.end_time = datetime.strptime(f"{new_date} {new_end}", '%Y-%m-%d %H:%M')
-    appointment.status = AppointmentStatus.RESCHEDULED
-    
-    history = AppointmentHistory(
-        appointment_id=appointment.id,
-        action='reschedule_requested',
-        old_value=f'{old_date.strftime("%Y-%m-%d")} {old_time.strftime("%H:%M")}',
-        new_value=f'{new_date} {new_start}',
+    booking_service = BookingService()
+    success, appointment, error = booking_service.reschedule_booking(
+        appointment.id, new_start_dt, new_end_dt, admin_id=None, is_admin=False
     )
-    db.session.add(history)
-    db.session.commit()
+    
+    if not success:
+        flash(f'Cannot reschedule: {error}', 'danger')
+        return redirect(url_for('booking.manage_detail', reference=reference))
+    
+    try:
+        NotificationService.notify_booking_rescheduled(appointment, old_date, old_time)
+    except Exception as e:
+        import logging
+        logging.error(f"Failed to send reschedule email: {e}")
     
     flash('Reschedule request submitted. You will receive an email once confirmed by our team.', 'info')
     return redirect(url_for('booking.manage_detail', reference=reference))
