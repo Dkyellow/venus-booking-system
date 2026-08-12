@@ -41,6 +41,7 @@ class Appointment(db.Model):
     cancellation_reason = db.Column(db.Text)
     completed_at = db.Column(db.DateTime)
     checked_in_at = db.Column(db.DateTime)
+    confirmed_at = db.Column(db.DateTime)
     
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

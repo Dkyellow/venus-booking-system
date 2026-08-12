@@ -19,6 +19,7 @@ from app.extensions import db
 from app.utils.decorators import admin_required, receptionist_or_admin
 from app.services.scheduling_engine import SchedulingEngine
 from app.services.notification_service import NotificationService
+from app.services.booking_service import BookingService
 from app.services.google_calendar_service import GoogleCalendarService
 
 
@@ -215,32 +216,60 @@ def update_appointment(id):
     if action == 'status':
         new_status = request.form.get('status')
         old_status = appointment.status.value
-        appointment.status = AppointmentStatus(new_status)
 
-        if new_status == 'Completed':
-            appointment.completed_at = datetime.utcnow()
-        elif new_status == 'Cancelled':
-            appointment.cancelled_at = datetime.utcnow()
-            appointment.cancellation_reason = request.form.get('reason', '')
-        elif new_status == 'Checked In':
-            appointment.checked_in_at = datetime.utcnow()
+        if new_status == 'Confirmed':
+            # Use BookingService for safe confirmation with re-availability check
+            booking_service = BookingService()
+            success, error = booking_service.confirm_booking(appointment.id, current_user.id)
+            if not success:
+                flash(f'Cannot confirm appointment: {error}', 'danger')
+                return redirect(url_for('admin.appointment_detail', id=id))
+            # Send confirmation email
+            try:
+                NotificationService.notify_booking_confirmed(appointment)
+            except Exception as e:
+                import logging
+                logging.error(f"Failed to send confirmation email: {e}")
+        else:
+            from app.extensions import db
+            appointment.status = AppointmentStatus(new_status)
 
-        history = AppointmentHistory(
-            appointment_id=appointment.id,
-            action='status_changed',
-            old_value=old_status,
-            new_value=new_status,
-            changed_by=current_user.id
-        )
-        db.session.add(history)
-        db.session.commit()
+            if new_status == 'Completed':
+                appointment.completed_at = datetime.utcnow()
+            elif new_status == 'Cancelled':
+                appointment.cancelled_at = datetime.utcnow()
+                appointment.cancellation_reason = request.form.get('reason', '')
+            elif new_status == 'Checked In':
+                appointment.checked_in_at = datetime.utcnow()
 
-        if new_status == 'Cancelled':
-            NotificationService.notify_booking_cancelled(appointment, appointment.cancellation_reason)
-        elif new_status == 'Confirmed':
-            NotificationService.notify_booking_confirmed(appointment)
+            # Handle cancellation via BookingService
+            if new_status == 'Cancelled':
+                booking_service = BookingService()
+                success, error = booking_service.cancel_booking(
+                    appointment.id,
+                    reason=request.form.get('reason', ''),
+                    cancelled_by=current_user.id
+                )
+                if not success:
+                    flash(f'Cannot cancel appointment: {error}', 'danger')
+                    return redirect(url_for('admin.appointment_detail', id=id))
+                try:
+                    NotificationService.notify_booking_cancelled(appointment, appointment.cancellation_reason)
+                except Exception as e:
+                    import logging
+                    logging.error(f"Failed to send cancellation email: {e}")
+            else:
+                history = AppointmentHistory(
+                    appointment_id=appointment.id,
+                    action='status_changed',
+                    old_value=old_status,
+                    new_value=new_status,
+                    changed_by=current_user.id
+                )
+                db.session.add(history)
+                db.session.commit()
 
-        flash(f'Appointment status updated to {new_status}', 'success')
+            flash(f'Appointment status updated to {new_status}', 'success')
 
     elif action == 'notes':
         appointment.notes = request.form.get('notes', '')

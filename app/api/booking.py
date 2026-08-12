@@ -1,13 +1,18 @@
 from flask import jsonify, request
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from app.api import api_bp
 from app.models.service import Service
 from app.models.staff import Staff
 from app.models.patient import Patient
 from app.models.appointment import Appointment, AppointmentStatus, AppointmentHistory
+from app.models.room import Room
 from app.extensions import db
 from app.services.scheduling_engine import SchedulingEngine
+from app.services.booking_service import BookingService
 from app.services.notification_service import NotificationService
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @api_bp.route('/services')
@@ -88,101 +93,81 @@ def api_available_slots():
 @api_bp.route('/booking/create', methods=['POST'])
 def api_create_booking():
     data = request.get_json()
-    
+
     if not data:
         return jsonify({'success': False, 'message': 'No data provided'}), 400
-    
+
     required_fields = ['service_id', 'date', 'start_time', 'end_time', 'first_name', 'last_name', 'email', 'phone']
     for field in required_fields:
         if not data.get(field):
             return jsonify({'success': False, 'message': f'{field} is required'}), 400
-    
+
     service = Service.query.get(data['service_id'])
     if not service:
         return jsonify({'success': False, 'message': 'Service not found'}), 404
-    
+
     try:
         start_dt = datetime.strptime(f"{data['date']} {data['start_time']}", '%Y-%m-%d %H:%M')
         end_dt = datetime.strptime(f"{data['date']} {data['end_time']}", '%Y-%m-%d %H:%M')
     except ValueError:
         return jsonify({'success': False, 'message': 'Invalid date/time format'}), 400
-    
+
     practitioner_id = data.get('practitioner_id')
     if practitioner_id:
         practitioner_id = int(practitioner_id) if str(practitioner_id).isdigit() else None
-    
-    engine = SchedulingEngine()
-    can_book, message = engine.can_book_appointment(data['service_id'], practitioner_id, start_dt, end_dt)
-    
-    if not can_book:
-        return jsonify({'success': False, 'message': message}), 400
-    
-    patient = Patient.query.filter(
-        (Patient.email == data['email'].lower()) | (Patient.phone == data['phone'])
-    ).first()
-    
-    if not patient:
-        patient = Patient(
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            email=data['email'].lower(),
-            phone=data['phone'],
-            date_of_birth=datetime.strptime(data['date_of_birth'], '%Y-%m-%d').date() if data.get('date_of_birth') else None,
-            gender=data.get('gender')
-        )
-        db.session.add(patient)
-        db.session.flush()
-    
-    reference = engine.create_booking_reference()
-    
-    appointment = Appointment(
-        reference=reference,
-        patient_id=patient.id,
-        practitioner_id=practitioner_id,
+
+    # Calculate end_time from service duration if the provided end_time differs
+    calculated_end = start_dt + timedelta(minutes=service.duration)
+    if end_dt != calculated_end:
+        end_dt = calculated_end
+
+    booking_service = BookingService()
+
+    patient_data = {
+        'first_name': data['first_name'],
+        'last_name': data['last_name'],
+        'email': data['email'],
+        'phone': data['phone'],
+        'date_of_birth': data.get('date_of_birth'),
+        'gender': data.get('gender'),
+    }
+
+    # For online bookings, use PENDING status (requires admin confirmation)
+    appointment, error = booking_service.create_booking(
         service_id=data['service_id'],
-        date=start_dt.date(),
+        practitioner_id=practitioner_id,
         start_time=start_dt,
         end_time=end_dt,
-        status=AppointmentStatus.PENDING,
+        patient_data=patient_data,
         reason=data.get('reason'),
-        notes=data.get('notes')
+        notes=data.get('notes'),
+        created_by=None,
+        auto_confirm=False
     )
-    db.session.add(appointment)
-    db.session.commit()
-    
+
+    if error:
+        return jsonify({'success': False, 'message': error}), 409 if 'available' in error.lower() else 400
+
     room_assigned = None
     if service.requires_room:
-        room = engine.assign_room(
-            appointment.id,
-            start_dt.date(),
-            start_dt,
-            end_dt,
-            service.required_room_type
-        )
-        if room:
-            room_assigned = room.name
-    
-    history = AppointmentHistory(
-        appointment_id=appointment.id,
-        action='created',
-        new_value='Booking created via online portal'
-    )
-    db.session.add(history)
-    db.session.commit()
-    
+        assigned_room = db.session.query(Room).join(
+            AppointmentRoom, AppointmentRoom.room_id == Room.id
+        ).filter(AppointmentRoom.appointment_id == appointment.id).first()
+        if assigned_room:
+            room_assigned = assigned_room.name
+
     email_sent = False
     email_error = None
     try:
         email_sent = NotificationService.notify_booking_received(appointment)
     except Exception as e:
         email_error = str(e)
-        import logging
-        logging.error(f"Email notification failed: {e}")
-    
+        logger.error(f"Email notification failed: {e}")
+
     return jsonify({
         'success': True,
-        'reference': reference,
-        'message': f'Appointment booked successfully! Reference: {reference}',
+        'reference': appointment.reference,
+        'message': f'Appointment booked successfully! Reference: {appointment.reference}',
         'email_sent': email_sent,
         'email_error': email_error,
         'room_assigned': room_assigned
