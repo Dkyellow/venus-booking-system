@@ -13,8 +13,8 @@ class Room(db.Model):
     floor = db.Column(db.String(20))
     equipment = db.Column(db.Text)  # Comma-separated list of equipment
     is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), onupdate=db.func.now())
     
     def __repr__(self):
         return f'<Room {self.name}>'
@@ -26,7 +26,7 @@ class AppointmentRoom(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     appointment_id = db.Column(db.Integer, db.ForeignKey('appointments.id'), nullable=False)
     room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
-    assigned_at = db.Column(db.DateTime, default=datetime.utcnow)
+    assigned_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
     
     appointment = db.relationship('Appointment', backref=db.backref('room_assignments', lazy='dynamic'))
     room = db.relationship('Room', backref=db.backref('assignments', lazy='dynamic'))

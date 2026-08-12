@@ -24,8 +24,9 @@ class Appointment(db.Model):
     service_id = db.Column(db.Integer, db.ForeignKey('services.id'), nullable=False)
     
     date = db.Column(db.Date, nullable=False, index=True)
-    start_time = db.Column(db.DateTime, nullable=False)
-    end_time = db.Column(db.DateTime, nullable=False)
+    # Use timezone-aware timestamps in the DB
+    start_time = db.Column(db.DateTime(timezone=True), nullable=False)
+    end_time = db.Column(db.DateTime(timezone=True), nullable=False)
     
     status = db.Column(db.Enum(AppointmentStatus), default=AppointmentStatus.CONFIRMED, nullable=False)
     reason = db.Column(db.Text)
@@ -37,14 +38,15 @@ class Appointment(db.Model):
     reminder_sent_24h = db.Column(db.Boolean, default=False)
     reminder_sent_2h = db.Column(db.Boolean, default=False)
     
-    cancelled_at = db.Column(db.DateTime)
+    cancelled_at = db.Column(db.DateTime(timezone=True))
     cancellation_reason = db.Column(db.Text)
-    completed_at = db.Column(db.DateTime)
-    checked_in_at = db.Column(db.DateTime)
-    confirmed_at = db.Column(db.DateTime)
-    
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    completed_at = db.Column(db.DateTime(timezone=True))
+    checked_in_at = db.Column(db.DateTime(timezone=True))
+    confirmed_at = db.Column(db.DateTime(timezone=True))
+
+    # Use DB-side timezone-aware defaults where appropriate
+    created_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), onupdate=db.func.now())
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     
     service = db.relationship('Service', backref='appointments')

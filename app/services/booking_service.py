@@ -53,15 +53,13 @@ class BookingService:
             if not service.is_active:
                 return None, "Service is not currently available"
 
+            # Always calculate end_time from service duration on the server
+            end_time = start_time + timedelta(minutes=service.duration)
+
             if start_time >= end_time:
                 return None, "Start time must be before end time"
 
-            # Calculate end_time from service duration if not provided
-            # (but if end_time is provided and valid, use it)
-            if end_time is None:
-                end_time = start_time + timedelta(minutes=service.duration)
-
-            # Validate against past times
+            # Validate against past times (check before min_advance since past is always less than min_advance)
             now = datetime.utcnow()
             if start_time < now:
                 return None, "Cannot book appointments in the past"
@@ -114,58 +112,60 @@ class BookingService:
                 if not room_ok:
                     return None, room_reason
 
-            # Find or create patient
-            patient = Patient.query.filter(
-                (Patient.email == patient_data['email'].lower()) |
-                (Patient.phone == patient_data['phone'])
-            ).first()
+            # Use a transaction block so all DB writes are atomic
+            with db.session.begin():
+                # Find or create patient
+                patient = Patient.query.filter(
+                    (Patient.email == patient_data['email'].lower()) |
+                    (Patient.phone == patient_data['phone'])
+                ).first()
 
-            if not patient:
-                patient = Patient(
-                    first_name=patient_data['first_name'],
-                    last_name=patient_data['last_name'],
-                    email=patient_data['email'].lower(),
-                    phone=patient_data['phone'],
-                    date_of_birth=patient_data.get('date_of_birth'),
-                    gender=patient_data.get('gender')
+                if not patient:
+                    patient = Patient(
+                        first_name=patient_data.get('first_name', ''),
+                        last_name=patient_data.get('last_name', ''),
+                        email=patient_data.get('email', '').lower(),
+                        phone=patient_data.get('phone', ''),
+                        date_of_birth=patient_data.get('date_of_birth'),
+                        gender=patient_data.get('gender')
+                    )
+                    db.session.add(patient)
+                    db.session.flush()
+
+                reference = self.engine.create_booking_reference()
+
+                appointment = Appointment(
+                    reference=reference,
+                    patient_id=patient.id,
+                    practitioner_id=practitioner_id,
+                    service_id=service_id,
+                    date=start_time.date(),
+                    start_time=start_time,
+                    end_time=end_time,
+                    status=AppointmentStatus.CONFIRMED if auto_confirm else AppointmentStatus.PENDING,
+                    reason=reason,
+                    notes=notes,
+                    created_by=created_by
                 )
-                db.session.add(patient)
-                db.session.flush()
+                db.session.add(appointment)
+                db.session.flush()  # Ensure appointment.id is assigned
 
-            reference = self.engine.create_booking_reference()
+                # Assign room within the same transaction
+                if room:
+                    assignment = AppointmentRoom(
+                        appointment_id=appointment.id,
+                        room_id=room.id
+                    )
+                    db.session.add(assignment)
 
-            appointment = Appointment(
-                reference=reference,
-                patient_id=patient.id,
-                practitioner_id=practitioner_id,
-                service_id=service_id,
-                date=start_time.date(),
-                start_time=start_time,
-                end_time=end_time,
-                status=AppointmentStatus.CONFIRMED if auto_confirm else AppointmentStatus.PENDING,
-                reason=reason,
-                notes=notes,
-                created_by=created_by
-            )
-            db.session.add(appointment)
-
-            # Assign room within the same transaction
-            if room:
-                assignment = AppointmentRoom(
+                history = AppointmentHistory(
                     appointment_id=appointment.id,
-                    room_id=room.id
+                    action='created' if not auto_confirm else 'confirmed',
+                    new_value=f"Appointment created{' and confirmed' if auto_confirm else ''}"
                 )
-                db.session.add(assignment)
+                db.session.add(history)
 
-            history = AppointmentHistory(
-                appointment_id=appointment.id,
-                action='created' if not auto_confirm else 'confirmed',
-                new_value=f"Appointment created{' and confirmed' if auto_confirm else ''}"
-            )
-            db.session.add(history)
-
-            db.session.commit()
-
+            # At this point the transaction has been committed
             logger.info(f"Booking created: {reference} (appointment_id={appointment.id})")
             return appointment, None
 

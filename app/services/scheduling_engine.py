@@ -11,7 +11,7 @@ from app.models.room import Room, AppointmentRoom
 
 class SchedulingEngine:
     
-    def __init__(self, timezone='UTC'):
+    def __init__(self, timezone='Africa/Harare'):
         self.timezone = pytz.timezone(timezone)
     
     def is_practitioner_available_on_date(self, practitioner_id: int, target_date: date) -> Tuple[bool, str]:
