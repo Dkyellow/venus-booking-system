@@ -46,18 +46,16 @@ if(hpNav){
   });
 }
 
-// Scroll animations with stagger
+// Scroll animations - reveal cards when they enter viewport
 function homeAnimateOnScroll(){
-  var elements=document.querySelectorAll('.animate-on-scroll');
-  elements.forEach(function(el){
+  document.querySelectorAll('.animate-on-scroll').forEach(function(el){
     var rect=el.getBoundingClientRect();
-    if(rect.top<window.innerHeight-60){el.classList.add('visible')}
+    if(rect.top<window.innerHeight-40){el.classList.add('visible')}
   });
 }
 window.addEventListener('scroll',homeAnimateOnScroll);
-window.addEventListener('load',homeAnimateOnScroll);
 
-// Add animate-on-scroll to cards with stagger
+// Add animate-on-scroll to cards with stagger - ONLY cards, NOT sections
 document.addEventListener('DOMContentLoaded',function(){
   var animGroups=[
     {sel:'.feature-card',delay:0.1},
@@ -76,11 +74,13 @@ document.addEventListener('DOMContentLoaded',function(){
       el.style.transitionDelay=(i*group.delay)+'s';
     });
   });
+  // Run immediately and again after paint to catch above-fold cards
   homeAnimateOnScroll();
-  // Re-run after a tick to catch elements revealed by IntersectionObserver/revealVisible
-  setTimeout(homeAnimateOnScroll, 100);
-  setTimeout(homeAnimateOnScroll, 400);
+  setTimeout(homeAnimateOnScroll,50);
+  setTimeout(homeAnimateOnScroll,300);
 });
+
+window.addEventListener('load',homeAnimateOnScroll);
 
 // Counter animation for stats
 function homeAnimateCounters(){
@@ -165,33 +165,3 @@ document.querySelectorAll('.feature-card, .team-card').forEach(function(card){
     this.style.transform='perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)';
   });
 });
-
-// Smooth reveal for sections
-(function(){
-  var observer=new IntersectionObserver(function(entries){
-    entries.forEach(function(entry){
-      if(entry.isIntersecting){
-        entry.target.style.opacity='1';
-        entry.target.style.transform='translateY(0)';
-      }
-    });
-  },{threshold:0,rootMargin:'0px 0px -30px 0px'});
-  document.querySelectorAll('section').forEach(function(sec){
-    sec.style.opacity='0';
-    sec.style.transform='translateY(30px)';
-    sec.style.transition='all 0.8s cubic-bezier(0.4,0,0.2,1)';
-    observer.observe(sec);
-  });
-  // Immediately show any sections already visible in the viewport on load
-  function revealVisible(){
-    document.querySelectorAll('section').forEach(function(sec){
-      var rect=sec.getBoundingClientRect();
-      if(rect.top<window.innerHeight&&rect.bottom>0){
-        sec.style.opacity='1';
-        sec.style.transform='translateY(0)';
-      }
-    });
-  }
-  revealVisible();
-  window.addEventListener('load',revealVisible);
-})();
