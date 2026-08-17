@@ -46,7 +46,7 @@ if(hpNav){
   });
 }
 
-// Scroll animations - reveal cards when they enter viewport
+// Scroll animations - reveal elements when they enter viewport
 function homeAnimateOnScroll(){
   document.querySelectorAll('.animate-on-scroll').forEach(function(el){
     var rect=el.getBoundingClientRect();
@@ -54,16 +54,13 @@ function homeAnimateOnScroll(){
   });
 }
 window.addEventListener('scroll',homeAnimateOnScroll);
+window.addEventListener('load',homeAnimateOnScroll);
 
-// Add animate-on-scroll to cards with stagger - ONLY cards, NOT sections
+// Add scroll reveal ONLY to non-content decorative elements
+// Service cards and category chips are NOT animated - they are always visible
 document.addEventListener('DOMContentLoaded',function(){
-  // Mark body so CSS can safely hide cards before they animate in
-  document.body.classList.add('js-loaded');
-
   var animGroups=[
     {sel:'.feature-card',delay:0.1},
-    {sel:'.service-home-card',delay:0.08},
-    {sel:'.service-chip',delay:0.08},
     {sel:'.how-step',delay:0.15},
     {sel:'.team-card',delay:0.15},
     {sel:'.gallery-section .row > div',delay:0.1},
@@ -77,13 +74,9 @@ document.addEventListener('DOMContentLoaded',function(){
       el.style.transitionDelay=(i*group.delay)+'s';
     });
   });
-  // Run immediately and again after paint to catch above-fold cards
   homeAnimateOnScroll();
-  setTimeout(homeAnimateOnScroll,50);
-  setTimeout(homeAnimateOnScroll,300);
+  setTimeout(homeAnimateOnScroll,200);
 });
-
-window.addEventListener('load',homeAnimateOnScroll);
 
 // Counter animation for stats
 function homeAnimateCounters(){
@@ -146,9 +139,8 @@ document.querySelectorAll('.btn-hero, .btn-nav, .team-card a').forEach(function(
 // Parallax on hero
 window.addEventListener('scroll',function(){
   var hero=document.querySelector('.hero');
-  if(hero&&window.innerWidth>768&&hero.style.backgroundImage!=='none'&&getComputedStyle(hero).backgroundImage.indexOf('url')>-1){
-    var scrolled=window.scrollY;
-    hero.style.backgroundPositionY=scrolled*0.5+'px';
+  if(hero&&window.innerWidth>768&&getComputedStyle(hero).backgroundImage.indexOf('url')>-1){
+    hero.style.backgroundPositionY=(window.scrollY*0.5)+'px';
   }
 });
 
@@ -156,15 +148,11 @@ window.addEventListener('scroll',function(){
 document.querySelectorAll('.feature-card, .team-card').forEach(function(card){
   card.addEventListener('mousemove',function(e){
     var rect=this.getBoundingClientRect();
-    var x=e.clientX-rect.left;
-    var y=e.clientY-rect.top;
-    var centerX=rect.width/2;
-    var centerY=rect.height/2;
-    var rotateX=(y-centerY)/20;
-    var rotateY=(centerX-x)/20;
+    var rotateX=((e.clientY-rect.top)-rect.height/2)/20;
+    var rotateY=(rect.width/2-(e.clientX-rect.left))/20;
     this.style.transform='perspective(1000px) rotateX('+rotateX+'deg) rotateY('+rotateY+'deg) translateY(-8px)';
   });
   card.addEventListener('mouseleave',function(){
-    this.style.transform='perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)';
+    this.style.transform='';
   });
 });
