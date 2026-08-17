@@ -12,12 +12,11 @@ app.scheduler = scheduler
 with app.app_context():
     db.create_all()
     
-    import psycopg2
-    from urllib.parse import urlparse
-    
     DATABASE_URL = os.getenv('DATABASE_URL')
     if DATABASE_URL:
         try:
+            import psycopg2
+            from urllib.parse import urlparse
             url = urlparse(DATABASE_URL)
             conn = psycopg2.connect(
                 database=url.path[1:],

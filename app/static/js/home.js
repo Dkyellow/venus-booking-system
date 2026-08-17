@@ -77,6 +77,9 @@ document.addEventListener('DOMContentLoaded',function(){
     });
   });
   homeAnimateOnScroll();
+  // Re-run after a tick to catch elements revealed by IntersectionObserver/revealVisible
+  setTimeout(homeAnimateOnScroll, 100);
+  setTimeout(homeAnimateOnScroll, 400);
 });
 
 // Counter animation for stats
@@ -172,11 +175,23 @@ document.querySelectorAll('.feature-card, .team-card').forEach(function(card){
         entry.target.style.transform='translateY(0)';
       }
     });
-  },{threshold:0.1});
+  },{threshold:0,rootMargin:'0px 0px -30px 0px'});
   document.querySelectorAll('section').forEach(function(sec){
     sec.style.opacity='0';
     sec.style.transform='translateY(30px)';
     sec.style.transition='all 0.8s cubic-bezier(0.4,0,0.2,1)';
     observer.observe(sec);
   });
+  // Immediately show any sections already visible in the viewport on load
+  function revealVisible(){
+    document.querySelectorAll('section').forEach(function(sec){
+      var rect=sec.getBoundingClientRect();
+      if(rect.top<window.innerHeight&&rect.bottom>0){
+        sec.style.opacity='1';
+        sec.style.transform='translateY(0)';
+      }
+    });
+  }
+  revealVisible();
+  window.addEventListener('load',revealVisible);
 })();
