@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Our Centre - Venus Medical & Dental Centre{% endblock %}
+{% block extra_css %}<link href="{{ url_for('static', filename='css/home.css') }}" rel="stylesheet">{% endblock %}
+{% block body %}
+{% include "main/_nav.html" %}
+
+<!-- Page Hero -->
+<section class="page-hero">
+<div class="container">
+  <div class="hero-badge"><span class="dot"></span> Our Facility</div>
+  <h1>Our Centre</h1>
+  <p>Take a look at our modern facilities and welcoming environment.</p>
+</div>
+</section>
+
+<!-- Gallery -->
+<section class="gallery-section" style="padding:80px 0">
+<div class="container">
+  <div class="row g-3">
+    <div class="col-md-4"><div style="border-radius:16px;overflow:hidden;height:250px"><img src="{{ url_for('static', filename='images/gallery (1).jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover"></div></div>
+    <div class="col-md-4"><div style="border-radius:16px;overflow:hidden;height:250px"><img src="{{ url_for('static', filename='images/gallery (2).jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover"></div></div>
+    <div class="col-md-4"><div style="border-radius:16px;overflow:hidden;height:250px"><img src="{{ url_for('static', filename='images/gallery (3).jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover"></div></div>
+    <div class="col-md-4"><div style="border-radius:16px;overflow:hidden;height:250px"><img src="{{ url_for('static', filename='images/gallery (4).JPG') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover"></div></div>
+    <div class="col-md-4"><div style="border-radius:16px;overflow:hidden;height:250px"><img src="{{ url_for('static', filename='images/gallery (5).jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover"></div></div>
+    <div class="col-md-4"><div style="border-radius:16px;overflow:hidden;height:250px"><img src="{{ url_for('static', filename='images/gallery(6).jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover"></div></div>
+  </div>
+  <div class="row g-3 mt-1">
+    <div class="col-md-8"><div style="border-radius:16px;overflow:hidden;height:300px"><img src="{{ url_for('static', filename='images/Venus Team.jpeg') }}" alt="Venus Medical & Dental Centre Team" style="width:100%;height:100%;object-fit:cover"></div></div>
+    <div class="col-md-4"><div style="border-radius:16px;overflow:hidden;height:300px"><img src="{{ url_for('static', filename='images/VideoCapture_20250405-072926.jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover"></div></div>
+  </div>
+</div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+<div class="container">
+  <div class="cta-box">
+    <h2>Ready to Take Control<br>of Your Health?</h2>
+    <p>Join thousands of patients who trust Venus Medical & Dental Centre for their healthcare needs.</p>
+    <a href="{{ url_for('booking.book') }}" class="btn-hero btn-hero-primary"><i class="fas fa-calendar-plus"></i> Book Your Appointment</a>
+  </div>
+</div>
+</section>
+
+{% include "main/_footer.html" %}
+{% endblock %}
+{% block extra_js %}<script src="{{ url_for('static', filename='js/home.js') }}"></script>{% endblock %}

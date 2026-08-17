@@ -1,0 +1,27 @@
+<nav class="hp-nav" id="hpNav">
+<div class="container d-flex justify-content-between align-items-center">
+  <a href="{{ url_for('main.index') }}" class="logo">
+    <div class="logo-icon" style="width:auto;height:40px;background:transparent;box-shadow:none"><img src="{{ url_for('static', filename='logo.png') }}" alt="Venus Medical & Dental Centre" style="height:40px;width:auto;"></div>
+    <span class="logo-text">Venus Medical & Dental Centre</span>
+  </a>
+  <button class="hamburger" id="hpHamburger"><i class="fas fa-bars"></i></button>
+  <div class="d-flex align-items-center gap-4 nav-links-desktop">
+    <a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}">Home</a>
+    <a href="{{ url_for('main.about') }}" class="nav-link {% if request.endpoint == 'main.about' %}active{% endif %}">About</a>
+    <a href="{{ url_for('main.services') }}" class="nav-link {% if request.endpoint == 'main.services' %}active{% endif %}">Services</a>
+    <a href="{{ url_for('main.gallery') }}" class="nav-link {% if request.endpoint == 'main.gallery' %}active{% endif %}">Gallery</a>
+    <a href="{{ url_for('main.faq') }}" class="nav-link {% if request.endpoint == 'main.faq' %}active{% endif %}">FAQ</a>
+    <a href="{{ url_for('main.contact') }}" class="nav-link {% if request.endpoint == 'main.contact' %}active{% endif %}">Contact</a>
+    <a href="{{ url_for('booking.book') }}" class="btn-nav">Book Now</a>
+  </div>
+</div>
+<div class="mobile-menu" id="hpMobileMenu">
+  <a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}">Home</a>
+  <a href="{{ url_for('main.about') }}" class="nav-link {% if request.endpoint == 'main.about' %}active{% endif %}">About</a>
+  <a href="{{ url_for('main.services') }}" class="nav-link {% if request.endpoint == 'main.services' %}active{% endif %}">Services</a>
+  <a href="{{ url_for('main.gallery') }}" class="nav-link {% if request.endpoint == 'main.gallery' %}active{% endif %}">Gallery</a>
+  <a href="{{ url_for('main.faq') }}" class="nav-link {% if request.endpoint == 'main.faq' %}active{% endif %}">FAQ</a>
+  <a href="{{ url_for('main.contact') }}" class="nav-link {% if request.endpoint == 'main.contact' %}active{% endif %}">Contact</a>
+  <a href="{{ url_for('booking.book') }}" class="nav-link" style="color:#69A83F;font-weight:600">Book Now</a>
+</div>
+</nav>

@@ -1,0 +1,45 @@
+<footer class="hp-footer">
+<div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo-text" style="display:flex;align-items:center;gap:10px"><img src="{{ url_for('static', filename='logo.png') }}" alt="Venus" style="height:32px;width:auto;"> Venus Medical & Dental Centre</div>
+      <p>Comprehensive medical, dental, mental health, diagnostic, preventative, and specialist healthcare services. Your health is our priority.</p>
+    </div>
+    <div class="footer-col">
+      <h6>Quick Links</h6>
+      <a href="{{ url_for('main.index') }}">Home</a>
+      <a href="{{ url_for('main.about') }}">About Us</a>
+      <a href="{{ url_for('main.services') }}">Services</a>
+      <a href="{{ url_for('main.gallery') }}">Gallery</a>
+      <a href="{{ url_for('main.faq') }}">FAQ</a>
+      <a href="{{ url_for('main.contact') }}">Contact</a>
+      <a href="{{ url_for('booking.book') }}">Book Now</a>
+    </div>
+    <div class="footer-col">
+      <h6>Services</h6>
+      {% for service in services[:5] %}
+      <a href="{{ url_for('main.services') }}">{{ service.name }}</a>
+      {% endfor %}
+    </div>
+    <div class="footer-col">
+      <h6>Contact</h6>
+      <a href="tel:+263777289797"><i class="fas fa-phone me-2"></i>+263 777 289 797</a>
+      <a href="tel:+263774890158"><i class="fas fa-phone me-2"></i>+263 774 890 158</a>
+      <a href="tel:+263242339769"><i class="fas fa-phone me-2"></i>+263 (0242) 339 769</a>
+      <a href="mailto:dental@venushealthcare.co.zw"><i class="fas fa-envelope me-2"></i>dental@venushealthcare.co.zw</a>
+      <a href="mailto:medical@venushealthcare.co.zw"><i class="fas fa-envelope me-2"></i>medical@venushealthcare.co.zw</a>
+      <a><i class="fas fa-map-marker-alt me-2"></i>4 Cuba Ave, Mount Pleasant, Harare</a>
+      <a><i class="fas fa-clock me-2"></i>Mon–Fri: 08:00–17:00 | Sat: 08:00–13:00</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; {{ current_year }} Venus Medical & Dental Centre. All rights reserved.</span>
+    <div class="d-flex gap-3">
+      <a href="https://www.facebook.com/pg/venusmedicalanddentalsurgery/posts/" target="_blank" rel="noopener" style="color:#9CA3AF"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://x.com/venus_surgery" target="_blank" rel="noopener" style="color:#9CA3AF"><i class="fab fa-twitter"></i></a>
+      <a href="https://www.instagram.com/venusmedicalanddentalsurgery/" target="_blank" rel="noopener" style="color:#9CA3AF"><i class="fab fa-instagram"></i></a>
+      <a href="https://www.linkedin.com/company/venus-healthcare-services/home/" target="_blank" rel="noopener" style="color:#9CA3AF"><i class="fab fa-linkedin-in"></i></a>
+    </div>
+  </div>
+</div>
+</footer>

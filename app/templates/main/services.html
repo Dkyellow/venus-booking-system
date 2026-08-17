@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Our Services - Venus Medical & Dental Centre{% endblock %}
+{% block extra_css %}<link href="{{ url_for('static', filename='css/home.css') }}" rel="stylesheet">{% endblock %}
+{% block body %}
+{% include "main/_nav.html" %}
+
+<!-- Page Hero -->
+<section class="page-hero">
+<div class="container">
+  <div class="hero-badge"><span class="dot"></span> Our Services</div>
+  <h1>Comprehensive Healthcare Services</h1>
+  <p>Medical, dental, mental health, diagnostic, preventative, and specialist services all under one roof.</p>
+</div>
+</section>
+
+<!-- Services -->
+<section class="services-section">
+<div class="container">
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3"><div style="border-radius:12px;overflow:hidden;height:140px"><img src="{{ url_for('static', filename='images/service (1).jpg') }}" alt="Medical Services" style="width:100%;height:100%;object-fit:cover"></div></div>
+    <div class="col-6 col-md-3"><div style="border-radius:12px;overflow:hidden;height:140px"><img src="{{ url_for('static', filename='images/service (2).jpg') }}" alt="Dental Services" style="width:100%;height:100%;object-fit:cover"></div></div>
+    <div class="col-6 col-md-3"><div style="border-radius:12px;overflow:hidden;height:140px"><img src="{{ url_for('static', filename='images/service (3).jpg') }}" alt="Mental Health" style="width:100%;height:100%;object-fit:cover"></div></div>
+    <div class="col-6 col-md-3"><div style="border-radius:12px;overflow:hidden;height:140px"><img src="{{ url_for('static', filename='images/service (4).jpg') }}" alt="Diagnostics" style="width:100%;height:100%;object-fit:cover"></div></div>
+  </div>
+  <div class="row g-4">
+    {% for service in services %}
+    <div class="col-md-6 col-lg-4">
+      <div class="service-home-card">
+        <div class="service-home-top">
+          <div class="service-home-icon" style="color:#C62828;width:56px;height:56px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas {{ service.icon or 'fa-stethoscope' }}" style="font-size:1.5rem"></i></div>
+          <div class="service-home-info">
+            <h5>{{ service.name }}</h5>
+            <p>{{ service.description[:120] if service.description else '' }}{% if service.description and service.description|length > 120 %}...{% endif %}</p>
+          </div>
+        </div>
+        <div class="service-home-bottom">
+          <div class="service-home-meta">
+            <span><i class="far fa-clock"></i> {{ service.duration }} min</span>
+          </div>
+          <a href="{{ url_for('booking.book') }}" style="font-size:0.8125rem;color:#69A83F;font-weight:600;text-decoration:none">Book <i class="fas fa-arrow-right ms-1" style="font-size:0.6875rem"></i></a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+</section>
+
+<!-- How It Works -->
+<section class="how-section">
+<div class="container">
+  <div class="section-header">
+    <div class="section-badge"><i class="fas fa-list-ol"></i> How It Works</div>
+    <h2>Book in 3 Simple Steps</h2>
+    <p>Getting the care you need has never been easier.</p>
+  </div>
+  <div class="how-steps">
+    <div class="how-step">
+      <div class="how-step-num">1</div>
+      <h5>Choose a Service</h5>
+      <p>Browse our services and select the one that fits your needs. Each service shows duration and pricing.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-step-num">2</div>
+      <h5>Pick a Time</h5>
+      <p>Select your preferred doctor and pick an available time slot that works for your schedule.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-step-num">3</div>
+      <h5>Confirm & Go</h5>
+      <p>Confirm your booking and receive instant confirmation. We'll send you a reminder before your visit.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+<div class="container">
+  <div class="cta-box">
+    <h2>Ready to Take Control<br>of Your Health?</h2>
+    <p>Join thousands of patients who trust Venus Medical & Dental Centre for their healthcare needs.</p>
+    <a href="{{ url_for('booking.book') }}" class="btn-hero btn-hero-primary"><i class="fas fa-calendar-plus"></i> Book Your Appointment</a>
+  </div>
+</div>
+</section>
+
+{% include "main/_footer.html" %}
+{% endblock %}
+{% block extra_js %}<script src="{{ url_for('static', filename='js/home.js') }}"></script>{% endblock %}

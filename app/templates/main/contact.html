@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Contact Us - Venus Medical & Dental Centre{% endblock %}
+{% block extra_css %}<link href="{{ url_for('static', filename='css/home.css') }}" rel="stylesheet">{% endblock %}
+{% block body %}
+{% include "main/_nav.html" %}
+
+<!-- Page Hero -->
+<section class="page-hero">
+<div class="container">
+  <div class="hero-badge"><span class="dot"></span> Contact Us</div>
+  <h1>Get In Touch</h1>
+  <p>Have questions? We'd love to hear from you. Reach out to us through any of the channels below.</p>
+</div>
+</section>
+
+<!-- Contact -->
+<section class="contact-section">
+<div class="container">
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="contact-card">
+        <h5>Contact Information</h5>
+        <div class="d-flex align-items-start gap-3 mb-4">
+          <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div><div style="font-weight:600;color:#111827;margin-bottom:2px">Address</div><div style="font-size:0.9375rem;color:#6B7280;line-height:1.6">4 Cuba Ave, Mount Pleasant<br>Opposite Billy's Meats (Along the Bond Shops)<br>Harare, Zimbabwe</div></div>
+        </div>
+        <div class="d-flex align-items-start gap-3 mb-4">
+          <div class="contact-icon"><i class="fas fa-phone"></i></div>
+          <div><div style="font-weight:600;color:#111827;margin-bottom:2px">Phone</div><div style="font-size:0.9375rem;color:#6B7280;line-height:1.8"><a href="tel:+263777289797" style="color:#6B7280;text-decoration:none">+263 777 289 797</a><br><a href="tel:+263774890158" style="color:#6B7280;text-decoration:none">+263 774 890 158</a><br><a href="tel:+263242339769" style="color:#6B7280;text-decoration:none">+263 (0242) 339 769</a></div></div>
+        </div>
+        <div class="d-flex align-items-start gap-3 mb-4">
+          <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+          <div><div style="font-weight:600;color:#111827;margin-bottom:2px">Email</div><div style="font-size:0.9375rem;color:#6B7280;line-height:1.8"><a href="mailto:medical@venushealthcare.co.zw" style="color:#6B7280;text-decoration:none">medical@venushealthcare.co.zw</a><br><a href="mailto:dental@venushealthcare.co.zw" style="color:#6B7280;text-decoration:none">dental@venushealthcare.co.zw</a></div></div>
+        </div>
+        <div class="d-flex align-items-start gap-3">
+          <div class="contact-icon"><i class="fas fa-clock"></i></div>
+          <div><div style="font-weight:600;color:#111827;margin-bottom:2px">Opening Hours</div><div style="font-size:0.9375rem;color:#6B7280;line-height:1.6">Monday–Friday: 08:00–17:00<br>Saturday: 08:00–13:00<br>Sunday & Public Holidays: Closed</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-7">
+      <div style="border-radius:20px;overflow:hidden;border:1px solid var(--border-color);height:100%;min-height:420px">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3799.4270604463914!2d31.04670077494399!3d-17.771615283182623!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1931a50b3749319d%3A0xde0d867336bc53ed!2sVenus%20Medical%20%26%20Dental%20Centre!5e0!3m2!1sen!2szw!4v1785918508778!5m2!1sen!2szw" style="width:100%;height:100%;min-height:420px;border:0" loading="lazy" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+{% include "main/_footer.html" %}
+{% endblock %}
+{% block extra_js %}<script src="{{ url_for('static', filename='js/home.js') }}"></script>{% endblock %}

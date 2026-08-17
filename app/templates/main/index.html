@@ -1,265 +1,26 @@
 {% extends "base.html" %}
 {% block title %}Venus Medical & Dental Centre{% endblock %}
+{% block extra_css %}<link href="{{ url_for('static', filename='css/home.css') }}" rel="stylesheet">{% endblock %}
 {% block body %}
-<style>
-/* Animations */
-@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeInLeft{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
-@keyframes fadeInRight{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
-@keyframes scaleIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
-@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-.animate-on-scroll{opacity:0;transform:translateY(30px);transition:all 0.6s cubic-bezier(0.4,0,0.2,1)}
-.animate-on-scroll.visible{opacity:1;transform:translateY(0)}
-.animate-on-scroll.delay-1{transition-delay:0.1s}
-.animate-on-scroll.delay-2{transition-delay:0.2s}
-.animate-on-scroll.delay-3{transition-delay:0.3s}
-.animate-on-scroll.delay-4{transition-delay:0.4s}
-
-/* Nav */
-.hp-nav{position:fixed;width:100%;top:0;z-index:100;padding:16px 0;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);box-shadow:0 1px 8px rgba(0,0,0,0.06);transition:all 0.3s ease}
-.hp-nav.scrolled{padding:10px 0;box-shadow:0 2px 20px rgba(0,0,0,0.1)}
-.hp-nav .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.hp-nav .logo-icon{width:40px;height:40px;background:#69A83F;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;color:white;box-shadow:0 2px 8px rgba(105,168,63,0.3);transition:all 0.3s ease}
-.hp-nav .logo:hover .logo-icon{transform:rotate(-5deg) scale(1.1);box-shadow:0 4px 16px rgba(105,168,63,0.4)}
-.hp-nav .logo-text{font-weight:700;font-size:1.1rem;color:#111827;transition:color 0.3s ease}
-.hp-nav .logo:hover .logo-text{color:#69A83F}
-.hp-nav .nav-link{color:#374151;font-weight:500;font-size:0.9rem;position:relative;transition:color 0.3s ease}
-.hp-nav .nav-link::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:#69A83F;transition:width 0.3s ease}
-.hp-nav .nav-link:hover::after{width:100%}
-.hp-nav .nav-link:hover{color:#69A83F}
-.hp-nav .btn-nav{background:#69A83F;color:white;border:1px solid #69A83F;padding:8px 20px;border-radius:8px;font-weight:600;font-size:0.875rem;text-decoration:none;transition:all 0.3s ease;position:relative;overflow:hidden}
-.hp-nav .btn-nav::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transition:left 0.5s ease}
-.hp-nav .btn-nav:hover::before{left:100%}
-.hp-nav .btn-nav:hover{background:#5A9033;border-color:#5A9033;transform:translateY(-2px);box-shadow:0 4px 12px rgba(105,168,63,0.3)}
-.hp-nav .hamburger{display:none;background:none;border:none;color:#111827;font-size:1.5rem;cursor:pointer;padding:4px;transition:all 0.3s ease}
-.hp-nav .hamburger:hover{color:#69A83F;transform:scale(1.1)}
-.hp-nav .mobile-menu{display:none;position:absolute;top:100%;left:0;right:0;background:white;flex-direction:column;padding:16px 24px;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,0.1);border-radius:0 0 16px 16px}
-.hp-nav .mobile-menu.show{display:flex;animation:slideDown 0.3s cubic-bezier(0.4,0,0.2,1)}
-.hp-nav .mobile-menu .nav-link{color:#374151;padding:12px 16px;border-radius:8px;transition:all 0.3s ease;opacity:0;animation:fadeInUp 0.3s ease forwards}
-.hp-nav .mobile-menu .nav-link:nth-child(1){animation-delay:0.05s}
-.hp-nav .mobile-menu .nav-link:nth-child(2){animation-delay:0.1s}
-.hp-nav .mobile-menu .nav-link:nth-child(3){animation-delay:0.15s}
-.hp-nav .mobile-menu .nav-link:nth-child(4){animation-delay:0.2s}
-.hp-nav .mobile-menu .nav-link:nth-child(5){animation-delay:0.25s}
-.hp-nav .mobile-menu .nav-link:nth-child(6){animation-delay:0.3s}
-.hp-nav .mobile-menu .nav-link:nth-child(7){animation-delay:0.35s}
-.hp-nav .mobile-menu .nav-link:hover{background:#F0F7E6;color:#69A83F;padding-left:20px}
-.hp-nav .mobile-menu .btn-nav{opacity:0;animation:fadeInUp 0.3s ease 0.4s forwards;margin-top:8px}
-
-/* Hero */
-.hero{background:url("{{ url_for('static', filename='background.jpg') }}") center/cover no-repeat;min-height:100vh;display:flex;align-items:center;padding:120px 0 80px;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(105,168,63,0.3),rgba(105,168,63,0.3));z-index:1}
-.hero-content,.hero-grid{position:relative;z-index:2}
-.hero::after{content:'';position:absolute;bottom:-100px;left:-100px;width:400px;height:400px;border-radius:50%;background:rgba(255,255,255,0.06);z-index:1}
-.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);border-radius:100px;padding:6px 16px 6px 8px;font-size:0.8125rem;color:rgba(255,255,255,0.95);margin-bottom:24px;text-shadow:0 1px 4px rgba(0,0,0,0.2)}
-.hero-badge .dot{width:8px;height:8px;border-radius:50%;background:#4ade80;animation:pulse-dot 2s infinite}
-@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
-.hero h1{font-size:3.5rem;font-weight:800;color:white;line-height:1.1;margin-bottom:20px;letter-spacing:-0.02em;text-shadow:0 2px 12px rgba(0,0,0,0.3);animation:fadeInUp 0.8s ease}
-.hero h1 span{color:rgba(255,255,255,0.75);font-weight:600}
-.hero p{font-size:1.15rem;color:rgba(255,255,255,0.9);line-height:1.7;max-width:520px;margin-bottom:32px;text-shadow:0 1px 8px rgba(0,0,0,0.25);animation:fadeInUp 0.8s ease 0.2s both}
-.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
-.btn-hero{padding:14px 32px;border-radius:12px;font-weight:600;font-size:1rem;text-decoration:none;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);display:inline-flex;align-items:center;gap:10px;border:none;cursor:pointer;animation:fadeInUp 0.8s ease 0.4s both;position:relative;overflow:hidden}
-.btn-hero::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:rgba(255,255,255,0.2);border-radius:50%;transform:translate(-50%,-50%);transition:width 0.6s ease,height 0.6s ease}
-.btn-hero:active::after{width:300px;height:300px}
-.btn-hero-primary{background:white;color:#69A83F;box-shadow:0 4px 16px rgba(0,0,0,0.15)}
-.btn-hero-primary:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 12px 32px rgba(0,0,0,0.2);color:#5A9033}
-.btn-hero-primary:active{transform:translateY(-1px) scale(0.98)}
-.btn-hero-outline{background:transparent;color:white;border:2px solid rgba(255,255,255,0.35)}
-.btn-hero-outline:hover{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.6);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.15)}
-.btn-hero-outline:active{transform:translateY(-1px)}
-.hero-stats{display:flex;gap:32px;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.15)}
-.hero-stat-num{font-size:1.75rem;font-weight:800;color:white;text-shadow:0 2px 8px rgba(0,0,0,0.3)}
-.hero-stat-label{font-size:0.8125rem;color:rgba(255,255,255,0.8);margin-top:2px;text-shadow:0 1px 4px rgba(0,0,0,0.2)}
-.hero-visual{position:relative;display:flex;justify-content:center;align-items:center}
-.hero-card{background:white;border-radius:20px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.2);width:100%;max-width:380px;position:relative;z-index:2}
-.hero-card-header{display:flex;align-items:center;gap:14px;margin-bottom:20px}
-.hero-card-avatar{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#69A83F,#4E8C36);display:flex;align-items:center;justify-content:center;color:white;font-size:1.25rem}
-.hero-card-name{font-weight:700;color:#111827;font-size:1rem}
-.hero-card-sub{font-size:0.8125rem;color:#6B7280}
-.hero-card-slot{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#f0f7e6;border-radius:12px;margin-bottom:12px}
-.hero-card-slot i{color:#69A83F;font-size:0.875rem}
-.hero-card-slot span{font-size:0.875rem;color:#374151;font-weight:500}
-.hero-card-btn{width:100%;padding:12px;background:linear-gradient(135deg,#69A83F,#4E8C36);color:white;border:none;border-radius:12px;font-weight:600;font-size:0.9375rem;cursor:pointer;transition:all .2s}
-.hero-card-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(107,142,35,0.4)}
-.hero-float{position:absolute;background:white;border-radius:16px;padding:14px 18px;box-shadow:0 8px 30px rgba(0,0,0,0.12);display:flex;align-items:center;gap:10px;z-index:3}
-.hero-float-1{top:10%;right:-10%;animation:float-y 4s ease-in-out infinite}
-.hero-float-2{bottom:15%;left:-5%;animation:float-y 5s ease-in-out infinite 1s}
-@keyframes float-y{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-.float-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.875rem}
-.float-text{font-size:0.8125rem;font-weight:600;color:#111827}
-.float-sub{font-size:0.6875rem;color:#6B7280}
-
-/* Stats Bar */
-.stats-bar{background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:32px 40px;margin-top:-50px;position:relative;z-index:10;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;box-shadow:0 4px 20px rgba(0,0,0,0.06)}
-.stats-bar-item{text-align:center}
-.stats-bar-num{font-size:2rem;font-weight:800;color:#69A83F}
-.stats-bar-label{font-size:0.8125rem;color:#6B7280;margin-top:4px}
-
-/* Section Shared */
-.section-header{text-align:center;max-width:600px;margin:0 auto 48px}
-.section-badge{display:inline-flex;align-items:center;gap:6px;background:transparent;color:#69A83F;padding:6px 16px;border-radius:100px;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px}
-.section-header h2{font-size:2.25rem;font-weight:800;color:#111827;margin-bottom:12px;letter-spacing:-0.02em}
-.section-header p{font-size:1.0625rem;color:#6B7280;line-height:1.7}
-.about-section{padding:90px 0 80px}
-
-/* Features */
-.features-section{padding:100px 0;background:var(--bg-secondary)}
-.feature-card{background:var(--bg-card);border-radius:20px;padding:36px 28px;border:1px solid var(--border-color);transition:all 0.3s cubic-bezier(0.4,0,0.2,1);height:100%;position:relative;overflow:hidden;cursor:default}
-.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#69A83F,#4E8C36);opacity:0;transition:opacity 0.3s ease}
-.feature-card:hover{transform:translateY(-8px);box-shadow:0 16px 48px rgba(0,0,0,0.1)}
-.feature-card:hover::before{opacity:1}
-.feature-icon-lg{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:20px;transition:transform 0.3s ease}
-.feature-card:hover .feature-icon-lg{transform:scale(1.15) rotate(-5deg)}
-.feature-card h5{font-size:1.125rem;font-weight:700;margin-bottom:10px;color:#111827}
-.feature-card p{font-size:0.9375rem;color:#6B7280;line-height:1.65;margin:0}
-
-/* Services */
-.services-section{padding:100px 0}
-.service-home-card{background:var(--bg-card);border-radius:20px;border:1px solid var(--border-color);overflow:hidden;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);height:100%;display:flex;flex-direction:column;cursor:default}
-.service-home-card:hover{transform:translateY(-8px);box-shadow:0 16px 48px rgba(0,0,0,0.1)}
-.service-home-icon{transition:transform 0.3s ease}
-.service-home-card:hover .service-home-icon{transform:scale(1.1) rotate(-5deg)}
-.service-home-top{padding:28px 28px 0;display:flex;align-items:flex-start;gap:16px}
-.service-home-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0}
-.service-home-info h5{font-size:1.0625rem;font-weight:700;color:#111827;margin-bottom:4px}
-.service-home-info p{font-size:0.8125rem;color:#6B7280;line-height:1.6;margin:0}
-.service-home-bottom{padding:16px 28px 24px;margin-top:auto;display:flex;align-items:center;justify-content:space-between}
-.service-home-meta{display:flex;gap:16px;font-size:0.8125rem;color:#6B7280}
-.service-home-meta span{display:flex;align-items:center;gap:5px}
-.service-home-price{font-size:1.125rem;font-weight:700;color:#69A83F}
-
-/* How It Works */
-.how-section{padding:100px 0;background:var(--bg-secondary)}
-.how-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;position:relative}
-.how-steps::before{content:'';position:absolute;top:40px;left:calc(16.67% + 20px);right:calc(16.67% + 20px);height:2px;background:linear-gradient(90deg,#69A83F,#4E8C36)}
-.how-step{text-align:center;position:relative}
-.how-step-num{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#69A83F,#4E8C36);color:white;display:flex;align-items:center;justify-content:center;font-size:1.75rem;font-weight:800;margin:0 auto 24px;position:relative;z-index:2;box-shadow:0 4px 16px rgba(107,142,35,0.3);transition:all 0.3s ease}
-.how-step:hover .how-step-num{transform:scale(1.1);box-shadow:0 8px 24px rgba(107,142,35,0.4)}
-.how-step{transition:all 0.3s ease}
-.how-step:hover{transform:translateY(-5px)}
-.how-step h5{font-size:1.125rem;font-weight:700;color:#111827;margin-bottom:8px}
-.how-step p{font-size:0.9375rem;color:#6B7280;line-height:1.6}
-
-/* CTA */
-.cta-section{padding:100px 0}
-.cta-box{background:linear-gradient(135deg,#69A83F 0%,#4E8C36 50%,#3D7528 100%);border-radius:24px;padding:64px;text-align:center;position:relative;overflow:hidden;transition:all 0.3s ease}
-.cta-box:hover{transform:scale(1.02)}
-.cta-box::before{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,0.05);animation:float 6s ease-in-out infinite}
-.cta-box::after{content:'';position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.04);animation:float 8s ease-in-out infinite reverse}
-.cta-box h2{font-size:2.5rem;font-weight:800;color:white;margin-bottom:16px;position:relative;z-index:2}
-.cta-box p{font-size:1.125rem;color:rgba(255,255,255,0.85);margin-bottom:32px;max-width:500px;margin-left:auto;margin-right:auto;position:relative;z-index:2}
-.cta-box .btn-hero-primary{position:relative;z-index:2;background:#69A83F;color:white}
-.cta-box .btn-hero-primary:hover{background:#5A9033}
-
-/* Footer */
-.hp-footer{background:#111827;color:#9CA3AF;padding:60px 0 30px}
-.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
-.footer-brand .logo-text{color:white;font-size:1.25rem;font-weight:700;margin-bottom:12px}
-.footer-brand p{font-size:0.9rem;line-height:1.7;color:#9CA3AF}
-.footer-col h6{color:white;font-size:0.875rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px}
-.footer-col a{display:flex;align-items:center;gap:8px;color:#9CA3AF;font-size:0.8125rem;text-decoration:none;padding:4px 0;transition:all 0.3s ease;white-space:nowrap}
-.footer-col a:hover{color:#69A83F;transform:translateX(4px)}
-.gallery-section img{transition:all 0.4s cubic-bezier(0.4,0,0.2,1)}
-.gallery-section div:hover img{transform:scale(1.05);filter:brightness(1.05)}
-.gallery-section div{overflow:hidden;border-radius:16px}
-.team-card{transition:all 0.3s cubic-bezier(0.4,0,0.2,1)}
-.team-card:hover{transform:translateY(-8px);box-shadow:0 16px 48px rgba(0,0,0,0.12)}
-.team-card img{transition:transform 0.5s ease}
-.team-card:hover img{transform:scale(1.05)}
-.stats-bar-item{transition:all 0.3s ease;padding:16px;border-radius:12px}
-.stats-bar-item:hover{background:rgba(105,168,63,0.05);transform:translateY(-3px)}
-.footer-bottom div a{transition:all 0.3s ease}
-.footer-bottom div a:hover{transform:translateY(-3px);color:#69A83F!important}
-.footer-bottom{border-top:1px solid #1F2937;padding-top:24px;display:flex;justify-content:space-between;align-items:center;font-size:0.8125rem}
-
-@media(max-width:992px){
-  .hero-grid{grid-template-columns:1fr;text-align:center}
-  .hero p{margin-left:auto;margin-right:auto}
-  .hero-actions{justify-content:center}
-  .hero-stats{justify-content:center}
-  .hero-visual{margin-top:40px}
-  .hero-float{display:none}
-  .stats-bar{grid-template-columns:repeat(2,1fr)}
-  .how-steps::before{display:none}
-  .footer-grid{grid-template-columns:1fr 1fr}
-}
-@media(max-width:768px){
-  .hp-nav .nav-links-desktop{display:none!important}
-  .hp-nav .hamburger{display:flex!important;align-items:center;justify-content:center;width:40px;height:40px}
-  .hero{padding:100px 0 60px;min-height:auto}
-  .hero h1{font-size:2rem}
-  .hero p{font-size:1rem}
-  .section-header h2{font-size:1.75rem}
-  .cta-box{padding:40px 24px}
-  .cta-box h2{font-size:1.75rem}
-  .how-steps{grid-template-columns:1fr;gap:40px}
-  .footer-grid{grid-template-columns:1fr}
-  .footer-bottom{flex-direction:column;gap:12px;text-align:center}
-}
-@media(max-width:576px){
-  .hero h1{font-size:1.75rem}
-  .hero-actions{flex-direction:column;align-items:stretch}
-  .hero-stats{flex-direction:column;gap:16px;align-items:center}
-  .stats-bar{grid-template-columns:1fr 1fr;padding:20px}
-  .stats-bar-num{font-size:1.5rem}
-}
-#faqAccordion .accordion-item{border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden;transition:all 0.3s ease}
-#faqAccordion .accordion-item:hover{border-color:#69A83F;box-shadow:0 4px 16px rgba(105,168,63,0.1)}
-#faqAccordion .accordion-button{font-weight:600;color:#111827;box-shadow:none;background:transparent;transition:all 0.3s ease}
-#faqAccordion .accordion-button:hover{color:#69A83F}
-#faqAccordion .accordion-button:not(.collapsed){background:transparent;color:#69A83F}
-#faqAccordion .accordion-button::after{filter:invert(40%) sepia(50%) saturate(500%) hue-rotate(85deg);transition:transform 0.3s ease}
-#faqAccordion .accordion-button:not(.collapsed)::after{transform:rotate(-180deg)}
-#faqAccordion .accordion-body{color:#6B7280;font-size:0.9375rem;line-height:1.7;padding:16px 24px;animation:fadeInUp 0.3s ease}
-.faq-accordion .accordion-item{border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden}
-.faq-accordion .accordion-button{font-weight:600;color:#111827;box-shadow:none;background:transparent}
-.faq-accordion .accordion-button:not(.collapsed){background:transparent}
-.faq-accordion .accordion-body{color:#6B7280;font-size:0.9375rem;line-height:1.7;padding:16px 24px}
-</style>
-
-<!-- Nav -->
-<nav class="hp-nav" id="hpNav">
-<div class="container d-flex justify-content-between align-items-center">
-  <a href="/" class="logo">
-    <div class="logo-icon" style="width:auto;height:40px;background:transparent;box-shadow:none"><img src="{{ url_for('static', filename='logo.png') }}" alt="Venus Medical & Dental Centre" style="height:40px;width:auto;"></div>
-    <span class="logo-text">Venus Medical & Dental Centre</span>
-  </a>
-  <button class="hamburger" id="hpHamburger"><i class="fas fa-bars"></i></button>
-  <div class="d-flex align-items-center gap-4 nav-links-desktop">
-    <a href="#about" class="nav-link">About</a>
-    <a href="#services" class="nav-link">Services</a>
-    <a href="#team" class="nav-link">Team</a>
-    <a href="#faq" class="nav-link">FAQ</a>
-    <a href="#contact" class="nav-link">Contact</a>
-    <a href="{{ url_for('booking.book') }}" class="btn-nav">Book Now</a>
-  </div>
-</div>
-<div class="mobile-menu" id="hpMobileMenu">
-  <a href="#about" class="nav-link">About</a>
-  <a href="#services" class="nav-link">Services</a>
-  <a href="#team" class="nav-link">Team</a>
-  <a href="#faq" class="nav-link">FAQ</a>
-  <a href="#contact" class="nav-link">Contact</a>
-  <a href="{{ url_for('booking.book') }}" class="nav-link" style="color:#69A83F;font-weight:600">Book Now</a>
- 
-</div>
-</nav>
+{% include "main/_nav.html" %}
 
 <!-- Hero -->
 <section class="hero">
 <div class="container">
   <div class="hero-grid">
     <div>
+      <div class="hero-badge"><span class="dot"></span> Open 24/7 Online Booking</div>
       <h1>Comprehensive Healthcare<br><span>For The Whole Family</span></h1>
-      <p>Venus Medical & Dental Centre provides medical, dental, mental health, diagnostic, preventative, and specialist healthcare services. Book your appointment online  fast, easy, and available 24/7.</p>
+      <p>Venus Medical & Dental Centre provides medical, dental, mental health, diagnostic, preventative, and specialist healthcare services. Book your appointment online — fast, easy, and available 24/7.</p>
       <div class="hero-actions">
         <a href="{{ url_for('booking.book') }}" class="btn-hero btn-hero-primary"><i class="fas fa-calendar-plus"></i> Book Appointment</a>
-        <a href="#services" class="btn-hero btn-hero-outline"><i class="fas fa-play-circle"></i> Our Services</a>
+        <a href="{{ url_for('main.services') }}" class="btn-hero btn-hero-outline"><i class="fas fa-stethoscope"></i> Our Services</a>
       </div>
-      
+      <div class="hero-stats">
+        <div><div class="hero-stat-num">2014</div><div class="hero-stat-label">Serving Families Since</div></div>
+        <div><div class="hero-stat-num">6+</div><div class="hero-stat-label">Care Specialties</div></div>
+        <div><div class="hero-stat-num">3</div><div class="hero-stat-label">Simple Steps to Book</div></div>
+      </div>
     </div>
     <div class="hero-visual">
       <img src="{{ url_for('static', filename='images/hero.jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover;border-radius:24px;min-height:400px">
@@ -268,91 +29,47 @@
 </div>
 </section>
 
-
-<!-- About Us -->
-<section class="about-section" id="about">
-<div class="container">
-  <div class="row align-items-center g-5">
-    <div class="col-lg-6">
-      <div class="section-badge"><i class="fas fa-heart"></i> About Us</div>
-      <h2 style="font-size:2.25rem;font-weight:800;color:#111827;margin-bottom:20px;letter-spacing:-0.02em;">Trusted Healthcare<br>Since 2014</h2>
-      <p style="font-size:1.0625rem;color:#6B7280;line-height:1.8;margin-bottom:16px;">Founded in 2014 by Dr. Knowledge Tsungu, Venus Medical & Dental Centre has grown from a single dental practice into a multidisciplinary healthcare provider. Today, we offer medical, dental, mental health, diagnostic, preventative, and specialist services under one roof in Mount Pleasant, Harare.</p>
-      <p style="font-size:1.0625rem;color:#6B7280;line-height:1.8;margin-bottom:28px;">Our team of experienced professionals is committed to delivering compassionate, patient-centred care. We combine modern technology with personalised attention to ensure every patient receives the best possible outcome.</p>
-     
-    </div>
-    <div class="col-lg-6">
-      <div style="border-radius:24px;overflow:hidden;min-height:380px;position:relative">
-        <img src="{{ url_for('static', filename='images/about.jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover;min-height:380px">
-      </div>
-    </div>
-  </div>
-</div>
-</section>
-
-
-<!-- Services -->
+<!-- Services Highlight -->
 <section class="services-section" id="services">
 <div class="container">
   <div class="section-header">
-    <div class="section-badge"><i class="fas fa-stethoscope"></i> Our Services</div>
-    <h2>Comprehensive Healthcare Services</h2>
-    <p>Medical, dental, mental health, diagnostic, preventative, and specialist services all under one roof.</p>
-  </div>
-  <div class="row g-3 mb-4">
-    <div class="col-6 col-md-3"><div style="border-radius:12px;overflow:hidden;height:140px"><img src="{{ url_for('static', filename='images/service (1).jpg') }}" alt="Medical Services" style="width:100%;height:100%;object-fit:cover"></div></div>
-    <div class="col-6 col-md-3"><div style="border-radius:12px;overflow:hidden;height:140px"><img src="{{ url_for('static', filename='images/service (2).jpg') }}" alt="Dental Services" style="width:100%;height:100%;object-fit:cover"></div></div>
-    <div class="col-6 col-md-3"><div style="border-radius:12px;overflow:hidden;height:140px"><img src="{{ url_for('static', filename='images/service (3).jpg') }}" alt="Mental Health" style="width:100%;height:100%;object-fit:cover"></div></div>
-    <div class="col-6 col-md-3"><div style="border-radius:12px;overflow:hidden;height:140px"><img src="{{ url_for('static', filename='images/service (4).jpg') }}" alt="Diagnostics" style="width:100%;height:100%;object-fit:cover"></div></div>
+    <div class="section-badge"><i class="fas fa-stethoscope"></i> What We Offer</div>
+    <h2>Care For Every Family Member</h2>
+    <p>Explore our range of services delivered by experienced professionals under one roof.</p>
   </div>
   <div class="row g-4">
-    {% for service in services %}
+    {% for category in categories %}
     <div class="col-md-6 col-lg-4">
-      <div class="service-home-card">
-        <div class="service-home-top">
-          <div class="service-home-icon" style="color:#C62828;width:56px;height:56px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas {{ service.icon or 'fa-stethoscope' }}" style="font-size:1.5rem"></i></div>
-          <div class="service-home-info">
-            <h5>{{ service.name }}</h5>
-            <p>{{ service.description[:120] if service.description else '' }}{% if service.description and service.description|length > 120 %}...{% endif %}</p>
-          </div>
+      <a href="{{ url_for('main.services') }}" class="service-chip">
+        <div class="service-chip-icon" style="background:linear-gradient(135deg, {{ category.color or '#69A83F' }}22, {{ category.color or '#69A83F' }}11)"><i class="fas {{ category.icon or 'fa-medical' }}"></i></div>
+        <div>
+          <h6>{{ category.name }}</h6>
+          <p>{{ (category.description or '')[0:90] }}{% if category.description and category.description|length > 90 %}...{% endif %}</p>
         </div>
-        <div class="service-home-bottom">
-          <div class="service-home-meta">
-            <span><i class="far fa-clock"></i> {{ service.duration }} min</span>
-          </div>
-          <a href="{{ url_for('booking.book') }}" style="font-size:0.8125rem;color:#69A83F;font-weight:600;text-decoration:none">Book <i class="fas fa-arrow-right ms-1" style="font-size:0.6875rem"></i></a>
+      </a>
+    </div>
+    {% else %}
+    {% for service in services[:6] %}
+    <div class="col-md-6 col-lg-4">
+      <a href="{{ url_for('main.services') }}" class="service-chip">
+        <div class="service-chip-icon" style="background:linear-gradient(135deg, {{ service.color or '#69A83F' }}22, {{ service.color or '#69A83F' }}11)"><i class="fas {{ service.icon or 'fa-medical' }}"></i></div>
+        <div>
+          <h6>{{ service.name }}</h6>
+          <p>{{ (service.description or '')[0:90] }}{% if service.description and service.description|length > 90 %}...{% endif %}</p>
         </div>
-      </div>
+      </a>
     </div>
     {% endfor %}
+    {% endfor %}
   </div>
-</div>
-</section>
-
-<!-- Gallery -->
-<section class="gallery-section" style="padding:80px 0;background:var(--bg-secondary)">
-<div class="container">
-  <div class="section-header">
-    <div class="section-badge"><i class="fas fa-images"></i> Our Facility</div>
-    <h2>Our Centre</h2>
-    <p>Take a look at our modern facilities and welcoming environment.</p>
-  </div>
-  <div class="row g-3">
-    <div class="col-md-4"><div style="border-radius:16px;overflow:hidden;height:250px"><img src="{{ url_for('static', filename='images/gallery (1).jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover"></div></div>
-    <div class="col-md-4"><div style="border-radius:16px;overflow:hidden;height:250px"><img src="{{ url_for('static', filename='images/gallery (2).jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover"></div></div>
-    <div class="col-md-4"><div style="border-radius:16px;overflow:hidden;height:250px"><img src="{{ url_for('static', filename='images/gallery (3).jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover"></div></div>
-    <div class="col-md-4"><div style="border-radius:16px;overflow:hidden;height:250px"><img src="{{ url_for('static', filename='images/gallery (4).JPG') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover"></div></div>
-    <div class="col-md-4"><div style="border-radius:16px;overflow:hidden;height:250px"><img src="{{ url_for('static', filename='images/gallery (5).jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover"></div></div>
-    <div class="col-md-4"><div style="border-radius:16px;overflow:hidden;height:250px"><img src="{{ url_for('static', filename='images/gallery(6).jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover"></div></div>
-  </div>
-  <div class="row g-3 mt-1">
-    <div class="col-md-8"><div style="border-radius:16px;overflow:hidden;height:300px"><img src="{{ url_for('static', filename='images/Venus Team.jpeg') }}" alt="Venus Medical & Dental Centre Team" style="width:100%;height:100%;object-fit:cover"></div></div>
-    <div class="col-md-4"><div style="border-radius:16px;overflow:hidden;height:300px"><img src="{{ url_for('static', filename='images/VideoCapture_20250405-072926.jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover"></div></div>
+  <div class="text-center mt-4">
+    <a href="{{ url_for('main.services') }}" class="btn-hero btn-hero-outline" style="color:#69A83F;border-color:#69A83F;background:transparent"><i class="fas fa-arrow-right"></i> View All Services</a>
   </div>
 </div>
 </section>
 
 <!-- How It Works -->
-<section class="how-section" id="how">
+<section class="how-section">
 <div class="container">
   <div class="section-header">
     <div class="section-badge"><i class="fas fa-list-ol"></i> How It Works</div>
@@ -379,149 +96,6 @@
 </div>
 </section>
 
-<!-- Our Team -->
-<section class="team-section" id="team" style="padding:100px 0;background:var(--bg-secondary)">
-<div class="container">
-  <div class="section-header">
-    <div class="section-badge"><i class="fas fa-user-md"></i> Our Team</div>
-    <h2>Meet Our Experts</h2>
-    <p>Our team of experienced healthcare professionals is dedicated to providing you with the best care.</p>
-  </div>
-  <div class="row g-4 justify-content-center">
-    <div class="col-md-6 col-lg-4">
-      <div class="team-card" style="background:var(--bg-card);border-radius:20px;border:1px solid var(--border-color);overflow:hidden;transition:all .3s;height:100%">
-        <div style="height:280px;overflow:hidden">
-          <img src="{{ url_for('static', filename='images/director image Tsungu.jpg') }}" alt="Dr. Knowledge Tsungu" style="width:100%;height:100%;object-fit:cover">
-        </div>
-        <div style="padding:20px;text-align:center">
-          <h5 style="font-weight:700;color:#111827;margin-bottom:4px">Dr. Knowledge Tsungu</h5>
-          <p style="font-size:0.8125rem;color:#69A83F;font-weight:600;margin-bottom:4px">Founder & Managing Director</p>
-          <p style="font-size:0.8125rem;color:#6B7280;margin-bottom:12px">Dentist</p>
-          <a href="{{ url_for('booking.book') }}" style="display:inline-block;padding:8px 20px;background:#EDF5E6;color:#69A83F;border-radius:8px;font-size:0.8125rem;font-weight:600;text-decoration:none;transition:all .2s">Book Now</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6 col-lg-4">
-      <div class="team-card" style="background:var(--bg-card);border-radius:20px;border:1px solid var(--border-color);overflow:hidden;transition:all .3s;height:100%">
-        <div style="height:280px;overflow:hidden">
-          <img src="{{ url_for('static', filename='images/Mwamuka Director.jpg') }}" alt="Dr. Rukudzo Mwamuka" style="width:100%;height:100%;object-fit:cover">
-        </div>
-        <div style="padding:20px;text-align:center">
-          <h5 style="font-weight:700;color:#111827;margin-bottom:4px">Dr. Rukudzo Mwamuka</h5>
-          <p style="font-size:0.8125rem;color:#69A83F;font-weight:600;margin-bottom:4px">Director</p>
-          <p style="font-size:0.8125rem;color:#6B7280;margin-bottom:12px">Specialist Psychiatrist</p>
-          <a href="{{ url_for('booking.book') }}" style="display:inline-block;padding:8px 20px;background:#EDF5E6;color:#69A83F;border-radius:8px;font-size:0.8125rem;font-weight:600;text-decoration:none;transition:all .2s">Book Now</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-</section>
-
-<!-- FAQ -->
-<section class="faq-section" id="faq" style="padding:100px 0">
-<div class="container">
-  <div class="section-header">
-    <div class="section-badge"><i class="fas fa-question-circle"></i> FAQ</div>
-    <h2>Frequently Asked Questions</h2>
-    <p>Find answers to common questions about our services and booking process.</p>
-  </div>
-  <div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="accordion" id="faqAccordion">
-        <div class="accordion-item">
-          <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">Do I need an appointment or can I just walk in?</button></h2>
-          <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion"><div class="accordion-body">Yes! You do require an appointment.</div></div>
-        </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">How do I schedule an appointment?</button></h2>
-          <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">You can book online through our website, call, or send us a message on our WhatsApp numbers:<br>+263 719 341 917 – For medical appointments<br>+263 777 289 797 – For Dental Appointments<br>+263 242 339 280 – Our Landline Number</div></div>
-        </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">Can I make same day appointments?</button></h2>
-          <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Yes. We keep appointments open each day for same day emergency appointments however these can get filled. Therefore, for your convenience, please phone ahead and book appointments in advance.</div></div>
-        </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">What should I bring?</button></h2>
-          <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Your ID, Medical Aid card, previous medical records and referral letter where applicable.</div></div>
-        </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">Do you accept my Medical Aid?</button></h2>
-          <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Yes! But conditions do apply on certain medical aids; please call or message us for more details.</div></div>
-        </div>
-        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6" style="font-weight:600;color:#111827;box-shadow:none">What time do you close?</button></h2>
-          <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">During week days, we are open from 08:00 until 16:30. On Saturdays, we close at 13:00. We are closed on Sundays and all public holidays.</div></div>
-        </div>
-        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7" style="font-weight:600;color:#111827;box-shadow:none">Where are you located?</button></h2>
-          <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">We are at Number 4 Cuba Avenue, Mt Pleasant in Harare, Zimbabwe. Please visit our <a href="#contact" style="color:#69A83F">Contact Us section</a> for the map and contact details.</div></div>
-        </div>
-        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq8" style="font-weight:600;color:#111827;box-shadow:none">Do you offer online mental health services?</button></h2>
-          <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">Yes, we offer telephone consultations for medical and mental health services. Call or send a message on <a href="tel:+263777289797" style="color:#69A83F">+263 777 289 797</a>, to get more information on how to make a booking.</div></div>
-        </div>
-        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq9" style="font-weight:600;color:#111827;box-shadow:none">At what age can a child have their first dental visit?</button></h2>
-          <div id="faq9" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">When your child has their first tooth, it's time to visit the dentist.</div></div>
-        </div>
-        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq10" style="font-weight:600;color:#111827;box-shadow:none">How often should I get a dental checkup?</button></h2>
-          <div id="faq10" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">Every 6 months.</div></div>
-        </div>
-        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq11" style="font-weight:600;color:#111827;box-shadow:none">Do you provide vaccinations?</button></h2>
-          <div id="faq11" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">Yes! We provide a variety of travel vaccinations.</div></div>
-        </div>
-        <div class="accordion-item" style="border:1px solid var(--border-color);border-radius:12px;margin-bottom:12px;overflow:hidden">
-          <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq12" style="font-weight:600;color:#111827;box-shadow:none">Which vaccinations can I get at your center?</button></h2>
-          <div id="faq12" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body" style="color:#6B7280;font-size:0.9375rem;line-height:1.7">We offer all travel vaccinations as well as the COVID vaccine.</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-</section>
-
-<!-- Contact -->
-<section class="contact-section" id="contact" style="padding:100px 0;background:var(--bg-secondary)">
-<div class="container">
-  <div class="section-header">
-    <div class="section-badge"><i class="fas fa-map-marker-alt"></i> Contact Us</div>
-    <h2>Get In Touch</h2>
-    <p>Have questions? We'd love to hear from you. Reach out to us through any of the channels below.</p>
-  </div>
-  <div class="row g-4">
-    <div class="col-lg-5">
-      <div class="contact-card" style="background:var(--bg-card);border-radius:20px;border:1px solid var(--border-color);padding:36px;height:100%">
-        <h5 style="font-weight:700;color:#111827;margin-bottom:24px">Contact Information</h5>
-        <div class="d-flex align-items-start gap-3 mb-4">
-          <div style="width:44px;height:44px;border-radius:12px;color:#C62828;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-map-marker-alt"></i></div>
-          <div><div style="font-weight:600;color:#111827;margin-bottom:2px">Address</div><div style="font-size:0.9375rem;color:#6B7280;line-height:1.6">4 Cuba Ave, Mount Pleasant<br>Opposite Billy's Meats (Along the Bond Shops)<br>Harare, Zimbabwe</div></div>
-        </div>
-        <div class="d-flex align-items-start gap-3 mb-4">
-          <div style="width:44px;height:44px;border-radius:12px;color:#C62828;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-phone"></i></div>
-          <div><div style="font-weight:600;color:#111827;margin-bottom:2px">Phone</div><div style="font-size:0.9375rem;color:#6B7280;line-height:1.8"><a href="tel:+263777289797" style="color:#6B7280;text-decoration:none">+263 777 289 797</a><br><a href="tel:+263774890158" style="color:#6B7280;text-decoration:none">+263 774 890 158</a><br><a href="tel:+263242339769" style="color:#6B7280;text-decoration:none">+263 (0242) 339 769</a></div></div>
-        </div>
-        <div class="d-flex align-items-start gap-3 mb-4">
-          <div style="width:44px;height:44px;border-radius:12px;color:#C62828;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-envelope"></i></div>
-          <div><div style="font-weight:600;color:#111827;margin-bottom:2px">Email</div><div style="font-size:0.9375rem;color:#6B7280;line-height:1.8"><a href="mailto:medical@venushealthcare.co.zw" style="color:#6B7280;text-decoration:none">medical@venushealthcare.co.zw</a><br><a href="mailto:dental@venushealthcare.co.zw" style="color:#6B7280;text-decoration:none">dental@venushealthcare.co.zw</a></div></div>
-        </div>
-        <div class="d-flex align-items-start gap-3">
-          <div style="width:44px;height:44px;border-radius:12px;color:#C62828;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-clock"></i></div>
-          <div><div style="font-weight:600;color:#111827;margin-bottom:2px">Opening Hours</div><div style="font-size:0.9375rem;color:#6B7280;line-height:1.6">Monday–Friday: 08:00–17:00<br>Saturday: 08:00–13:00<br>Sunday & Public Holidays: Closed</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-7">
-      <div style="border-radius:20px;overflow:hidden;border:1px solid var(--border-color);height:100%;min-height:420px">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3799.4270604463914!2d31.04670077494399!3d-17.771615283182623!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1931a50b3749319d%3A0xde0d867336bc53ed!2sVenus%20Medical%20%26%20Dental%20Centre!5e0!3m2!1sen!2szw!4v1785918508778!5m2!1sen!2szw" style="width:100%;height:100%;min-height:420px;border:0" loading="lazy" allowfullscreen></iframe>
-      </div>
-    </div>
-  </div>
-</div>
-</section>
-
 <!-- CTA -->
 <section class="cta-section">
 <div class="container">
@@ -533,223 +107,6 @@
 </div>
 </section>
 
-<!-- Footer -->
-<footer class="hp-footer">
-<div class="container">
-  <div class="footer-grid">
-    <div class="footer-brand">
-      <div class="logo-text" style="display:flex;align-items:center;gap:10px"><img src="{{ url_for('static', filename='logo.png') }}" alt="Venus" style="height:32px;width:auto;"> Venus Medical & Dental Centre</div>
-      <p>Comprehensive medical, dental, mental health, diagnostic, preventative, and specialist healthcare services. Your health is our priority.</p>
-    </div>
-    <div class="footer-col">
-      <h6>Quick Links</h6>
-      <a href="#about">About Us</a>
-      <a href="#services">Services</a>
-      <a href="#team">Our Team</a>
-      <a href="#faq">FAQ</a>
-      <a href="#contact">Contact</a>
-      <a href="{{ url_for('booking.book') }}">Book Now</a>
-    </div>
-    <div class="footer-col">
-      <h6>Services</h6>
-      {% for service in services[:5] %}
-      <a href="{{ url_for('booking.book') }}">{{ service.name }}</a>
-      {% endfor %}
-    </div>
-    <div class="footer-col">
-      <h6>Contact</h6>
-      <a href="tel:+263777289797"><i class="fas fa-phone me-2"></i>+263 777 289 797</a>
-      <a href="tel:+263774890158"><i class="fas fa-phone me-2"></i>+263 774 890 158</a>
-      <a href="tel:+263242339769"><i class="fas fa-phone me-2"></i>+263 (0242) 339 769</a>
-      <a href="mailto:dental@venushealthcare.co.zw"><i class="fas fa-envelope me-2"></i>dental@venushealthcare.co.zw</a>
-      <a href="mailto:medical@venushealthcare.co.zw"><i class="fas fa-envelope me-2"></i>medical@venushealthcare.co.zw</a>
-      <a><i class="fas fa-map-marker-alt me-2"></i>4 Cuba Ave, Mount Pleasant, Harare</a>
-      <a><i class="fas fa-clock me-2"></i>Mon–Fri: 08:00–17:00 | Sat: 08:00–13:00</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <span>&copy; {{ current_year }} Venus Medical & Dental Centre. All rights reserved.</span>
-    <div class="d-flex gap-3">
-      <a href="https://www.facebook.com/pg/venusmedicalanddentalsurgery/posts/" target="_blank" rel="noopener" style="color:#9CA3AF"><i class="fab fa-facebook-f"></i></a>
-      <a href="https://x.com/venus_surgery" target="_blank" rel="noopener" style="color:#9CA3AF"><i class="fab fa-twitter"></i></a>
-      <a href="https://www.instagram.com/venusmedicalanddentalsurgery/" target="_blank" rel="noopener" style="color:#9CA3AF"><i class="fab fa-instagram"></i></a>
-      <a href="https://www.linkedin.com/company/venus-healthcare-services/home/" target="_blank" rel="noopener" style="color:#9CA3AF"><i class="fab fa-linkedin-in"></i></a>
-    </div>
-  </div>
-</div>
-</footer>
-
-<script>
-// Hamburger
-document.getElementById('hpHamburger').addEventListener('click',function(){
-  var menu=document.getElementById('hpMobileMenu');
-  menu.classList.toggle('show');
-  var icon=this.querySelector('i');
-  if(menu.classList.contains('show')){
-    icon.classList.remove('fa-bars');icon.classList.add('fa-times');
-    this.style.transform='rotate(90deg)';
-  }else{
-    icon.classList.remove('fa-times');icon.classList.add('fa-bars');
-    this.style.transform='rotate(0deg)';
-  }
-});
-// Close mobile menu on link click
-document.querySelectorAll('#hpMobileMenu .nav-link').forEach(function(a){
-  a.addEventListener('click',function(){
-    document.getElementById('hpMobileMenu').classList.remove('show');
-    var icon=document.getElementById('hpHamburger').querySelector('i');
-    icon.classList.remove('fa-times');icon.classList.add('fa-bars');
-    document.getElementById('hpHamburger').style.transform='rotate(0deg)';
-  });
-});
-// Smooth scroll
-document.querySelectorAll('a[href^="#"]').forEach(function(a){
-  a.addEventListener('click',function(e){
-    var t=document.querySelector(this.getAttribute('href'));
-    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}
-  });
-});
-
-// Nav scroll effect
-var lastScroll=0;
-window.addEventListener('scroll',function(){
-  var nav=document.querySelector('.hp-nav');
-  var scrollY=window.scrollY;
-  if(scrollY>50){nav.classList.add('scrolled')}
-  else{nav.classList.remove('scrolled')}
-  if(scrollY>lastScroll&&scrollY>100){nav.style.transform='translateY(-100%)'}
-  else{nav.style.transform='translateY(0)'}
-  lastScroll=scrollY;
-});
-
-// Scroll animations with stagger
-function animateOnScroll(){
-  var elements=document.querySelectorAll('.animate-on-scroll');
-  elements.forEach(function(el){
-    var rect=el.getBoundingClientRect();
-    if(rect.top<window.innerHeight-60){el.classList.add('visible')}
-  });
-}
-window.addEventListener('scroll',animateOnScroll);
-window.addEventListener('load',animateOnScroll);
-
-// Add animate-on-scroll class to sections with stagger
-document.addEventListener('DOMContentLoaded',function(){
-  var animGroups=[
-    {sel:'.feature-card',delay:0.1},
-    {sel:'.service-home-card',delay:0.08},
-    {sel:'.how-step',delay:0.15},
-    {sel:'.team-card',delay:0.15},
-    {sel:'.gallery-section .row > div',delay:0.1},
-    {sel:'.faq-section .accordion-item',delay:0.08},
-    {sel:'.stats-bar-item',delay:0.1},
-    {sel:'.contact-section > .container > .row > div',delay:0.2}
-  ];
-  animGroups.forEach(function(group){
-    document.querySelectorAll(group.sel).forEach(function(el,i){
-      el.classList.add('animate-on-scroll');
-      el.style.transitionDelay=(i*group.delay)+'s';
-    });
-  });
-  animateOnScroll();
-});
-
-// Counter animation for stats
-function animateCounters(){
-  var counters=document.querySelectorAll('.hero-stat-num, .stats-bar-num');
-  counters.forEach(function(counter){
-    if(counter.dataset.animated) return;
-    var rect=counter.getBoundingClientRect();
-    if(rect.top<window.innerHeight){
-      counter.dataset.animated='true';
-      var text=counter.textContent;
-      var match=text.match(/(\d+)/);
-      if(match){
-        var target=parseInt(match[1]);
-        var suffix=text.replace(match[1],'');
-        var current=0;
-        var increment=Math.ceil(target/40);
-        var timer=setInterval(function(){
-          current+=increment;
-          if(current>=target){current=target;clearInterval(timer)}
-          counter.textContent=current+suffix;
-        },25);
-      }
-    }
-  });
-}
-window.addEventListener('scroll',animateCounters);
-window.addEventListener('load',animateCounters);
-
-// Image lazy load with fade
-document.querySelectorAll('img').forEach(function(img){
-  img.style.transition='opacity 0.6s ease, transform 0.6s ease';
-  img.style.opacity='0';
-  img.addEventListener('load',function(){this.style.opacity='1'});
-  if(img.complete&&img.naturalHeight!==0){img.style.opacity='1'}
-});
-
-// Ripple effect on buttons
-document.querySelectorAll('.btn-hero, .btn-nav, .team-card a').forEach(function(btn){
-  btn.addEventListener('click',function(e){
-    var ripple=document.createElement('span');
-    ripple.style.cssText='position:absolute;border-radius:50%;background:rgba(255,255,255,0.4);transform:scale(0);animation:ripple 0.6s linear;pointer-events:none';
-    var rect=this.getBoundingClientRect();
-    var size=Math.max(rect.width,rect.height);
-    ripple.style.width=ripple.style.height=size+'px';
-    ripple.style.left=(e.clientX-rect.left-size/2)+'px';
-    ripple.style.top=(e.clientY-rect.top-size/2)+'px';
-    this.style.position='relative';this.style.overflow='hidden';
-    this.appendChild(ripple);
-    setTimeout(function(){ripple.remove()},600);
-  });
-});
-
-// Add ripple keyframe
-var style=document.createElement('style');
-style.textContent='@keyframes ripple{to{transform:scale(4);opacity:0}}';
-document.head.appendChild(style);
-
-// Parallax on hero
-window.addEventListener('scroll',function(){
-  var hero=document.querySelector('.hero');
-  if(hero&&window.innerWidth>768){
-    var scrolled=window.scrollY;
-    hero.style.backgroundPositionY=scrolled*0.5+'px';
-  }
-});
-
-// Tilt effect on feature cards
-document.querySelectorAll('.feature-card, .team-card').forEach(function(card){
-  card.addEventListener('mousemove',function(e){
-    var rect=this.getBoundingClientRect();
-    var x=e.clientX-rect.left;
-    var y=e.clientY-rect.top;
-    var centerX=rect.width/2;
-    var centerY=rect.height/2;
-    var rotateX=(y-centerY)/20;
-    var rotateY=(centerX-x)/20;
-    this.style.transform='perspective(1000px) rotateX('+rotateX+'deg) rotateY('+rotateY+'deg) translateY(-8px)';
-  });
-  card.addEventListener('mouseleave',function(){
-    this.style.transform='perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)';
-  });
-});
-
-// Smooth reveal for sections
-var observer=new IntersectionObserver(function(entries){
-  entries.forEach(function(entry){
-    if(entry.isIntersecting){
-      entry.target.style.opacity='1';
-      entry.target.style.transform='translateY(0)';
-    }
-  });
-},{threshold:0.1});
-document.querySelectorAll('section').forEach(function(sec){
-  sec.style.opacity='0';
-  sec.style.transform='translateY(30px)';
-  sec.style.transition='all 0.8s cubic-bezier(0.4,0,0.2,1)';
-  observer.observe(sec);
-});
-</script>
+{% include "main/_footer.html" %}
 {% endblock %}
+{% block extra_js %}<script src="{{ url_for('static', filename='js/home.js') }}"></script>{% endblock %}
