@@ -66,6 +66,12 @@ def seed_database():
             if not cat:
                 cat = ServiceCategory(name=name, description=desc, color=color, icon=icon, is_active=True, sort_order=sort_order)
                 db.session.add(cat)
+            else:
+                cat.description = desc
+                cat.color = color
+                cat.icon = icon
+                cat.sort_order = sort_order
+                cat.is_active = True
             categories[name] = cat
         db.session.flush()
         
@@ -84,7 +90,7 @@ def seed_database():
             
             # Mental Health Specialist Clinics category
             ('Psychiatrist', 'A medical doctor who diagnoses, treats, and manages mental health disorders, often including medication management.', 60, 15, '#8B5CF6', 'fa-brain', 120.00, 'Mental Health Specialist Clinics', True),
-            ('Clinical Neuropsychologist', 'Specializes in understanding how brain function affects behavior and cognition, often assessing memory, learning, or neurological conditions.', 90, 30, '#8B5CF6', 'fa-brain', 150.00, 'Mental Health Specialist Clinics', True),
+            ('Clinical Neuropsychologist', 'Diagnoses and treats emotional, behavioral, and psychological issues through therapy and assessments, and specializes in understanding how brain function affects behavior and cognition. Assesses memory, learning, and neurological conditions.', 90, 30, '#8B5CF6', 'fa-brain', 150.00, 'Mental Health Specialist Clinics', True),
             ('Educational Psychologist', 'Helps with learning difficulties, school performance issues, and emotional challenges affecting academic success.', 90, 30, '#8B5CF6', 'fa-graduation-cap', 150.00, 'Mental Health Specialist Clinics', True),
             
             # Dermatology
@@ -108,7 +114,7 @@ def seed_database():
             ('ECG', 'Electrocardiogram testing for heart health assessment. Quick, non-invasive cardiac screening.', 15, 10, '#14B8A6', 'fa-heartbeat', 40.00, 'Diagnostic Services', True),
             
             # Pharmacy - not bookable online
-            ('Pharmacy', 'Fully stocked pharmacy for your prescriptions and health needs. Contact: +263 78 025 0400', 15, 5, '#14B8A6', 'fa-prescription-bottle-alt', 0.00, 'Pharmacy', False),
+            ('Pharmacy', 'Fully stocked pharmacy for your prescriptions and health needs.', 15, 5, '#14B8A6', 'fa-prescription-bottle-alt', 0.00, 'Pharmacy', False),
         ]
 
         services = {}
@@ -123,7 +129,27 @@ def seed_database():
                     category_id=cat.id if cat else None
                 )
                 db.session.add(svc)
+            else:
+                svc.description = desc
+                svc.duration = duration
+                svc.buffer_time = buffer
+                svc.color = color
+                svc.icon = icon
+                svc.price = price
+                svc.is_active = True
+                svc.is_online_bookable = bookable
+                svc.category = cat
             services[name] = svc
+        db.session.flush()
+
+        # Retire services no longer offered (e.g. Eye Services, ENT)
+        retired_terms = ['eye', 'ophthalmology', 'otolaryngology', 'ear, nose', 'ear nose', 'ears']
+        retired_exact = ['ent', 'ent services', 'ent clinic', 'e.n.t', 'e n t']
+        for svc in Service.query.filter_by(is_active=True).all():
+            ln = svc.name.lower()
+            if ln in retired_exact or any(term in ln for term in retired_terms):
+                svc.is_active = False
+                print(f"[SEED] Deactivated removed service: {svc.name}")
         db.session.flush()
 
         print("Seeding practitioners...")

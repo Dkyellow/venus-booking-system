@@ -20,8 +20,9 @@ def about():
 
 @main_bp.route('/services')
 def services():
-    services = Service.query.filter_by(is_active=True, is_online_bookable=True).order_by(Service.sort_order).all()
-    return render_template('main/services.html', services=services)
+    services = Service.query.filter_by(is_active=True).order_by(Service.sort_order, Service.name).all()
+    categories = ServiceCategory.query.filter_by(is_active=True).order_by(ServiceCategory.sort_order).all()
+    return render_template('main/services.html', services=services, categories=categories)
 
 
 @main_bp.route('/gallery')

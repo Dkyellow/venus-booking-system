@@ -9,7 +9,7 @@
 <div class="container">
   <div class="hero-grid">
     <div>
-      <div class="hero-badge"><span class="dot"></span> Open 24/7 Online Booking</div>
+      
       <h1>Comprehensive Healthcare<br><span>For The Whole Family</span></h1>
       <p>Venus Medical & Dental Centre provides medical, dental, mental health, diagnostic, preventative, and specialist healthcare services. Book your appointment online — fast, easy, and available 24/7.</p>
       <div class="hero-actions">
@@ -33,14 +33,13 @@
 <section class="services-section" id="services">
 <div class="container">
   <div class="section-header">
-    <div class="section-badge"><i class="fas fa-stethoscope"></i> What We Offer</div>
     <h2>Care For Every Family Member</h2>
     <p>Explore our range of services delivered by experienced professionals under one roof.</p>
   </div>
   <div class="row g-4">
     {% for category in categories %}
     <div class="col-md-6 col-lg-4">
-      <a href="{{ url_for('main.services') }}" class="service-chip">
+      <a href="{{ url_for('main.services') }}#cat-{{ category.id }}" class="service-chip">
         <div class="service-chip-icon" style="background:linear-gradient(135deg, {{ category.color or '#69A83F' }}22, {{ category.color or '#69A83F' }}11)"><i class="fas {{ category.icon or 'fa-medical' }}"></i></div>
         <div>
           <h6>{{ category.name }}</h6>
@@ -72,7 +71,6 @@
 <section class="how-section">
 <div class="container">
   <div class="section-header">
-    <div class="section-badge"><i class="fas fa-list-ol"></i> How It Works</div>
     <h2>Book in 3 Simple Steps</h2>
     <p>Getting the care you need has never been easier.</p>
   </div>
