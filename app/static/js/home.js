@@ -57,6 +57,9 @@ window.addEventListener('scroll',homeAnimateOnScroll);
 
 // Add animate-on-scroll to cards with stagger - ONLY cards, NOT sections
 document.addEventListener('DOMContentLoaded',function(){
+  // Mark body so CSS can safely hide cards before they animate in
+  document.body.classList.add('js-loaded');
+
   var animGroups=[
     {sel:'.feature-card',delay:0.1},
     {sel:'.service-home-card',delay:0.08},
