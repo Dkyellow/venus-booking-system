@@ -112,60 +112,58 @@ class BookingService:
                 if not room_ok:
                     return None, room_reason
 
-            # Use a transaction block so all DB writes are atomic
-            with db.session.begin():
-                # Find or create patient
-                patient = Patient.query.filter(
-                    (Patient.email == patient_data['email'].lower()) |
-                    (Patient.phone == patient_data['phone'])
-                ).first()
+            # Find or create patient
+            patient = Patient.query.filter(
+                (Patient.email == patient_data['email'].lower()) |
+                (Patient.phone == patient_data['phone'])
+            ).first()
 
-                if not patient:
-                    patient = Patient(
-                        first_name=patient_data.get('first_name', ''),
-                        last_name=patient_data.get('last_name', ''),
-                        email=patient_data.get('email', '').lower(),
-                        phone=patient_data.get('phone', ''),
-                        date_of_birth=patient_data.get('date_of_birth'),
-                        gender=patient_data.get('gender')
-                    )
-                    db.session.add(patient)
-                    db.session.flush()
-
-                reference = self.engine.create_booking_reference()
-
-                appointment = Appointment(
-                    reference=reference,
-                    patient_id=patient.id,
-                    practitioner_id=practitioner_id,
-                    service_id=service_id,
-                    date=start_time.date(),
-                    start_time=start_time,
-                    end_time=end_time,
-                    status=AppointmentStatus.CONFIRMED if auto_confirm else AppointmentStatus.PENDING,
-                    reason=reason,
-                    notes=notes,
-                    created_by=created_by
+            if not patient:
+                patient = Patient(
+                    first_name=patient_data.get('first_name', ''),
+                    last_name=patient_data.get('last_name', ''),
+                    email=patient_data.get('email', '').lower(),
+                    phone=patient_data.get('phone', ''),
+                    date_of_birth=patient_data.get('date_of_birth'),
+                    gender=patient_data.get('gender')
                 )
-                db.session.add(appointment)
-                db.session.flush()  # Ensure appointment.id is assigned
+                db.session.add(patient)
+                db.session.flush()
 
-                # Assign room within the same transaction
-                if room:
-                    assignment = AppointmentRoom(
-                        appointment_id=appointment.id,
-                        room_id=room.id
-                    )
-                    db.session.add(assignment)
+            reference = self.engine.create_booking_reference()
 
-                history = AppointmentHistory(
+            appointment = Appointment(
+                reference=reference,
+                patient_id=patient.id,
+                practitioner_id=practitioner_id,
+                service_id=service_id,
+                date=start_time.date(),
+                start_time=start_time,
+                end_time=end_time,
+                status=AppointmentStatus.CONFIRMED if auto_confirm else AppointmentStatus.PENDING,
+                reason=reason,
+                notes=notes,
+                created_by=created_by
+            )
+            db.session.add(appointment)
+            db.session.flush()  # Ensure appointment.id is assigned
+
+            # Assign room within the same transaction
+            if room:
+                assignment = AppointmentRoom(
                     appointment_id=appointment.id,
-                    action='created' if not auto_confirm else 'confirmed',
-                    new_value=f"Appointment created{' and confirmed' if auto_confirm else ''}"
+                    room_id=room.id
                 )
-                db.session.add(history)
+                db.session.add(assignment)
 
-            # At this point the transaction has been committed
+            history = AppointmentHistory(
+                appointment_id=appointment.id,
+                action='created' if not auto_confirm else 'confirmed',
+                new_value=f"Appointment created{' and confirmed' if auto_confirm else ''}"
+            )
+            db.session.add(history)
+
+            db.session.commit()
             logger.info(f"Booking created: {reference} (appointment_id={appointment.id})")
             return appointment, None
 

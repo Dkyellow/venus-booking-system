@@ -137,7 +137,6 @@ with app.app_context():
                 ('Laboratory', 'Sample collection and testing', 'Laboratory', 2, '1st', 'Centrifuge, Microscope'),
                 ('Examination Room 1', 'Multi-purpose exam room', 'Examination', 1, '1st', 'Exam table, Basic diagnostics'),
                 ('Vaccination Room', 'Dedicated immunization room', 'Consultation', 1, '1st', 'Vaccine storage, Emergency kit'),
-                ('ENT Suite', 'Specialist ENT room', 'Examination', 1, '2nd', 'Otoscope, Nasoscope, Audiometer'),
             ]
             for name, desc, rtype, cap, floor, equip in rooms_data:
                 try:

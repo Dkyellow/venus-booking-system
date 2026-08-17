@@ -45,64 +45,99 @@ def seed_database():
             db.session.add(receptionist)
 
         print("Seeding services...")
+        
+        # Create categories first
+        categories_data = [
+            ('General Practitioner', 'General practice, family medicine, family planning & more', '#69A83F', 'fa-stethoscope', 1),
+            ('Dental', 'General dentistry, orthodontics, Restorative & Aesthetic dentistry', '#10B981', 'fa-tooth', 2),
+            ('Mental Health Specialist Clinics', 'Psychiatrist, Clinical Neuropsychologist, Educational Psychologist', '#8B5CF6', 'fa-brain', 3),
+            ('Dermatology', 'Specialist adult and Paediatric Dermatology managing a range of skin conditions', '#F59E0B', 'fa-hand-holding-medical', 4),
+            ('Physiotherapy', 'Physical therapy and rehabilitation for musculoskeletal conditions', '#F59E0B', 'fa-bone', 5),
+            ('Paediatrics', 'Specialised paediatrician consultation', '#EC4899', 'fa-baby', 6),
+            ('Vaccinations & Health Screenings', 'Vaccines & screenings for travel or individual needs, as well as baby clinic immunizations and weighing', '#EF4444', 'fa-syringe', 7),
+            ('Ultrasound', 'Diagnostic ultrasound imaging', '#06B6D4', 'fa-x-ray', 8),
+            ('Diagnostic Services', 'On-site laboratory services for testing and diagnoses', '#14B8A6', 'fa-flask', 9),
+            ('Pharmacy', 'Fully stocked pharmacy for your prescriptions and health needs', '#14B8A6', 'fa-prescription-bottle-alt', 10),
+        ]
+        
+        categories = {}
+        for name, desc, color, icon, sort_order in categories_data:
+            cat = ServiceCategory.query.filter_by(name=name).first()
+            if not cat:
+                cat = ServiceCategory(name=name, description=desc, color=color, icon=icon, is_active=True, sort_order=sort_order)
+                db.session.add(cat)
+            categories[name] = cat
+        db.session.flush()
+        
         service_data = [
-            ('General Consultation', 'Comprehensive medical consultations for adults and children. Our experienced general practitioners provide thorough health assessments, diagnoses, and treatment plans.', 30, 15, '#69A83F', 'fa-stethoscope', 50.00),
-            ('Dental Checkup', 'Professional dental examination, cleaning, and oral health assessment. Includes X-rays if needed and personalised dental care advice.', 45, 15, '#10B981', 'fa-tooth', 75.00),
-            ('Dental Fillings', 'Tooth-coloured composite fillings to restore decayed or damaged teeth. Painless procedure with modern materials.', 45, 15, '#10B981', 'fa-tooth', 80.00),
-            ('Dental Cleaning', 'Professional teeth cleaning and polishing to remove plaque and tartar. Prevents gum disease and maintains oral health.', 30, 15, '#10B981', 'fa-tooth', 60.00),
-            ('Orthodontics', 'Braces and clear aligners to straighten teeth and correct bite issues. Comprehensive orthodontic treatment for all ages.', 60, 15, '#10B981', 'fa-teeth', 150.00),
-            ('Dental Implants', 'Permanent tooth replacement using titanium implants. Natural-looking and long-lasting solution for missing teeth.', 90, 30, '#10B981', 'fa-tooth', 500.00),
-            ('Teeth Whitening', 'Professional teeth whitening for a brighter, whiter smile. Safe and effective in-office treatment.', 60, 15, '#10B981', 'fa-sun', 120.00),
-            ('Dental Crowns & Bridges', 'Custom-made crowns and bridges to restore damaged or missing teeth. Natural appearance and comfortable fit.', 60, 30, '#10B981', 'fa-tooth', 200.00),
-            ('Veneers', 'Thin porcelain shells bonded to teeth to improve appearance. Transform your smile with minimal preparation.', 60, 30, '#10B981', 'fa-tooth', 250.00),
-            ('Paediatric Dentistry', 'Gentle dental care for children in a comfortable, friendly environment. Preventive treatments and education.', 30, 15, '#10B981', 'fa-baby', 50.00),
-            ('Dental Extractions', 'Safe and painless tooth extraction when necessary. Includes surgical and wisdom tooth removal.', 45, 15, '#10B981', 'fa-tooth', 100.00),
-            ('Dental X-Rays', 'Digital dental X-rays for accurate diagnosis. Low radiation exposure with instant results.', 15, 10, '#10B981', 'fa-x-ray', 40.00),
-            ('Dental Emergencies', 'Same-day emergency dental care for toothaches, broken teeth, and dental trauma.', 30, 15, '#10B981', 'fa-exclamation-triangle', 75.00),
-            ('Smile Makeover', 'Complete smile transformation combining multiple dental treatments. Custom treatment plan for your dream smile.', 90, 30, '#10B981', 'fa-smile', 800.00),
-            ('Clear Aligners', 'Invisible aligners for discreet teeth straightening. Removable and comfortable for adults and teens.', 60, 15, '#10B981', 'fa-teeth-open', 200.00),
-            ('General Practice', 'Comprehensive primary healthcare for individuals and families. Routine check-ups, chronic disease management, and preventive care.', 30, 15, '#69A83F', 'fa-stethoscope', 50.00),
-            ('Family Medicine', 'Holistic healthcare for the whole family. From children to elderly, we provide continuity of care across generations.', 30, 15, '#69A83F', 'fa-users', 50.00),
-            ('Chronic Disease Management', 'Ongoing monitoring and management of chronic conditions including diabetes, hypertension, asthma, and heart disease.', 30, 15, '#69A83F', 'fa-heartbeat', 60.00),
-            ('Travel Clinic', 'Travel health consultations, vaccinations, and medications for international travel. Personalised travel health advice.', 30, 15, '#69A83F', 'fa-plane', 75.00),
-            ('Laboratory Testing', 'On-site laboratory for blood work, urine tests, and other diagnostic testing. Fast and accurate results.', 15, 10, '#14B8A6', 'fa-flask', 45.00),
-            ('ECG', 'Electrocardiogram testing for heart health assessment. Quick, non-invasive cardiac screening.', 15, 10, '#14B8A6', 'fa-heartbeat', 40.00),
-            ('Specialist Consultations', 'Access to specialist doctors in psychiatry, dermatology, and other medical specialties. Referral-based and self-referral appointments.', 45, 15, '#8B5CF6', 'fa-user-md', 100.00),
-            ('Vaccination Clinic', 'Comprehensive vaccination services including childhood immunisations, travel vaccines, and COVID-19 vaccinations. All standard vaccines available.', 20, 10, '#EF4444', 'fa-syringe', 35.00),
-            ('Dermatology', 'Skin care consultations, diagnosis, and treatment of skin conditions. Acne, eczema, psoriasis, and skin cancer screening.', 30, 15, '#F59E0B', 'fa-hand-holding-medical', 80.00),
-            ('Paediatrics', 'Specialised healthcare for infants, children, and adolescents. Developmental assessments, immunisations, and paediatric consultations.', 30, 15, '#EC4899', 'fa-baby', 60.00),
-            ('Mental Health Services', 'Comprehensive psychiatric and psychological care including individual therapy, group therapy, CBT, family therapy, and psychiatric evaluations.', 60, 15, '#8B5CF6', 'fa-brain', 100.00),
-            ('Psychiatric Evaluations', 'Comprehensive psychiatric assessments for diagnosis and treatment planning. Includes medication management and follow-up.', 60, 15, '#8B5CF6', 'fa-brain', 120.00),
-            ('Clinical Psychology', 'Individual therapy sessions with qualified clinical psychologists. Evidence-based treatment for anxiety, depression, and trauma.', 50, 15, '#8B5CF6', 'fa-comments', 80.00),
-            ('Educational Assessments', 'Comprehensive educational and learning assessments for children and adults. ADHD assessments and learning disability evaluations.', 90, 30, '#8B5CF6', 'fa-graduation-cap', 150.00),
-            ('Physiotherapy', 'Physical therapy and rehabilitation sessions. Treatment for musculoskeletal conditions, sports injuries, and post-surgical recovery.', 60, 15, '#F59E0B', 'fa-bone', 80.00),
-            ('Diagnostic Imaging', 'Digital X-rays, ultrasound, and other diagnostic imaging services. State-of-the-art equipment for accurate diagnosis.', 30, 15, '#06B6D4', 'fa-x-ray', 120.00),
-            ('Preventative Health Screenings', 'Comprehensive health screenings and wellness checks. Early detection of health issues for better outcomes.', 30, 15, '#69A83F', 'fa-shield-alt', 70.00),
-            ('Smile Design', 'Digital smile design using advanced technology. Visualise your new smile before treatment begins.', 45, 15, '#10B981', 'fa-magic', 100.00),
-            ('Pharmacy', 'On-site pharmacy for convenient prescription filling and over-the-counter medications. Quality pharmaceutical services.', 15, 5, '#14B8A6', 'fa-prescription-bottle-alt', 0.00),
+            # General Practitioner category
+            ('General Consultation', 'Comprehensive medical consultations for adults and children. Our experienced general practitioners provide thorough health assessments, diagnoses, and treatment plans.', 30, 15, '#69A83F', 'fa-stethoscope', 50.00, 'General Practitioner', True),
+            ('Family Medicine', 'Holistic healthcare for the whole family. From children to elderly, we provide continuity of care across generations.', 30, 15, '#69A83F', 'fa-users', 50.00, 'General Practitioner', True),
+            ('Chronic Disease Management', 'Ongoing monitoring and management of chronic conditions including diabetes, hypertension, asthma, and heart disease.', 30, 15, '#69A83F', 'fa-heartbeat', 60.00, 'General Practitioner', True),
+            ('Travel Clinic', 'Travel health consultations, vaccinations, and medications for international travel. Personalised travel health advice.', 30, 15, '#69A83F', 'fa-plane', 75.00, 'General Practitioner', True),
+            
+            # Dental category
+            ('General Dentistry', 'Routine dental check-ups, cleanings, fillings, and preventive care. Comprehensive dental examinations for all ages.', 45, 15, '#10B981', 'fa-tooth', 75.00, 'Dental', True),
+            ('Orthodontics', 'Braces and clear aligners to straighten teeth and correct bite issues. Comprehensive orthodontic treatment for all ages.', 60, 15, '#10B981', 'fa-teeth', 150.00, 'Dental', True),
+            ('Restorative & Aesthetic Dentistry', 'Crowns, bridges, veneers, implants, and smile makeovers. Transform your smile with modern restorative and cosmetic treatments.', 90, 30, '#10B981', 'fa-smile', 500.00, 'Dental', True),
+            ('Dental Emergencies', 'Same-day emergency dental care for toothaches, broken teeth, and dental trauma.', 30, 15, '#10B981', 'fa-exclamation-triangle', 75.00, 'Dental', True),
+            
+            # Mental Health Specialist Clinics category
+            ('Psychiatrist', 'A medical doctor who diagnoses, treats, and manages mental health disorders, often including medication management.', 60, 15, '#8B5CF6', 'fa-brain', 120.00, 'Mental Health Specialist Clinics', True),
+            ('Clinical Neuropsychologist', 'Specializes in understanding how brain function affects behavior and cognition, often assessing memory, learning, or neurological conditions.', 90, 30, '#8B5CF6', 'fa-brain', 150.00, 'Mental Health Specialist Clinics', True),
+            ('Educational Psychologist', 'Helps with learning difficulties, school performance issues, and emotional challenges affecting academic success.', 90, 30, '#8B5CF6', 'fa-graduation-cap', 150.00, 'Mental Health Specialist Clinics', True),
+            
+            # Dermatology
+            ('Dermatology', 'Skin care consultations, diagnosis, and treatment of skin conditions. Acne, eczema, psoriasis, and skin cancer screening.', 30, 15, '#F59E0B', 'fa-hand-holding-medical', 80.00, 'Dermatology', True),
+            
+            # Physiotherapy
+            ('Physiotherapy', 'Physical therapy and rehabilitation sessions. Treatment for musculoskeletal conditions, sports injuries, and post-surgical recovery.', 60, 15, '#F59E0B', 'fa-bone', 80.00, 'Physiotherapy', True),
+            
+            # Paediatrics
+            ('Paediatrics', 'Specialised healthcare for infants, children, and adolescents. Developmental assessments, immunisations, and paediatric consultations.', 30, 15, '#EC4899', 'fa-baby', 60.00, 'Paediatrics', True),
+            
+            # Vaccinations & Health Screenings
+            ('Vaccination Clinic', 'Comprehensive vaccination services including childhood immunisations, travel vaccines, and COVID-19 vaccinations. All standard vaccines available.', 20, 10, '#EF4444', 'fa-syringe', 35.00, 'Vaccinations & Health Screenings', True),
+            ('Preventative Health Screenings', 'Comprehensive health screenings and wellness checks. Early detection of health issues for better outcomes.', 30, 15, '#69A83F', 'fa-shield-alt', 70.00, 'Vaccinations & Health Screenings', True),
+            
+            # Ultrasound
+            ('Ultrasound', 'Diagnostic ultrasound imaging for accurate diagnosis. State-of-the-art equipment operated by experienced sonographers.', 30, 15, '#06B6D4', 'fa-x-ray', 120.00, 'Ultrasound', True),
+            
+            # Diagnostic Services
+            ('Laboratory Testing', 'On-site laboratory for blood work, urine tests, and other diagnostic testing. Fast and accurate results.', 15, 10, '#14B8A6', 'fa-flask', 45.00, 'Diagnostic Services', True),
+            ('ECG', 'Electrocardiogram testing for heart health assessment. Quick, non-invasive cardiac screening.', 15, 10, '#14B8A6', 'fa-heartbeat', 40.00, 'Diagnostic Services', True),
+            
+            # Pharmacy - not bookable online
+            ('Pharmacy', 'Fully stocked pharmacy for your prescriptions and health needs. Contact: +263 78 025 0400', 15, 5, '#14B8A6', 'fa-prescription-bottle-alt', 0.00, 'Pharmacy', False),
         ]
 
         services = {}
-        for name, desc, duration, buffer, color, icon, price in service_data:
+        for name, desc, duration, buffer, color, icon, price, cat_name, bookable in service_data:
+            cat = categories.get(cat_name)
             svc = Service.query.filter_by(name=name).first()
             if not svc:
-                svc = Service(name=name, description=desc, duration=duration, buffer_time=buffer, color=color, icon=icon, price=price, is_active=True, is_online_bookable=True)
+                svc = Service(
+                    name=name, description=desc, duration=duration, buffer_time=buffer,
+                    color=color, icon=icon, price=price, is_active=True,
+                    is_online_bookable=bookable,
+                    category_id=cat.id if cat else None
+                )
                 db.session.add(svc)
             services[name] = svc
         db.session.flush()
 
         print("Seeding practitioners...")
         practitioners_data = [
-            ('Knowledge', 'Tsungu', 'knowledge.tsungu@venushealthcare.co.zw', 'Dentistry', 'Dr.', '#69A83F', ['General Consultation', 'Dental Checkup', 'Dental Fillings', 'Dental Cleaning', 'Orthodontics', 'Dental Implants', 'Teeth Whitening', 'Dental Crowns & Bridges', 'Veneers', 'Paediatric Dentistry', 'Dental Extractions', 'Dental X-Rays', 'Dental Emergencies', 'Smile Makeover', 'Clear Aligners', 'Smile Design']),
-            ('Rukudzo', 'Mwamuka', 'rukudzo.mwamuka@venushealthcare.co.zw', 'Psychiatry', 'Dr.', '#8B5CF6', ['Mental Health Services', 'Psychiatric Evaluations', 'Clinical Psychology']),
-            ('James', 'Wilson', 'james.wilson@venushealthcare.co.zw', 'General Practice', 'Dr.', '#69A83F', ['General Consultation', 'Family Medicine', 'Chronic Disease Management', 'Travel Clinic', 'Preventative Health Screenings']),
-            ('Emily', 'Chen', 'emily.chen@venushealthcare.co.zw', 'Dentistry', 'Dr.', '#10B981', ['Dental Checkup', 'Dental Fillings', 'Dental Cleaning', 'Dental Emergencies']),
+            ('Knowledge', 'Tsungu', 'knowledge.tsungu@venushealthcare.co.zw', 'Dentistry', 'Dr.', '#10B981', ['General Dentistry', 'Orthodontics', 'Restorative & Aesthetic Dentistry', 'Dental Emergencies']),
+            ('Rukudzo', 'Mwamuka', 'rukudzo.mwamuka@venushealthcare.co.zw', 'Psychiatry', 'Dr.', '#8B5CF6', ['Psychiatrist']),
+            ('James', 'Wilson', 'james.wilson@venushealthcare.co.zw', 'General Practice', 'Dr.', '#69A83F', ['General Consultation', 'Family Medicine', 'Chronic Disease Management', 'Travel Clinic']),
+            ('Emily', 'Chen', 'emily.chen@venushealthcare.co.zw', 'Dentistry', 'Dr.', '#10B981', ['General Dentistry', 'Dental Emergencies']),
             ('Sarah', 'Davis', 'sarah.davis@venushealthcare.co.zw', 'Paediatrics', 'Dr.', '#EC4899', ['Paediatrics', 'Vaccination Clinic']),
             ('Michael', 'Brown', 'michael.brown@venushealthcare.co.zw', 'Physiotherapy', 'Dr.', '#F59E0B', ['Physiotherapy']),
             ('Lisa', 'Anderson', 'lisa.anderson@venushealthcare.co.zw', 'Dermatology', 'Dr.', '#F59E0B', ['Dermatology', 'General Consultation']),
-            ('David', 'Kim', 'david.kim@venushealthcare.co.zw', 'Clinical Psychology', 'Dr.', '#8B5CF6', ['Clinical Psychology', 'Educational Assessments', 'Mental Health Services']),
-            ('Amy', 'Taylor', 'amy.taylor@venushealthcare.co.zw', 'Nursing', 'Nurse', '#14B8A6', ['Vaccination Clinic', 'Laboratory Testing', 'ECG']),
-            ('Grace', 'Moyo', 'grace.moyo@venushealthcare.co.zw', 'Diagnostic Imaging', 'Dr.', '#06B6D4', ['Diagnostic Imaging', 'Laboratory Testing']),
+            ('David', 'Kim', 'david.kim@venushealthcare.co.zw', 'Clinical Psychology', 'Dr.', '#8B5CF6', ['Clinical Neuropsychologist', 'Educational Psychologist']),
+            ('Amy', 'Taylor', 'amy.taylor@venushealthcare.co.zw', 'Nursing', 'Nurse', '#14B8A6', ['Vaccination Clinic', 'Laboratory Testing', 'ECG', 'Preventative Health Screenings']),
+            ('Grace', 'Moyo', 'grace.moyo@venushealthcare.co.zw', 'Diagnostic Imaging', 'Dr.', '#06B6D4', ['Ultrasound', 'Laboratory Testing']),
         ]
 
         staff_list = {}
