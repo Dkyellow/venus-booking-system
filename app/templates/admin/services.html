@@ -17,7 +17,7 @@
 </div>
 <h6 class="fw-semibold">{{ service.name }}</h6>
 <p class="small text-secondary mb-2">{{ (service.description or '')[:80] }}{% if service.description and service.description|length > 80 %}...{% endif %}</p>
-<div class="d-flex gap-3 small text-secondary"><span><i class="far fa-clock me-1"></i>{{ service.duration }} min</span>{% if service.price > 0 %}<span>${{ '%.2f'|format(service.price) }}</span>{% endif %}</div>
+
 </div><div class="card-footer bg-transparent d-flex gap-2">
 <a href="{{ url_for('admin.edit_service', id=service.id) }}" class="btn btn-sm btn-outline flex-fill"><i class="fas fa-edit me-1"></i>Edit</a>
 <form method="POST" action="{{ url_for('admin.delete_service', id=service.id) }}" class="flex-fill"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" class="btn btn-sm btn-outline-danger w-100" data-confirm-delete="Deactivate?"><i class="fas fa-trash me-1"></i>Deactivate</button></form>
