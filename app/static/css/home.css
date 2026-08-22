@@ -216,7 +216,9 @@
   .hero-slide-content{max-width:100%;text-align:center}
   .hero-slide-content p{margin-left:auto;margin-right:auto}
   .hero-actions{justify-content:center}
-  .hero-full-nav-btn{display:none}
+  .hero-full-nav-btn{width:40px;height:40px;font-size:1rem;}
+  .hero-full-prev{left:10px;}
+  .hero-full-next{right:10px;}
   .stats-bar{grid-template-columns:repeat(2,1fr)}
   .how-steps::before{display:none}
   .footer-grid{grid-template-columns:1fr 1fr}
@@ -246,5 +248,9 @@
   .hero-stats{flex-direction:column;gap:16px;align-items:center}
   .stats-bar{grid-template-columns:1fr 1fr;padding:20px}
   .stats-bar-num{font-size:1.5rem}
-  .hero-full-indicators{display:none}
+  .hero-full-nav-btn{width:36px;height:36px;font-size:0.875rem;}
+  .hero-full-indicators{bottom:15px;gap:6px;}
+  .hero-full-indicator{width:10px;height:10px;padding:0;border-radius:50%;font-size:0;color:transparent;min-width:10px;overflow:hidden;}
+  .hero-full-indicator i{display:none;}
+  .hero-full-indicator.active{width:24px;border-radius:10px;}
 }
