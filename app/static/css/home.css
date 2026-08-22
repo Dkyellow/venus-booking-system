@@ -71,24 +71,33 @@
 .hero-stats{display:flex;gap:32px;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.15)}
 .hero-stat-num{font-size:1.75rem;font-weight:800;color:white;text-shadow:0 2px 8px rgba(0,0,0,0.3)}
 .hero-stat-label{font-size:0.8125rem;color:rgba(255,255,255,0.8);margin-top:2px;text-shadow:0 1px 4px rgba(0,0,0,0.2)}
-.hero-visual{position:relative;display:flex;justify-content:center;align-items:center}
-.hero-card{background:white;border-radius:20px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.2);width:100%;max-width:380px;position:relative;z-index:2}
-.hero-card-header{display:flex;align-items:center;gap:14px;margin-bottom:20px}
-.hero-card-avatar{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#69A83F,#4E8C36);display:flex;align-items:center;justify-content:center;color:white;font-size:1.25rem}
-.hero-card-name{font-weight:700;color:#111827;font-size:1rem}
-.hero-card-sub{font-size:0.8125rem;color:#6B7280}
-.hero-card-slot{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#f0f7e6;border-radius:12px;margin-bottom:12px}
-.hero-card-slot i{color:#69A83F;font-size:0.875rem}
-.hero-card-slot span{font-size:0.875rem;color:#374151;font-weight:500}
-.hero-card-btn{width:100%;padding:12px;background:linear-gradient(135deg,#69A83F,#4E8C36);color:white;border:none;border-radius:12px;font-weight:600;font-size:0.9375rem;cursor:pointer;transition:all .2s}
-.hero-card-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(107,142,35,0.4)}
-.hero-float{position:absolute;background:white;border-radius:16px;padding:14px 18px;box-shadow:0 8px 30px rgba(0,0,0,0.12);display:flex;align-items:center;gap:10px;z-index:3}
-.hero-float-1{top:10%;right:-10%;animation:float-y 4s ease-in-out infinite}
-.hero-float-2{bottom:15%;left:-5%;animation:float-y 5s ease-in-out infinite 1s}
-@keyframes float-y{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-.float-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.875rem}
-.float-text{font-size:0.8125rem;font-weight:600;color:#111827}
-.float-sub{font-size:0.6875rem;color:#6B7280}
+.hero-visual{position:relative;display:flex;justify-content:center;align-items:center;width:100%}
+
+/* Hero Services Carousel */
+.hero-services-carousel{width:100%;max-width:520px;border-radius:24px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.25);position:relative;background:#0f172a}
+.hero-slide-wrapper{position:relative;width:100%;height:470px;overflow:hidden}
+.hero-slide-img{width:100%;height:100%;object-fit:cover;transition:transform 6s cubic-bezier(0.25,1,0.5,1)}
+.carousel-item.active .hero-slide-img{transform:scale(1.06)}
+.hero-slide-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.35) 40%,rgba(15,23,42,0.92) 100%);pointer-events:none}
+.hero-slide-badge{position:absolute;top:20px;left:20px;z-index:5;color:white;padding:7px 16px;border-radius:100px;font-size:0.8125rem;font-weight:600;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 4px 16px rgba(0,0,0,0.25);display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,0.2)}
+.hero-slide-card{position:absolute;bottom:0;left:0;right:0;z-index:5;padding:24px 26px 30px;color:white;background:linear-gradient(180deg,transparent 0%,rgba(15,23,42,0.92) 28%,rgba(15,23,42,0.98) 100%);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.hero-slide-card-header{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.hero-slide-icon{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;border:1px solid rgba(255,255,255,0.1)}
+.hero-slide-card-header h5{font-size:1.2rem;font-weight:700;margin:0 0 2px 0;color:white;letter-spacing:-0.01em;text-shadow:0 1px 4px rgba(0,0,0,0.3)}
+.hero-slide-card-header span{font-size:0.8125rem;color:rgba(255,255,255,0.75);display:block}
+.hero-slide-card p{font-size:0.875rem;color:rgba(255,255,255,0.85);line-height:1.55;margin-bottom:16px}
+.hero-slide-footer{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hero-slide-tag{font-size:0.8rem;color:#86efac;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.hero-slide-btn{background:#69A83F;color:white;text-decoration:none;padding:9px 20px;border-radius:10px;font-size:0.875rem;font-weight:600;display:inline-flex;align-items:center;gap:8px;transition:all 0.25s ease;box-shadow:0 4px 14px rgba(105,168,63,0.4);border:none}
+.hero-slide-btn:hover{background:#5A9033;color:white;transform:translateY(-2px);box-shadow:0 6px 20px rgba(105,168,63,0.5)}
+.hero-carousel-indicators{bottom:8px;margin-bottom:0;z-index:6;gap:6px}
+.hero-carousel-indicators button{width:24px;height:4px;border-radius:4px;border:none;background-color:rgba(255,255,255,0.35);transition:all 0.3s ease;opacity:0.8}
+.hero-carousel-indicators button.active{width:42px;background-color:#69A83F;opacity:1}
+.hero-carousel-btn{width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.25);top:45%;transform:translateY(-50%);opacity:0;transition:all 0.3s ease;color:white;display:flex;align-items:center;justify-content:center;z-index:7}
+.hero-services-carousel:hover .hero-carousel-btn{opacity:1}
+.hero-carousel-btn:hover{background:rgba(105,168,63,0.9);color:white;transform:translateY(-50%) scale(1.1)}
+.hero-carousel-prev{left:14px}
+.hero-carousel-next{right:14px}
 
 /* Page hero (inner pages) */
 .page-hero{background:linear-gradient(135deg,#69A83F 0%,#4E8C36 60%,#3D7528 100%);padding:160px 0 80px;text-align:center;position:relative;overflow:hidden}
@@ -238,6 +247,12 @@
   .how-steps{grid-template-columns:1fr;gap:40px}
   .footer-grid{grid-template-columns:1fr}
   .footer-bottom{flex-direction:column;gap:12px;text-align:center}
+  
+  /* Hero Carousel Mobile */
+  .hero-slide-wrapper{height:410px}
+  .hero-slide-card{padding:18px 20px 24px;text-align:left}
+  .hero-slide-badge{top:14px;left:14px;font-size:0.75rem;padding:5px 12px}
+  .hero-carousel-btn{opacity:0.75;width:34px;height:34px;font-size:0.85rem}
 }
 @media(max-width:576px){
   .hero h1{font-size:1.75rem}
@@ -245,4 +260,18 @@
   .hero-stats{flex-direction:column;gap:16px;align-items:center}
   .stats-bar{grid-template-columns:1fr 1fr;padding:20px}
   .stats-bar-num{font-size:1.5rem}
+
+  /* Hero Carousel Extra Small */
+  .hero-slide-wrapper{height:370px}
+  .hero-slide-card{padding:14px 16px 20px}
+  .hero-slide-card-header{gap:10px;margin-bottom:6px}
+  .hero-slide-icon{width:36px;height:36px;font-size:1rem;border-radius:10px}
+  .hero-slide-card-header h5{font-size:1.05rem}
+  .hero-slide-card-header span{font-size:0.75rem}
+  .hero-slide-card p{font-size:0.8rem;margin-bottom:10px;line-height:1.45}
+  .hero-slide-tag{font-size:0.725rem}
+  .hero-slide-btn{padding:7px 13px;font-size:0.775rem}
+  .hero-carousel-indicators{bottom:4px}
+  .hero-carousel-indicators button{width:18px;height:3px}
+  .hero-carousel-indicators button.active{width:30px}
 }

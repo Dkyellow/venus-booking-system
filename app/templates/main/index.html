@@ -19,7 +19,134 @@
      
     </div>
     <div class="hero-visual">
-      <img src="{{ url_for('static', filename='images/hero.jpg') }}" alt="Venus Medical & Dental Centre" style="width:100%;height:100%;object-fit:cover;border-radius:24px;min-height:400px">
+      <div id="heroServicesCarousel" class="carousel slide carousel-fade hero-services-carousel" data-bs-ride="carousel" data-bs-interval="4500" data-bs-pause="hover">
+        <!-- Indicators -->
+        <div class="carousel-indicators hero-carousel-indicators">
+          <button type="button" data-bs-target="#heroServicesCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Medical Consultation"></button>
+          <button type="button" data-bs-target="#heroServicesCarousel" data-bs-slide-to="1" aria-label="Dental Care"></button>
+          <button type="button" data-bs-target="#heroServicesCarousel" data-bs-slide-to="2" aria-label="Mental Health"></button>
+          <button type="button" data-bs-target="#heroServicesCarousel" data-bs-slide-to="3" aria-label="Diagnostics & Lab"></button>
+        </div>
+
+        <!-- Carousel Slides -->
+        <div class="carousel-inner hero-carousel-inner">
+          <!-- Slide 1: Medical Consultation -->
+          <div class="carousel-item active">
+            <div class="hero-slide-wrapper">
+              <img src="{{ url_for('static', filename='images/service (1).jpg') }}" class="hero-slide-img" alt="General Medical Consultation">
+              <div class="hero-slide-overlay"></div>
+              <div class="hero-slide-badge" style="background: rgba(105, 168, 63, 0.92);">
+                <i class="fas fa-stethoscope"></i> General Practice
+              </div>
+              <div class="hero-slide-card">
+                <div class="hero-slide-card-header">
+                  <div class="hero-slide-icon" style="background: rgba(105, 168, 63, 0.2); color: #86efac;">
+                    <i class="fas fa-user-md"></i>
+                  </div>
+                  <div>
+                    <h5>General Medical Care</h5>
+                    <span>Comprehensive family medicine & wellness</span>
+                  </div>
+                </div>
+                <p>Complete diagnoses, treatment plans, and continuous care for adults and children.</p>
+                <div class="hero-slide-footer">
+                  <span class="hero-slide-tag"><i class="fas fa-check-circle"></i> Available Daily</span>
+                  <a href="{{ url_for('booking.book') }}" class="hero-slide-btn">Book Visit <i class="fas fa-arrow-right"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 2: Dental Care -->
+          <div class="carousel-item">
+            <div class="hero-slide-wrapper">
+              <img src="{{ url_for('static', filename='images/service (2).jpg') }}" class="hero-slide-img" alt="Dental Care & Dentistry">
+              <div class="hero-slide-overlay"></div>
+              <div class="hero-slide-badge" style="background: rgba(16, 185, 129, 0.92);">
+                <i class="fas fa-tooth"></i> Dental Centre
+              </div>
+              <div class="hero-slide-card">
+                <div class="hero-slide-card-header">
+                  <div class="hero-slide-icon" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">
+                    <i class="fas fa-smile"></i>
+                  </div>
+                  <div>
+                    <h5>Advanced Dentistry</h5>
+                    <span>Checkups, aesthetic & restorative care</span>
+                  </div>
+                </div>
+                <p>Gentle cleanings, modern orthodontics, implants, and emergency dental relief.</p>
+                <div class="hero-slide-footer">
+                  <span class="hero-slide-tag"><i class="fas fa-star"></i> State-of-the-Art</span>
+                  <a href="{{ url_for('booking.book') }}" class="hero-slide-btn">Book Dental <i class="fas fa-arrow-right"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 3: Mental Health -->
+          <div class="carousel-item">
+            <div class="hero-slide-wrapper">
+              <img src="{{ url_for('static', filename='images/service (3).jpg') }}" class="hero-slide-img" alt="Mental Health Specialist Clinic">
+              <div class="hero-slide-overlay"></div>
+              <div class="hero-slide-badge" style="background: rgba(139, 92, 246, 0.92);">
+                <i class="fas fa-brain"></i> Mental Health
+              </div>
+              <div class="hero-slide-card">
+                <div class="hero-slide-card-header">
+                  <div class="hero-slide-icon" style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd;">
+                    <i class="fas fa-heart"></i>
+                  </div>
+                  <div>
+                    <h5>Specialist Psychology</h5>
+                    <span>Psychiatrists & neuropsychologists</span>
+                  </div>
+                </div>
+                <p>Confidential psychiatric evaluations, clinical psychology, and personalized therapy.</p>
+                <div class="hero-slide-footer">
+                  <span class="hero-slide-tag"><i class="fas fa-shield-alt"></i> Private & Confidential</span>
+                  <a href="{{ url_for('booking.book') }}" class="hero-slide-btn">Book Therapy <i class="fas fa-arrow-right"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 4: Diagnostics & Laboratory -->
+          <div class="carousel-item">
+            <div class="hero-slide-wrapper">
+              <img src="{{ url_for('static', filename='images/service (4).jpg') }}" class="hero-slide-img" alt="Diagnostics & Laboratory">
+              <div class="hero-slide-overlay"></div>
+              <div class="hero-slide-badge" style="background: rgba(20, 184, 166, 0.92);">
+                <i class="fas fa-flask"></i> Diagnostics & Lab
+              </div>
+              <div class="hero-slide-card">
+                <div class="hero-slide-card-header">
+                  <div class="hero-slide-icon" style="background: rgba(20, 184, 166, 0.2); color: #5eead4;">
+                    <i class="fas fa-x-ray"></i>
+                  </div>
+                  <div>
+                    <h5>Laboratory & Ultrasound</h5>
+                    <span>Fast diagnostic testing & digital imaging</span>
+                  </div>
+                </div>
+                <p>On-site blood testing, ECG scans, health screenings, and accurate sonography.</p>
+                <div class="hero-slide-footer">
+                  <span class="hero-slide-tag"><i class="fas fa-bolt"></i> Fast Results</span>
+                  <a href="{{ url_for('booking.book') }}" class="hero-slide-btn">Book Test <i class="fas fa-arrow-right"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carousel Navigation Controls -->
+        <button class="carousel-control-prev hero-carousel-btn hero-carousel-prev" type="button" data-bs-target="#heroServicesCarousel" data-bs-slide="prev" aria-label="Previous">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="carousel-control-next hero-carousel-btn hero-carousel-next" type="button" data-bs-target="#heroServicesCarousel" data-bs-slide="next" aria-label="Next">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
     </div>
   </div>
 </div>
