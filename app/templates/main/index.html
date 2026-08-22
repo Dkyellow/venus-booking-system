@@ -4,166 +4,125 @@
 {% block body %}
 {% include "main/_nav.html" %}
 
-<!-- Hero -->
-<section class="hero">
-<div class="container">
-  <div class="hero-grid">
-    <div>
-      
-      <h1>Comprehensive Healthcare<br><span>For The Whole Family</span></h1>
-      <p>Venus Medical & Dental Centre provides medical, dental, mental health, diagnostic, preventative, and specialist healthcare services. Book your appointment online — fast, easy, and available 24/7.</p>
-      <div class="hero-actions">
-        <a href="{{ url_for('booking.book') }}" class="btn-hero btn-hero-primary"><i class="fas fa-calendar-plus"></i> Book Appointment</a>
-        <a href="{{ url_for('main.services') }}" class="btn-hero btn-hero-outline"><i class="fas fa-stethoscope"></i> Our Services</a>
-      </div>
-     
+<!-- Full-Bleed Hero Carousel -->
+<section class="hero-carousel-section">
+  <div id="heroMainCarousel" class="carousel slide carousel-fade hero-bg-carousel" data-bs-ride="carousel" data-bs-interval="5000" data-bs-pause="hover">
+    <!-- Indicators -->
+    <div class="hero-full-indicators">
+      <button type="button" data-bs-target="#heroMainCarousel" data-bs-slide-to="0" class="hero-full-indicator active" aria-current="true">
+        <i class="fas fa-stethoscope"></i> Medical Care
+      </button>
+      <button type="button" data-bs-target="#heroMainCarousel" data-bs-slide-to="1" class="hero-full-indicator">
+        <i class="fas fa-tooth"></i> Dental Centre
+      </button>
+      <button type="button" data-bs-target="#heroMainCarousel" data-bs-slide-to="2" class="hero-full-indicator">
+        <i class="fas fa-brain"></i> Mental Health
+      </button>
+      <button type="button" data-bs-target="#heroMainCarousel" data-bs-slide-to="3" class="hero-full-indicator">
+        <i class="fas fa-flask"></i> Diagnostics & Lab
+      </button>
     </div>
-    <div class="hero-visual">
-      <div id="heroServicesCarousel" class="carousel slide carousel-fade hero-services-carousel" data-bs-ride="carousel" data-bs-interval="4500" data-bs-pause="hover">
-        <!-- Indicators -->
-        <div class="carousel-indicators hero-carousel-indicators">
-          <button type="button" data-bs-target="#heroServicesCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Medical Consultation"></button>
-          <button type="button" data-bs-target="#heroServicesCarousel" data-bs-slide-to="1" aria-label="Dental Care"></button>
-          <button type="button" data-bs-target="#heroServicesCarousel" data-bs-slide-to="2" aria-label="Mental Health"></button>
-          <button type="button" data-bs-target="#heroServicesCarousel" data-bs-slide-to="3" aria-label="Diagnostics & Lab"></button>
-        </div>
 
-        <!-- Carousel Slides -->
-        <div class="carousel-inner hero-carousel-inner">
-          <!-- Slide 1: Medical Consultation -->
-          <div class="carousel-item active">
-            <div class="hero-slide-wrapper">
-              <img src="{{ url_for('static', filename='images/service (1).jpg') }}" class="hero-slide-img" alt="General Medical Consultation">
-              <div class="hero-slide-overlay"></div>
-              <div class="hero-slide-badge" style="background: rgba(105, 168, 63, 0.92);">
-                <i class="fas fa-stethoscope"></i> General Practice
-              </div>
-              <div class="hero-slide-card">
-                <div class="hero-slide-card-header">
-                  <div class="hero-slide-icon" style="background: rgba(105, 168, 63, 0.2); color: #86efac;">
-                    <i class="fas fa-user-md"></i>
-                  </div>
-                  <div>
-                    <h5>General Medical Care</h5>
-                    <span>Comprehensive family medicine & wellness</span>
-                  </div>
-                </div>
-                <p>Complete diagnoses, treatment plans, and continuous care for adults and children.</p>
-                <div class="hero-slide-footer">
-                  <span class="hero-slide-tag"><i class="fas fa-check-circle"></i> Available Daily</span>
-                  <a href="{{ url_for('booking.book') }}" class="hero-slide-btn">Book Visit <i class="fas fa-arrow-right"></i></a>
-                </div>
-              </div>
+    <div class="carousel-inner">
+      <!-- Slide 1: Medical Care / General Practice -->
+      <div class="carousel-item active">
+        <div class="hero-slide-bg" style="background-image: url('{{ url_for('static', filename='images/service (1).jpg') }}');"></div>
+        <div class="hero-slide-scrim"></div>
+        <div class="container">
+          <div class="hero-slide-content">
+            <div class="hero-badge">
+              <span class="dot"></span> General Practice & Family Medicine
             </div>
-          </div>
-
-          <!-- Slide 2: Dental Care -->
-          <div class="carousel-item">
-            <div class="hero-slide-wrapper">
-              <img src="{{ url_for('static', filename='images/service (2).jpg') }}" class="hero-slide-img" alt="Dental Care & Dentistry">
-              <div class="hero-slide-overlay"></div>
-              <div class="hero-slide-badge" style="background: rgba(16, 185, 129, 0.92);">
-                <i class="fas fa-tooth"></i> Dental Centre
-              </div>
-              <div class="hero-slide-card">
-                <div class="hero-slide-card-header">
-                  <div class="hero-slide-icon" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">
-                    <i class="fas fa-smile"></i>
-                  </div>
-                  <div>
-                    <h5>Advanced Dentistry</h5>
-                    <span>Checkups, aesthetic & restorative care</span>
-                  </div>
-                </div>
-                <p>Gentle cleanings, modern orthodontics, implants, and emergency dental relief.</p>
-                <div class="hero-slide-footer">
-                  <span class="hero-slide-tag"><i class="fas fa-star"></i> State-of-the-Art</span>
-                  <a href="{{ url_for('booking.book') }}" class="hero-slide-btn">Book Dental <i class="fas fa-arrow-right"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Slide 3: Mental Health -->
-          <div class="carousel-item">
-            <div class="hero-slide-wrapper">
-              <img src="{{ url_for('static', filename='images/service (3).jpg') }}" class="hero-slide-img" alt="Mental Health Specialist Clinic">
-              <div class="hero-slide-overlay"></div>
-              <div class="hero-slide-badge" style="background: rgba(139, 92, 246, 0.92);">
-                <i class="fas fa-brain"></i> Mental Health
-              </div>
-              <div class="hero-slide-card">
-                <div class="hero-slide-card-header">
-                  <div class="hero-slide-icon" style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd;">
-                    <i class="fas fa-heart"></i>
-                  </div>
-                  <div>
-                    <h5>Specialist Psychology</h5>
-                    <span>Psychiatrists & neuropsychologists</span>
-                  </div>
-                </div>
-                <p>Confidential psychiatric evaluations, clinical psychology, and personalized therapy.</p>
-                <div class="hero-slide-footer">
-                  <span class="hero-slide-tag"><i class="fas fa-shield-alt"></i> Private & Confidential</span>
-                  <a href="{{ url_for('booking.book') }}" class="hero-slide-btn">Book Therapy <i class="fas fa-arrow-right"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Slide 4: Diagnostics & Laboratory -->
-          <div class="carousel-item">
-            <div class="hero-slide-wrapper">
-              <img src="{{ url_for('static', filename='images/service (4).jpg') }}" class="hero-slide-img" alt="Diagnostics & Laboratory">
-              <div class="hero-slide-overlay"></div>
-              <div class="hero-slide-badge" style="background: rgba(20, 184, 166, 0.92);">
-                <i class="fas fa-flask"></i> Diagnostics & Lab
-              </div>
-              <div class="hero-slide-card">
-                <div class="hero-slide-card-header">
-                  <div class="hero-slide-icon" style="background: rgba(20, 184, 166, 0.2); color: #5eead4;">
-                    <i class="fas fa-x-ray"></i>
-                  </div>
-                  <div>
-                    <h5>Laboratory & Ultrasound</h5>
-                    <span>Fast diagnostic testing & digital imaging</span>
-                  </div>
-                </div>
-                <p>On-site blood testing, ECG scans, health screenings, and accurate sonography.</p>
-                <div class="hero-slide-footer">
-                  <span class="hero-slide-tag"><i class="fas fa-bolt"></i> Fast Results</span>
-                  <a href="{{ url_for('booking.book') }}" class="hero-slide-btn">Book Test <i class="fas fa-arrow-right"></i></a>
-                </div>
-              </div>
+            <h1>World-Class Healthcare<br><span>For The Whole Family</span></h1>
+            <p>From routine health consultations and preventative screenings to chronic condition care, our experienced medical team provides compassionate, evidence-based healthcare tailored to all ages.</p>
+            <div class="hero-actions">
+              <a href="{{ url_for('main.services') }}" class="btn-hero btn-hero-primary"><i class="fas fa-stethoscope"></i> Explore Medical Services</a>
+              <a href="{{ url_for('booking.book') }}" class="btn-hero btn-hero-outline"><i class="far fa-calendar-check"></i> Book Appointment</a>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Carousel Navigation Controls -->
-        <button class="carousel-control-prev hero-carousel-btn hero-carousel-prev" type="button" data-bs-target="#heroServicesCarousel" data-bs-slide="prev" aria-label="Previous">
-          <i class="fas fa-chevron-left"></i>
-        </button>
-        <button class="carousel-control-next hero-carousel-btn hero-carousel-next" type="button" data-bs-target="#heroServicesCarousel" data-bs-slide="next" aria-label="Next">
-          <i class="fas fa-chevron-right"></i>
-        </button>
+      <!-- Slide 2: Dental Centre -->
+      <div class="carousel-item">
+        <div class="hero-slide-bg" style="background-image: url('{{ url_for('static', filename='images/service (2).jpg') }}');"></div>
+        <div class="hero-slide-scrim"></div>
+        <div class="container">
+          <div class="hero-slide-content">
+            <div class="hero-badge" style="border-color:rgba(16,185,129,0.35);">
+              <span class="dot" style="background:#10B981;box-shadow:0 0 8px #10B981;"></span> Modern Dental Centre
+            </div>
+            <h1>Precision Dentistry &<br><span>Restorative Smile Care</span></h1>
+            <p>Advanced orthodontic alignment, aesthetic veneers, gentle cleanings, dental implants, and prompt emergency relief delivered in a comfortable, patient-first environment.</p>
+            <div class="hero-actions">
+              <a href="{{ url_for('main.services') }}#cat-2" class="btn-hero btn-hero-primary"><i class="fas fa-tooth"></i> Our Dental Treatments</a>
+              <a href="tel:+263777289797" class="btn-hero btn-hero-outline"><i class="fas fa-phone-alt"></i> Call Dental Clinic</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3: Mental Health -->
+      <div class="carousel-item">
+        <div class="hero-slide-bg" style="background-image: url('{{ url_for('static', filename='images/service (3).jpg') }}');"></div>
+        <div class="hero-slide-scrim"></div>
+        <div class="container">
+          <div class="hero-slide-content">
+            <div class="hero-badge" style="border-color:rgba(139,92,246,0.35);">
+              <span class="dot" style="background:#a78bfa;box-shadow:0 0 8px #a78bfa;"></span> Mental Health Specialists
+            </div>
+            <h1>Compassionate Support<br><span>For Mental Wellbeing</span></h1>
+            <p>Qualified psychiatrists, clinical neuropsychologists, and educational psychologists offering confidential psychiatric evaluations, therapeutic counseling, and cognitive assessments.</p>
+            <div class="hero-actions">
+              <a href="{{ url_for('main.services') }}#cat-3" class="btn-hero btn-hero-primary"><i class="fas fa-brain"></i> Mental Health Care</a>
+              <a href="{{ url_for('main.contact') }}" class="btn-hero btn-hero-outline"><i class="fas fa-envelope"></i> Contact Clinic</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4: Diagnostics & Lab -->
+      <div class="carousel-item">
+        <div class="hero-slide-bg" style="background-image: url('{{ url_for('static', filename='images/service (4).jpg') }}');"></div>
+        <div class="hero-slide-scrim"></div>
+        <div class="container">
+          <div class="hero-slide-content">
+            <div class="hero-badge" style="border-color:rgba(20,184,166,0.35);">
+              <span class="dot" style="background:#2dd4bf;box-shadow:0 0 8px #2dd4bf;"></span> On-Site Diagnostic Centre
+            </div>
+            <h1>Advanced Diagnostics &<br><span>Rapid Laboratory Services</span></h1>
+            <p>Fast, high-precision blood work, cardiac ECG testing, digital ultrasound imaging, and comprehensive wellness screenings conducted on-site with same-day results.</p>
+            <div class="hero-actions">
+              <a href="{{ url_for('main.services') }}" class="btn-hero btn-hero-primary"><i class="fas fa-flask"></i> Diagnostic Services</a>
+              <a href="{{ url_for('main.about') }}" class="btn-hero btn-hero-outline"><i class="fas fa-info-circle"></i> About Our Centre</a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- Navigation Chevrons -->
+    <button class="hero-full-nav-btn hero-full-prev" type="button" data-bs-target="#heroMainCarousel" data-bs-slide="prev" aria-label="Previous Slide">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="hero-full-nav-btn hero-full-next" type="button" data-bs-target="#heroMainCarousel" data-bs-slide="next" aria-label="Next Slide">
+      <i class="fas fa-chevron-right"></i>
+    </button>
   </div>
-</div>
 </section>
 
 <!-- Services Highlight -->
 <section class="services-section" id="services">
 <div class="container">
   <div class="section-header">
-    <h2>Care For Every Family Member</h2>
-    <p>Explore our range of services delivered by experienced professionals under one roof.</p>
+    <h2>Our Clinical Specialties</h2>
+    <p>Explore comprehensive, multidisciplinary healthcare services delivered by experienced doctors and medical specialists.</p>
   </div>
   <div class="row g-4">
     {% for category in categories %}
     <div class="col-md-6 col-lg-4">
       <a href="{{ url_for('main.services') }}#cat-{{ category.id }}" class="service-chip">
-        <div class="service-chip-icon" style="background:linear-gradient(135deg, {{ category.color or '#69A83F' }}22, {{ category.color or '#69A83F' }}11)"><i class="fas {{ category.icon or 'fa-medical' }}"></i></div>
+        <div class="service-chip-icon" style="background:linear-gradient(135deg, {{ category.color or '#69A83F' }}22, {{ category.color or '#69A83F' }}11); color:{{ category.color or '#69A83F' }}"><i class="fas {{ category.icon or 'fa-stethoscope' }}"></i></div>
         <div>
           <h6>{{ category.name }}</h6>
           <p>{{ (category.description or '')[0:90] }}{% if category.description and category.description|length > 90 %}...{% endif %}</p>
@@ -174,7 +133,7 @@
     {% for service in services[:6] %}
     <div class="col-md-6 col-lg-4">
       <a href="{{ url_for('main.services') }}" class="service-chip">
-        <div class="service-chip-icon" style="background:linear-gradient(135deg, {{ service.color or '#69A83F' }}22, {{ service.color or '#69A83F' }}11)"><i class="fas {{ service.icon or 'fa-medical' }}"></i></div>
+        <div class="service-chip-icon" style="background:linear-gradient(135deg, {{ service.color or '#69A83F' }}22, {{ service.color or '#69A83F' }}11); color:{{ service.color or '#69A83F' }}"><i class="fas {{ service.icon or 'fa-stethoscope' }}"></i></div>
         <div>
           <h6>{{ service.name }}</h6>
           <p>{{ (service.description or '')[0:90] }}{% if service.description and service.description|length > 90 %}...{% endif %}</p>
@@ -185,33 +144,33 @@
     {% endfor %}
   </div>
   <div class="text-center mt-4">
-    <a href="{{ url_for('main.services') }}" class="btn-hero btn-hero-outline" style="color:#69A83F;border-color:#69A83F;background:transparent"><i class="fas fa-arrow-right"></i> View All Services</a>
+    <a href="{{ url_for('main.services') }}" class="btn-hero btn-hero-outline" style="color:#69A83F;border-color:#69A83F;background:transparent"><i class="fas fa-arrow-right"></i> View All Healthcare Services</a>
   </div>
 </div>
 </section>
 
-<!-- How It Works -->
+<!-- Patient Care Journey -->
 <section class="how-section">
 <div class="container">
   <div class="section-header">
-    <h2>Book in 3 Simple Steps</h2>
-    <p>Getting the care you need has never been easier.</p>
+    <h2>Our Patient Care Journey</h2>
+    <p>We are dedicated to providing clear, attentive, and continuous care at every step of your health journey.</p>
   </div>
   <div class="how-steps">
     <div class="how-step">
       <div class="how-step-num">1</div>
-      <h5>Choose a Service</h5>
-      <p>Browse our services and select the one that fits your needs. Each service shows duration and pricing.</p>
+      <h5>Consultation & Assessment</h5>
+      <p>Discuss your health goals or concerns with experienced doctors and specialists in a supportive environment.</p>
     </div>
     <div class="how-step">
       <div class="how-step-num">2</div>
-      <h5>Pick a Time</h5>
-      <p>Select your preferred doctor and pick an available time slot that works for your schedule.</p>
+      <h5>Personalized Treatment</h5>
+      <p>Receive tailored treatment plans, on-site diagnostics, and accurate therapies designed specifically for your needs.</p>
     </div>
     <div class="how-step">
       <div class="how-step-num">3</div>
-      <h5>Confirm & Go</h5>
-      <p>Confirm your booking and receive instant confirmation. We'll send you a reminder before your visit.</p>
+      <h5>Continuous Wellness</h5>
+      <p>Benefit from ongoing follow-ups, prescription management, and round-the-clock patient assistance.</p>
     </div>
   </div>
 </div>
@@ -221,9 +180,12 @@
 <section class="cta-section">
 <div class="container">
   <div class="cta-box">
-    <h2>Ready to Take Control<br>of Your Health?</h2>
-    <p>Join thousands of patients who trust Venus Medical & Dental Centre for their healthcare needs.</p>
-    <a href="{{ url_for('booking.book') }}" class="btn-hero btn-hero-primary"><i class="fas fa-calendar-plus"></i> Book Your Appointment</a>
+    <h2>Your Health & Wellbeing<br>Are Our Highest Priority</h2>
+    <p>Connect with our experienced healthcare team at Venus Medical & Dental Centre today.</p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <a href="{{ url_for('main.services') }}" class="btn-hero btn-hero-outline" style="background:white;color:#69A83F;border:none"><i class="fas fa-th-list"></i> Explore Services</a>
+      <a href="{{ url_for('main.contact') }}" class="btn-hero btn-hero-outline"><i class="fas fa-phone-alt"></i> Contact Our Clinic</a>
+    </div>
   </div>
 </div>
 </section>
