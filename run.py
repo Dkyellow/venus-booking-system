@@ -63,35 +63,29 @@ with app.app_context():
                         practitioner_id WITH =,
                         tstzrange(start_time, end_time, '[)') WITH &&
                     )
-                    WHERE (coalesce(status::text, '') IN ('Confirmed', 'Checked In', 'In Progress'))
+                    WHERE (status IN ('CONFIRMED', 'CHECKED_IN', 'IN_PROGRESS', 'Confirmed', 'Checked In', 'In Progress'))
                 """)
                 print("[MIGRATE] Added doctor overlap exclusion constraint")
-            except psycopg2.errors.DuplicateObject:
-                print("[MIGRATE] Doctor overlap constraint already exists, skipping")
             except Exception as e:
-                print(f"[WARN] Doctor exclusion constraint error: {e}")
-            
-            try:
-                cur.execute("""
-                    ALTER TABLE appointment_rooms
-                    ADD CONSTRAINT no_room_booking_overlap
-                    EXCLUDE USING GIST (
-                        room_id WITH =,
-                        tstzrange(
-                            (SELECT start_time FROM appointments WHERE appointments.id = appointment_rooms.appointment_id),
-                            (SELECT end_time FROM appointments WHERE appointments.id = appointment_rooms.appointment_id),
-                            '[)'
-                        ) WITH &&
-                    )
-                    WHERE (
-                        (SELECT coalesce(status::text, '') FROM appointments WHERE appointments.id = appointment_rooms.appointment_id) IN ('Confirmed', 'Checked In', 'In Progress')
-                    )
-                """)
-                print("[MIGRATE] Added room overlap exclusion constraint")
-            except psycopg2.errors.DuplicateObject:
-                print("[MIGRATE] Room overlap constraint already exists, skipping")
-            except Exception as e:
-                print(f"[WARN] Room exclusion constraint error: {e}")
+                if 'already exists' in str(e).lower() or 'DuplicateObject' in str(type(e)):
+                    print("[MIGRATE] Doctor overlap constraint already exists, skipping")
+                else:
+                    try:
+                        cur.execute("""
+                            ALTER TABLE appointments
+                            ADD CONSTRAINT no_doctor_booking_overlap
+                            EXCLUDE USING GIST (
+                                practitioner_id WITH =,
+                                tstzrange(start_time, end_time, '[)') WITH &&
+                            )
+                            WHERE (status = 'CONFIRMED' OR status = 'CHECKED_IN' OR status = 'IN_PROGRESS')
+                        """)
+                        print("[MIGRATE] Added doctor overlap exclusion constraint")
+                    except Exception as e2:
+                        if 'already exists' in str(e2).lower():
+                            print("[MIGRATE] Doctor overlap constraint already exists, skipping")
+                        else:
+                            print(f"[WARN] Doctor exclusion constraint error: {e2}")
             
             cur.execute("""CREATE TABLE IF NOT EXISTS staff_leave (
                 id SERIAL PRIMARY KEY,
