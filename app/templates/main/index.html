@@ -49,8 +49,8 @@
         <div class="hero-slide-scrim"></div>
         <div class="container">
           <div class="hero-slide-content">
-            <div class="hero-badge" style="border-color:rgba(16,185,129,0.35);">
-              <span class="dot" style="background:#10B981;box-shadow:0 0 8px #10B981;"></span> Modern Dental Centre
+            <div class="hero-badge">
+              <span class="dot"></span> Modern Dental Centre
             </div>
             <h1>Precision Dentistry &<br><span>Restorative Smile Care</span></h1>
             <p>Advanced orthodontic alignment, aesthetic veneers, gentle cleanings, dental implants, and prompt emergency relief delivered in a comfortable, patient-first environment.</p>
@@ -68,8 +68,8 @@
         <div class="hero-slide-scrim"></div>
         <div class="container">
           <div class="hero-slide-content">
-            <div class="hero-badge" style="border-color:rgba(139,92,246,0.35);">
-              <span class="dot" style="background:#a78bfa;box-shadow:0 0 8px #a78bfa;"></span> Mental Health Specialists
+            <div class="hero-badge">
+              <span class="dot"></span> Mental Health Specialists
             </div>
             <h1>Compassionate Support<br><span>For Mental Wellbeing</span></h1>
             <p>Qualified psychiatrists, clinical neuropsychologists, and educational psychologists offering confidential psychiatric evaluations, therapeutic counseling, and cognitive assessments.</p>
@@ -87,8 +87,8 @@
         <div class="hero-slide-scrim"></div>
         <div class="container">
           <div class="hero-slide-content">
-            <div class="hero-badge" style="border-color:rgba(20,184,166,0.35);">
-              <span class="dot" style="background:#2dd4bf;box-shadow:0 0 8px #2dd4bf;"></span> On-Site Diagnostic Centre
+            <div class="hero-badge">
+              <span class="dot"></span> On-Site Diagnostic Centre
             </div>
             <h1>Advanced Diagnostics &<br><span>Rapid Laboratory Services</span></h1>
             <p>Fast, high-precision blood work, cardiac ECG testing, digital ultrasound imaging, and comprehensive wellness screenings conducted on-site with same-day results.</p>
@@ -122,7 +122,7 @@
     {% for category in categories %}
     <div class="col-md-6 col-lg-4">
       <a href="{{ url_for('main.services') }}#cat-{{ category.id }}" class="service-chip">
-        <div class="service-chip-icon" style="background:linear-gradient(135deg, {{ category.color or '#69A83F' }}22, {{ category.color or '#69A83F' }}11); color:{{ category.color or '#69A83F' }}"><i class="fas {{ category.icon or 'fa-stethoscope' }}"></i></div>
+        <div class="service-chip-icon"><i class="fas {{ category.icon or 'fa-stethoscope' }}"></i></div>
         <div>
           <h6>{{ category.name }}</h6>
           <p>{{ (category.description or '')[0:90] }}{% if category.description and category.description|length > 90 %}...{% endif %}</p>
@@ -133,7 +133,7 @@
     {% for service in services[:6] %}
     <div class="col-md-6 col-lg-4">
       <a href="{{ url_for('main.services') }}" class="service-chip">
-        <div class="service-chip-icon" style="background:linear-gradient(135deg, {{ service.color or '#69A83F' }}22, {{ service.color or '#69A83F' }}11); color:{{ service.color or '#69A83F' }}"><i class="fas {{ service.icon or 'fa-stethoscope' }}"></i></div>
+        <div class="service-chip-icon"><i class="fas {{ service.icon or 'fa-stethoscope' }}"></i></div>
         <div>
           <h6>{{ service.name }}</h6>
           <p>{{ (service.description or '')[0:90] }}{% if service.description and service.description|length > 90 %}...{% endif %}</p>

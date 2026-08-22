@@ -62,11 +62,11 @@
 
 .hero-slide-content{position:relative;z-index:2;max-width:760px}
 .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.14);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.25);border-radius:100px;padding:6px 18px 6px 10px;font-size:0.875rem;color:rgba(255,255,255,0.98);margin-bottom:24px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
-.hero-badge .dot{width:9px;height:9px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;animation:pulse-dot 2s infinite}
+.hero-badge .dot{width:9px;height:9px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--primary);animation:pulse-dot 2s infinite}
 @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.2)}}
 
 .hero-slide-content h1{font-size:3.6rem;font-weight:800;color:white;line-height:1.15;margin-bottom:22px;letter-spacing:-0.025em;text-shadow:0 2px 14px rgba(0,0,0,0.5)}
-.hero-slide-content h1 span{color:#86efac;font-weight:700}
+.hero-slide-content h1 span{color:var(--primary);font-weight:700}
 .hero-slide-content p{font-size:1.2rem;color:rgba(255,255,255,0.92);line-height:1.75;max-width:640px;margin-bottom:34px;text-shadow:0 1px 8px rgba(0,0,0,0.4)}
 
 .hero-actions{display:flex;gap:16px;flex-wrap:wrap}
@@ -114,7 +114,7 @@
 .feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#69A83F,#4E8C36);opacity:0;transition:opacity 0.3s ease}
 .feature-card:hover{transform:translateY(-8px);box-shadow:0 16px 48px rgba(0,0,0,0.1)}
 .feature-card:hover::before{opacity:1}
-.feature-icon-lg{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:20px;transition:transform 0.3s ease}
+.feature-icon-lg{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:20px;transition:transform 0.3s ease;color:var(--secondary);background:white;border:1px solid var(--border-color)}
 .feature-card:hover .feature-icon-lg{transform:scale(1.15) rotate(-5deg)}
 .feature-card h5{font-size:1.125rem;font-weight:700;margin-bottom:10px;color:#111827}
 .feature-card p{font-size:0.9375rem;color:#6B7280;line-height:1.65;margin:0}
@@ -126,7 +126,7 @@
 .service-home-icon{transition:transform 0.3s ease}
 .service-home-card:hover .service-home-icon{transform:scale(1.1) rotate(-5deg)}
 .service-home-top{padding:28px 28px 0;display:flex;align-items:flex-start;gap:16px}
-.service-home-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0}
+.service-home-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;color:var(--secondary);background:white;border:1px solid var(--border-color)}
 .service-home-info h5{font-size:1.0625rem;font-weight:700;color:#111827;margin-bottom:4px}
 .service-home-info p{font-size:0.8125rem;color:#6B7280;line-height:1.6;margin:0}
 .service-home-bottom{padding:16px 28px 24px;margin-top:auto;display:flex;align-items:center;justify-content:space-between}
@@ -137,7 +137,7 @@
 /* Highlwhy category tiles (home teaser) */
 .service-chip{display:flex;align-items:center;gap:12px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:20px;text-decoration:none;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);height:100%}
 .service-chip:hover{transform:translateY(-6px);box-shadow:0 12px 32px rgba(0,0,0,0.1);border-color:#69A83F}
-.service-chip-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;color:#C62828}
+.service-chip-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;color:var(--secondary);background:white;border:1px solid var(--border-color)}
 .service-chip h6{font-size:1rem;font-weight:700;color:#111827;margin-bottom:2px}
 .service-chip p{font-size:0.8125rem;color:#6B7280;margin:0;line-height:1.5}
 
@@ -183,7 +183,7 @@
 .contact-section{padding:100px 0;background:var(--bg-secondary)}
 .contact-card{background:var(--bg-card);border-radius:20px;border:1px solid var(--border-color);padding:36px;height:100%}
 .contact-card h5{font-weight:700;color:#111827;margin-bottom:24px}
-.contact-icon{width:44px;height:44px;border-radius:12px;color:#C62828;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.contact-icon{width:44px;height:44px;border-radius:12px;color:var(--secondary);background:white;border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
 /* FAQ */
 .faq-section{padding:100px 0}
