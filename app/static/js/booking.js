@@ -276,18 +276,67 @@ const BookingFlow = {
         };
         try {
             const btn = document.getElementById('confirm-btn');
-            if (btn) { btn.disabled = true; btn.innerHTML = '<div class="bp-spinner" style="width:16px;height:16px;border-width:2px;"></div> Booking...'; }
+            if (btn) { btn.disabled = true; btn.innerHTML = '<div class="bp-spinner" style="width:16px;height:16px;border-width:2px;"></div> Sending Request...'; }
             const result = await App.fetchData('/api/booking/create', { method: 'POST', body: JSON.stringify(data) });
             if (result.success) {
-                window.location.href = `/booking/confirmation/${result.reference}`;
+                if (btn) { btn.innerHTML = '<i class="fas fa-check me-1"></i>Request Sent!'; }
+                this.showSuccessModal(result);
             } else {
                 App.showToast(result.message || 'Booking failed. Please try again.', 'error');
-                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check me-1"></i>Confirm Booking'; }
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check me-1"></i>Send Booking'; }
             }
         } catch (e) {
             App.showToast('An error occurred. Please try again.', 'error');
             const btn = document.getElementById('confirm-btn');
-            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check me-1"></i>Confirm Booking'; }
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check me-1"></i>Send Booking'; }
+        }
+    },
+
+    showSuccessModal(result) {
+        const modal = document.getElementById('bookingSuccessModal');
+        if (!modal) {
+            window.location.href = `/booking/confirmation/${result.reference}`;
+            return;
+        }
+
+        const refEl = document.getElementById('modal-ref-number');
+        if (refEl) refEl.textContent = result.reference ? `#${result.reference}` : '';
+
+        const viewBtn = document.getElementById('modal-view-details-btn');
+        if (viewBtn && result.reference) viewBtn.href = `/booking/confirmation/${result.reference}`;
+
+        const detailsEl = document.getElementById('modal-booking-details');
+        if (detailsEl) {
+            const serviceSel = document.getElementById('service-select');
+            const pracSel = document.getElementById('practitioner-select');
+            const serviceName = (serviceSel && serviceSel.selectedIndex > 0) ? serviceSel.options[serviceSel.selectedIndex].text : '';
+            const pracName = (pracSel && pracSel.selectedIndex > 0) ? pracSel.options[pracSel.selectedIndex].text : 'Any Available Practitioner';
+            
+            let dateStr = '';
+            if (this.selectedDate) {
+                const dt = new Date(this.selectedDate + 'T00:00:00');
+                dateStr = dt.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+            }
+            const timeStr = this.selectedTime ? this.selectedTime.display : '';
+
+            detailsEl.innerHTML = `
+                <div class="bp-modal-detail-row"><span>Service:</span><strong>${serviceName}</strong></div>
+                <div class="bp-modal-detail-row"><span>Practitioner:</span><strong>${pracName}</strong></div>
+                <div class="bp-modal-detail-row"><span>Requested Date:</span><strong>${dateStr}</strong></div>
+                <div class="bp-modal-detail-row"><span>Time Slot:</span><strong>${timeStr}</strong></div>
+            `;
+        }
+
+        modal.style.display = 'flex';
+        // Trigger CSS transition
+        setTimeout(() => modal.classList.add('active'), 10);
+    },
+
+    closeSuccessModal() {
+        const modal = document.getElementById('bookingSuccessModal');
+        if (modal) {
+            modal.classList.remove('active');
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
         }
     }
 };
