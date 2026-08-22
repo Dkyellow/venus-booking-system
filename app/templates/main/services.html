@@ -22,6 +22,7 @@
     <div class="col-6 col-md-3"><div style="border-radius:12px;overflow:hidden;height:140px"><img src="{{ url_for('static', filename='images/service (4).jpg') }}" alt="Diagnostics" style="width:100%;height:100%;object-fit:cover"></div></div>
   </div>
 
+  {% set categorized_service_ids = [] %}
   {% for category in categories %}
   {% set cat_services = services | selectattr('category_id', 'equalto', category.id) | list %}
   {% if cat_services %}
@@ -32,10 +33,11 @@
     </div>
     <div class="row g-4">
       {% for service in cat_services %}
+      {% set _ = categorized_service_ids.append(service.id) %}
       <div class="col-md-6 col-lg-4">
         <div class="service-home-card">
           <div class="service-home-top">
-            <div class="service-home-icon" style="color:{{ service.color or '#C62828' }};width:56px;height:56px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas {{ service.icon or 'fa-stethoscope' }}" style="font-size:1.5rem"></i></div>
+            <div class="service-home-icon" style="color:{{ service.color or '#69A83F' }};width:56px;height:56px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas {{ service.icon or 'fa-stethoscope' }}" style="font-size:1.5rem"></i></div>
             <div class="service-home-info">
               <h5>{{ service.name }}</h5>
               <p>{{ service.description if service.description else '' }}</p>
@@ -49,13 +51,50 @@
             {% endif %}
           </div>
         </div>
-
       </div>
       {% endfor %}
     </div>
   </div>
   {% endif %}
   {% endfor %}
+
+  {# Fallback for uncategorized services if any exist #}
+  {% set remaining_services = [] %}
+  {% for s in services %}
+    {% if s.id not in categorized_service_ids %}
+      {% set _ = remaining_services.append(s) %}
+    {% endif %}
+  {% endfor %}
+  {% if remaining_services %}
+  <div class="category-block" style="margin-bottom:56px" id="cat-general">
+    <div class="section-header" style="margin-bottom:32px">
+      <h2 style="font-size:1.75rem">{% if categories %}General & Additional Services{% else %}Our Services{% endif %}</h2>
+      <p>Comprehensive healthcare options tailored to your needs.</p>
+    </div>
+    <div class="row g-4">
+      {% for service in remaining_services %}
+      <div class="col-md-6 col-lg-4">
+        <div class="service-home-card">
+          <div class="service-home-top">
+            <div class="service-home-icon" style="color:{{ service.color or '#69A83F' }};width:56px;height:56px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas {{ service.icon or 'fa-stethoscope' }}" style="font-size:1.5rem"></i></div>
+            <div class="service-home-info">
+              <h5>{{ service.name }}</h5>
+              <p>{{ service.description if service.description else '' }}</p>
+            </div>
+          </div>
+          <div class="service-home-bottom">
+            {% if service.is_online_bookable %}
+            <a href="{{ url_for('booking.book') }}" style="font-size:0.8125rem;color:#69A83F;font-weight:600;text-decoration:none">Book <i class="fas fa-arrow-right ms-1" style="font-size:0.6875rem"></i></a>
+            {% else %}
+            <a href="tel:+263780250400" style="font-size:0.8125rem;color:#69A83F;font-weight:600;text-decoration:none"><i class="fas fa-phone me-1"></i> Call +263 78 025 0400</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
 </div>
 </section>
 
